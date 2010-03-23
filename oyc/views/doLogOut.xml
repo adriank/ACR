@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<actions>
+		<action name="wylogowano" component="userLogin" errorString="Nie byłeś zalogowany">
+			<logout/>
+		</action>
+		<action component="headers">
+			<redirect location="/"/>
+		</action>
+	</actions>
+</view>

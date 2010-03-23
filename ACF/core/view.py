@@ -1,0 +1,193 @@
+#!/usr/bin/env python
+from ACF.utils.xmlextras import *
+from ACF import globals
+from ACF import components
+from ACF.errors import *
+from ACF.utils import conditionchecker,getStorage
+from ACF.utils.interpreter import execute,make_tree
+from ACF.utils.checktype import checkType
+import logging
+import os
+
+log=logging.getLogger('ACF.core.View')
+D=logging.doLog
+ADD="add"
+SET="set"
+
+def parseInputs(nodes):
+	if not nodes:
+		return None
+	ret=[]
+	for i in nodes:
+		attrs=i[1]
+		ret.append({
+			"name":attrs["name"],
+			"type":attrs.get("type",None),
+			"default":attrs.get("default",None)
+		})
+	return ret
+
+class View(object):
+	immutable=False
+	timestamp=0 #file modification timestamp
+	path="" #file path
+	def __init__(self,name,app):
+		if D: log.info("Created %s",name)
+		#All "static" computations should be here. Don't do it inside handle!
+		self.name=name
+		self.app=app
+		self.path=globals.appDir+"/views/"+name+".xml"
+		try:
+			self.timestamp=os.stat(self.path).st_mtime
+			tree=xml2tree(self.path)
+		except:
+			self.immutable=True
+			return
+		#the order of inputs is meaningful - needs to be list
+		#__dict__ is used because I don't know if it is good idea, easily changeable to self.config
+		ns={}
+		if not tree[1]:
+			return
+		for i in tree[1]:
+			if i.startswith("xmlns:"):
+				key=i.split(":")[1]
+				value=tree[1][i].split("/").pop().lower()
+				ns[key]=value
+		self.namespaces=ns
+		self.post=parseInputs(tree.get("/post/param")) or []
+		inputs=[]
+		self.conditions=[]
+		instructions=[]
+		self.output=None
+		for i in tree[2]:
+			if i[0]=="param":
+				inputs.append(i)
+			elif i[0]=="condition":
+				self.conditions.append(i)
+			elif i[0]=="output":
+				output=i
+			else:
+				instructions.append(i)
+		self.instructions=self.parseActions(instructions)
+		#print self.instructions
+		self.inputs=parseInputs(inputs)
+		if not self.instructions:
+			self.immutable=True
+			return
+		#don't check type of default value. Might be an error msg.
+		#inputs={}
+		#if D: log.debug("Setting defaults for inputs")
+		#for i in self.inputs:
+		#	if not i["default"]:
+		#		self.needsParameters=True
+		#	inputs[i["name"]]=i["default"]
+		#self.inputDefaults=inputs
+		if D: log.debug("Setting defaults for posts")
+		posts={}
+		for i in self.post:
+			posts[i["name"]]=i["default"]
+		self.postDefaults=posts
+		#past here this object MUST be immutable
+		self.immutable=True
+
+	def parseActions(self,a):
+		ret=[]
+		try:
+			for i in a:
+				attrs=i[1]
+				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
+				try:
+					ns,type=i[0].split(":")
+				except:
+					ns,type=(None,i[0])
+				componentName=self.namespaces.get(ns,"default")
+				ret.append({
+					"type":type,#action or SET
+					"name":attrs.get("name",None),
+					"component":componentName,
+					"condition":make_tree(attrs.get("condition",None)),
+					"config":self.app.getComponent(componentName).parseAction(i),
+					"storage":attrs.get("storage","rs")
+				})
+		except Error,e:
+			pass
+		return ret
+
+	def __setattr__(self, name, val):
+		if self.immutable:
+			if D: log.error("%s is read only",name)
+			raise Exception("PropertyImmutable")
+		self.__dict__[name]=val
+
+	def fillInputs(self,acenv):
+		list=acenv.inputs
+		if not self.inputs or not len(self.inputs):
+			if D: log.debug("list of inputs empty. Returns 'True'.")
+			return True
+
+		#if not list or len(list)<len(self.inputDefaults):
+		#	if D: log.critical("TooFewGETParameters, Wrong number of parameters. Should be at least %s but is %s",len(self.inputDefaults),len(list or []))
+		#	raise Error("TooFewGETParameters","Wrong number of parameters. Should be at least "+str(len(self.inputs))+" but is "+str(len(list or [])))
+
+		if D: log.debug("All parameters were specified")
+		i=-1 #i in for is not set if len returns 0
+		inputsLen=len(self.inputs)
+		for i in xrange(0,inputsLen):
+			type=self.inputs[i]["type"]
+			if not type or checkType(type,list[i]):
+				acenv.requestStorage[self.inputs[i]["name"]]=list[i]
+			else:
+				if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
+		for i in xrange(i+1,inputsLen):
+			default=self.inputs[i]["default"]
+			if default:
+				acenv.requestStorage[self.inputs[i]["name"]]=default
+
+	def checkConditions(self,acenv, conditions):
+		if D: log.debug("Executed with acenv=%s and conditions=%s",acenv,conditions)
+		try:
+			for cond in conditions:
+				r=conditionchecker.check(cond,data)
+		except Error,e:
+			if D: log.warning("Condition not fulfilled, %s",e)
+			if cond["showError"]:
+				raise Error(e)
+			else:
+				return False
+		return True
+
+	def generate(self,acenv):
+		try:
+			self.inputs
+		except:# inputs is undefined
+			acenv.generations.append(("object",{"type":"view","name":self.name},None))
+			self.transform(acenv)
+			return
+		if D: log.debug("Executing with env=%s",acenv)
+		self.fillInputs(acenv)
+		for instruction in self.instructions:
+			if instruction["condition"] and not execute(acenv,instruction["condition"]):
+				#TODO if SET is used in action -> log.error
+				if instruction["type"]==SET:
+					break
+				continue
+			component=self.app.getComponent(instruction["component"])
+			#object or list
+			nodes=component.generate(acenv,instruction["config"])
+			if instruction["type"]==ADD:
+				if D: log.info("Executing action=%s",instruction)
+				if type(nodes) is tuple:
+					nodes[1]["name"]=instruction["name"]
+					nodes[1]["view"]=self.name
+					acenv.generations.append(nodes)
+				elif type(nodes) is list:
+					acenv.generations.append(("list",{"name":instruction["name"],"view":self.name},nodes))
+			elif instruction["type"]==SET:
+				if D: log.info("Executing SET=%s",instruction)
+				getStorage(acenv,instruction.get("storage","rs"))[instruction["name"]]=nodes[2]
+
+	def transform(self,acenv):
+		if not acenv.output["engine"]:
+			acenv.tree=("list",{},[])
+			for i in acenv.generations:
+				acenv.tree[2].append(i)

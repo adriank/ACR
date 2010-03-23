@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View"
+	xmlns:h="http://asyncode.com/Headers"
+	xmlns:u="http://asyncode.com/User">
+	<param name="email" type="email" default="adrian.kalbarczyk@gmail.com"/>
+	<param name="haslo" type="password" default="adrkal"/>
+	<u:register email="{$email}" password="{$haslo}"/>
+	<h:redirect location="/"/>
+</view>

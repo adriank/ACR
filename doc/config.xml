@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+<!-- Core congiguration -->
+	<name>optimizeyourcode.com</name>
+	<domain>http://localhost:9999/</domain>
+	<staticDir>/home/adrian/ACFmain/doc/static</staticDir>
+	<sessionDir>/home/adrian/ACFmain/doc/session</sessionDir>
+	<debug enable="False" level="error"/>
+	<lang default="en" supported="pl"/>
+	<plugin name="language">
+		<langs default="en" supported="pl"/>
+	</plugin>
+	<component name="database">
+		<server dbms="pgsql" name="main" default="true">
+			<host><!--keep empty for socket connections--></host>
+			<port><!--default 5432--></port>
+			<defaultdb>adrian</defaultdb>
+			<user>adrian</user>
+			<password>aaa</password>
+			<schema>texts</schema>
+		</server>
+	</component>
+	<output xsltfile="index.xsl"/>
+	<!--<component name="filesystem">-->
+	<!--	<absolutePath>/home/adrian/ACFStandalone/static</absolutePath>-->
+	<!--</component>-->
+	<engine name="acte">
+		<staticDomain>http://oyc.fstatic.eu/</staticDomain>
+		<backgroundcolor>#464646</backgroundcolor>
+		<defaultwidth>974</defaultwidth>
+		<description>Adrian Kalbarczyk home page. Articles on optimization, computer science and related topics.</description>
+		<keywords>optimization, Adrian Kalbarczyk, java script, python, xslt</keywords>	</engine>
+</config>

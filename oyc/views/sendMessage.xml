@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+		<post name="email" type="email"/>
+		<post name="name" default="notFilled"/>
+		<post name="message"/>
+		<post name="title" default="Message from contact form"/>
+	</inputs>
+	<actions>
+		<action component="email">
+			<headers fromName="{$name}" fromAdress="{$email}" subject="{$title}" to="adrian.kalbarczyk@gmail.com"/>
+			<content>{$message}</content>
+		</action>
+		<action name="s" component="headers">
+			<redirect location="/messageSent"/>
+		</action>
+	</actions>
+</view>

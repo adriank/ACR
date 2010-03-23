@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+
+	</inputs>
+	<conditions>
+
+	</conditions>
+	<actions>
+		<action name="articles" component="database">
+			<output>
+				<asnode>content</asnode>
+			</output>
+			select create_date,id,title,abstract,lang from articles where draft is not true order by create_date DESC
+		</action>
+	</actions>
+</view>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+		<input name="email" type="email"/>
+		<input name="password" type="password"/>
+		<!--<post name="reenter"/>-->
+	</inputs>
+	<!--<conditions>-->
+	<!--	<condition lang="python" errorCode="passwordsDoNotMatch">-->
+	<!--		password==reenter-->
+	<!--	</condition>-->
+	<!--</conditions>-->
+	<actions>
+		<action name="userAdded" component="userRegister">
+			<register email="{$email}" password="{$password}" errorCode="registrationFailed"/>
+		</action>
+<!--		<action component="email">
+			<headers fromName="Enhanced.pl - Rejestracja" fromAdress="register@enhanced.pl" subject="Witaj w ListaZadan.pl!" to="{$email}"/>
+			<content fromFile="pl/registrationApproval.txt"/>
+		</action>-->
+	</actions>
+</view>

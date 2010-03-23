@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<block id="body">
+		<widget name="form" type="form" values="values" action="admin-add_article">
+			<items>
+				<item name="title" type="text">Title</item>
+				<item name="type" type="textType">Type</item>
+				<item name="tags" type="text">Tags</item>
+				<item name="lang" type="lang">Language</item>
+				<item name="abstract" type="textarea">Abstract</item>
+				<item name="content" type="textarea">Content</item>
+				<item name="draft" type="checkbox" checked="true">Draft</item>
+				<item name="langid" type="text">Multilingual ID</item>
+			</items>
+		</widget>
+	</block>
+</layout>

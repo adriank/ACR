@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<pageTitle langElement="articles"/>
+	<blockt type="container w974 inner body">
+		<widget type="customHTML">
+			message sent
+		</widget>
+	</blockt>
+</layout>

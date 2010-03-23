@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<name>Documentation</name>
+	<domain>http://localhost:9999/</domain>
+	<staticdomain>http://oyc.fstatic.eu/</staticdomain>
+	<description>Adrian Kalbarczyk home page. Articles on optimization, computer science and related topics.</description>
+	<keywords>optimization, Adrian Kalbarczyk, java script, python, xslt</keywords>
+	<backgroundcolor>#464646</backgroundcolor>
+	<defaultwidth>974</defaultwidth>
+	<layout>
+		<block type="container" name="header">
+			<widget name="logo" type="template">
+				<h1>AsynCode Documentation</h1>
+			</widget>
+		</block>
+		<body/>
+		<block type="container" name="footer">
+			<widget name="copyright" type="template">
+				<!--Site hosted by <a href="http://enhanced.pl">AsynCode Platform</a> - the advanced website platform.-->
+				&#169; Adrian Kalbarczyk all rigths reserved
+			</widget>
+		</block>
+		<widget name="debug" type="debug" docElement="debug"/>
+	</layout>
+</config>

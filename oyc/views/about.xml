@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+
+	</inputs>
+	<conditions>
+
+	</conditions>
+	<actions>
+		<action name="article" component="database">
+			<output>
+				<asnode>content</asnode>
+			</output>
+			select * from articles where langid='about_optimization'
+			<!--and lang='{$__lang__}'-->
+		</action>
+	</actions>
+</view>

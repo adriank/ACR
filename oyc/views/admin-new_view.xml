@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+		<input name="name"/>
+	</inputs>
+	<conditions>
+
+	</conditions>
+	<actions>
+		<action component="file">
+			<create path="/enhanced/views/{$name}.xml" contentSource="template" templateName="view"/>
+			<!--<create path="/public_html/layouts/{$name}.xml" contentSource="template" templateName="layout"/>-->
+		</action>
+	</actions>
+</view>

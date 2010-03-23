@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View"
+	xmlns:db="http://asyncode.com/DataBase">
+	<set name="news" operation="db:query">
+		select title,lang,date_trunc('minute',create_date) as create_date,content from news where draft is false ORDER BY create_date DESC offset 0 limit 2
+	</set>
+	<define name="article" operation="db:query">
+		select image,id,title,date_trunc('minute',create_date) as create_date,abstract from articles where id=12
+	</define>
+	<define name="layout"><![CDATA[
+		<pageTitle langElement="defaultPage"/>
+		<block type="container" name="body">
+			<block type="col twothirds">
+				<widget name="articlePreview" type="template" datasource="article">
+					<a href="/article/">
+						<pars for="href"><node name='id'/>/<node name='title'/></pars>
+						<div class="topBar"><strong>Newest article</strong> | <node name="create_date"/></div>
+						<img src="" alt="">
+							<pars for="src">
+								<node name="image"/>
+							</pars>
+						</img>
+						<div class="info"><h3><node name="title"/></h3><p><node name="abstract"/></p></div>
+					</a>
+				</widget>
+			</block>
+		</block>]]>
+	</define>
+</view>

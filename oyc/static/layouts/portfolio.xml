@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<pageTitle langElement="portfolio"/>
+	<block id="body">
+		<widget name="article" type="article" dataSource="article"/>
+	</block>
+</layout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+	</inputs>
+	<conditions>
+
+	</conditions>
+	<actions>
+		<action name="admin_upload" component="fake"/>
+	</actions>
+</view>

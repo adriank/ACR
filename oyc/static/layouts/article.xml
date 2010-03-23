@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<pageTitle dataSource="booktitle"/>
+	<blockt type="container w974 inner body">
+		<widget name="article" type="article" dataSource="article"/>
+	</blockt>
+</layout>

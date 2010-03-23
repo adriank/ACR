@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<pageTitle langElement="contact"/>
+	<blockt type="container w974 inner body">
+		<widget name="contactMe" type="customHTML" langElement="contactMe"/>
+		<widget name="contactForm" type="form" action="/sendMessage">
+			<items>
+				<item name="name" type="text" langElement="yourName"/>
+				<item name="email" type="text" langElement="email"/>
+				<item name="title" type="text" langElement="title"/>
+				<item name="message" type="textarea" langElement="message"/>
+			</items>
+		</widget>
+	</blockt>
+</layout>

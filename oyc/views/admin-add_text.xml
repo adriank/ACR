@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<inputs>
+		<post name="id" default="null"/>
+		<post name="title"/>
+		<post name="type"/>
+		<post name="tags" type="list"/>
+		<post name="lang"/>
+		<post name="abstract" default="null"/>
+		<post name="content"/>
+		<post name="draft" default="f"/>
+		<post name="langid" default="null"/>
+	</inputs>
+	<conditions>
+
+	</conditions>
+	<actions>
+		<action name="articleAdded" component="texts">
+			<add/>
+		</action>
+	</actions>
+<!--	<output>
+
+	</output>-->
+</view>

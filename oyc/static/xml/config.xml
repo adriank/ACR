@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<name>Optimize your code</name>
+	<domain>http://localhost:9999/</domain>
+	<staticdomain>http://oyc.fstatic.eu/</staticdomain>
+	<description>Adrian Kalbarczyk home page. Articles on optimization, computer science and related topics.</description>
+	<keywords>optimization, Adrian Kalbarczyk, java script, python, xslt</keywords>
+	<backgroundcolor>#464646</backgroundcolor>
+	<defaultwidth>974</defaultwidth>
+	<layout>
+		<block type="container" name="header">
+			<widget name="logo" type="template">
+				<h1>Optimize your code</h1>
+			</widget>
+			<widget name="lang" type="selectLang"/>
+			<widget name="subtitle" type="template">
+				<h2>Articles on optimization by Adrian Kalbarczyk</h2>
+			</widget>
+			<widget name="motto" type="template">
+				<ml name="motto"/>
+			</widget>
+		</block>
+		<block type="container" name="menuContainer">
+			<widget name="menu" type="menu">
+				<item>default</item>
+				<item>about</item>
+				<item>news</item>
+				<item>articles</item>
+				<item>portfolio</item>
+				<!--<item>links</item>-->
+				<item>contact</item>
+			</widget>
+		</block>
+		<block type="container" name="warning">
+			<widget name="warn" type="template">
+				<ml name="warning"/>
+			</widget>
+		</block>
+		<body/>
+		<block type="container" name="report">
+			<widget name="report" type="template" langElement="reportMistake"/>
+		</block>
+		<block type="container" name="footer">
+			<widget name="copyright" type="template">
+				<!--Site hosted by <a href="http://enhanced.pl">AsynCode Enhanced Platform</a> - the advanced website platform.-->
+				&#169; Adrian Kalbarczyk all rigths reserved
+			</widget>
+		</block>
+		<widget name="rmotp" type="rmotp">
+			<widget name="form" type="form" values="values" action="/sendReport">
+				<items>
+					<item name="email" type="text" langElement="email"/>
+					<item name="issueType" type="issueType" langElement="issueType"/>
+					<item name="description" type="textarea" langElement="description"/>
+					<item name="debug" type="hidden"/>
+				</items>
+			</widget>
+		</widget>
+		<widget name="debug" type="debug" docElement="debug"/>
+	</layout>
+</config>

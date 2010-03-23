@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<block id="body">
+		<widget name="form" type="form" values="values" action="admin-add_article">
+			<items>
+				<item name="title" type="text" langElement="title"/>
+				<item name="lang" type="lang" langElement="language"/>
+				<item name="image" type="text" langElement="image"/>
+				<item name="abstract" type="textarea" langElement="abstract"/>
+				<item name="content" type="textarea" langElement="content">
+<document>
+	<metainfo>
+		<booktitle></booktitle>
+		<abstract></abstract>
+	</metainfo>
+	<text>
+		<chapter>
+			<title></title>
+			<p></p>
+		</chapter>
+	</text>
+</document>
+				</item>
+				<item name="draft" type="checkbox" langElement="draft"/>
+				<item name="langid" type="text" langElement="multilingualID"/>
+			</items>
+		</widget>
+	</block>
+</layout>
