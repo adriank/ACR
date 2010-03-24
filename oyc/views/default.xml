@@ -1,13 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View"
-	xmlns:db="http://asyncode.com/DataBase">
-	<set name="news" operation="db:query">
-		select title,lang,date_trunc('minute',create_date) as create_date,content from news where draft is false ORDER BY create_date DESC offset 0 limit 2
-	</set>
-	<define name="article" operation="db:query">
-		select image,id,title,date_trunc('minute',create_date) as create_date,abstract from articles where id=12
-	</define>
-	<define name="layout"><![CDATA[
+	xmlns:db="http://asyncode.com/DataBase" xmlns:f="http://asyncode.com/filesystem">
+	<db:add name="news" component="database">
+		select title,lang,date_trunc('minute',create_date) as create_date,content from optimizeyourcode.news where draft is false ORDER BY create_date DESC offset 0 limit 2
+	</db:add>
+	<db:add name="article" component="database" condition="2 is 2">
+		select image,id,title,date_trunc('minute',create_date) as create_date,abstract from optimizeyourcode.articles where id=12
+		<!--draft is false order by create_date DESC offset 0 limit 1-->
+	</db:add>
+	
+	<!--<f:list path="/home/sebastian/test.txt" filter="*.txt" showDirs="true"/>-->
+	<!---->
+	<!--<f:add path="/home/sebastian/test.txt" filter="*.txt" showDirs="true"/>-->
+	<!---->
+	<!--<f:set name="variable" path="/home/sebastian/test.txt"/>-->
+	
+	<!--<f:create path="/home/sebastian/test.txt">-->
+	<!--	This is content of test.txt and this is some data from variable from_data-->
+	<!--</f:create>-->
+	
+	<!--<f:update path="/home/sebastian/test.txt">-->
+	<!--	This is content of test.txt and this is some data from variable from_data-->
+	<!--</f:update>-->
+	
+	<!--<f:append path="/home/sebastian/test.txt">-->
+	<!--	It's okey Zbychu, ride on-->
+	<!--</f:append>-->
+	
+	<!--<f:delete path="/home/sebastian/test.txt"/>-->
+	
+	<!--<f:copy from="/home/sebastian/test.txt" to="/home/sebastian/testcopy.txt"/>-->
+	
+	<!--<f:move from="/home/sebastian/bbb.txt" to="/home/sebastian/testaftermove.txt"/>-->
+	
+	<!--<f:exists path="/home/sebastian/test.txt"/>-->
+	
+	<f:get path="/home/sebastian/litwo.txt"/>
+		
+	<add name="siteMap">
+
+		<category langElement="news">
+			<item langElement="allNews" link="/news"/>
+		</category>
+		<category langElement="siteSpecific">
+			<item langElement="aboutSite" link="/about"/>
+			<item langElement="aboutMe" link="/aboutMe"/>
+			<item langElement="contact" link="/contact"/>
+			<item langElement="links" link="/links"/>
+		</category>
+	</add>
+
+	<add name="layout"><![CDATA[
 		<pageTitle langElement="defaultPage"/>
 		<block type="container" name="body">
 			<block type="col twothirds">
@@ -25,5 +68,5 @@
 				</widget>
 			</block>
 		</block>]]>
-	</define>
+	</add>
 </view>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # AsynCode Framework - XML framework allowing developing internet
-# applications without using programming languages.
+# applications without using programming languages. 
 # Copyright (C) 2008-2010  Adrian Kalbarczyk
 
 # This program is free software: you can redistribute it and/or modify
@@ -18,56 +18,105 @@
 
 
 from ACF import globals
-from ACF.components.base import Component
+from ACF.components import Component
 from ACF.errors import *
-from ACF.utils.xmlextras import dom2tree
 from ACF.utils import replaceVars
 import os
+import shutil
+name="file"
 templateDir="/home/templates/"
 
-class FileSystem(Component):
-	def generate(self,data):
-		path="/".join(globals.appDir.split("/")[0:-2])
-		ret=[]
-		for a in self.config["actions"]:
-			if a[1]["path"].strip()[0]!="/":
-				raise Error("pathNotAbsolute")
-			dst=path+replaceVars(a[1]["path"])
-			actionName=a[0].lower()
-			if actionName=="create":
-				if os.path.exists(dst):
-					ret.append(("warning",{"code":"fileExists","name":replaceVars(a[1]["path"])},None))
-					continue
-				if a[1]["contentSource"]=="template":
-					import shutil
-					shutil.copyfile(templateDir+a[1]["templateName"],dst)
-					stat=os.stat("/home/"+globals.appDomain.replace(".","_"))[4:6]
-					os.chown(dst, stat[0], stat[1])
-				#else:
-				#	s=replaceVars(a[2][0])
-			elif actionName=="list":
-				for i in os.listdir(path):
-					raise os.path.basename()
-						#ret.append(("file",i[0:-4]))
-		if len(ret)>0:
-			return ret
-		else:
-			return None
-
-def parseConfig(root):
-	r=dom2tree(root)[2]
-	conditions=[]
-	actions=[]
-	for elem in r:
-		if elem[0].lower()=="conditions":
-			for e in elem[2]:
-				conditions.append(e)
-		else:
-			actions.append(elem)
-	return {
-		"conditions":conditions,
-		"actions":actions
-	}
-
+class file(Component):
+	def __init__(self,config):
+		self.config=config
+		for i in config:
+			path=i[2][0]
+			self.path=path
+			print "dupa jasiu ", i, "dalej", i[2][0]
+	
+			
+	def generate(self, acenv, conf):
+		print "generate: ",conf
+		#return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
+		
+	def parseAction(self, root):
+		operation=root[0].split(':')[1]
+				
+		if operation=="list":
+			print "list"
+		elif operation=="add":
+			print "add"
+		elif operation=="set":
+			print "set"
+		elif operation=="create":
+			if (os.path.isfile(root[1]["path"])):
+				raise os.error, "File exist"
+			else:
+				try:
+					file = open(root[1]["path"], 'w')
+					file.write(root[2][0])
+				except IOError:
+					print 'cannot open', root[1]["path"]
+				else:
+					file.close()
+			print "jest create"
+		elif operation=="update":
+			if (os.path.isfile(root[1]["path"])):
+				try:
+					file = open(root[1]["path"], 'w')
+					file.write(root[2][0])
+				except IOError:
+					print 'cannot open', root[1]["path"]
+				else:	
+					file.close()
+			else:
+				raise os.error, "File not exist"
+			print "jest update"
+		elif operation=="append":
+			if (os.path.isfile(root[1]["path"])):
+				try:
+					file = open(root[1]["path"], 'a')
+					file.write(root[2][0])
+				except IOError:
+					print 'cannot open', root[1]["path"]
+				else:	
+					file.close()
+			else:
+				raise os.error, "File not exist"
+			
+		elif operation=="delete":
+			if (os.path.isfile(root[1]["path"])):
+				os.remove(root[1]["path"])
+			
+		elif operation=="copy":
+			if (os.path.isfile(root[1]["from"]) and os.path.isfile(root[1]["to"])):
+				shutil.copyfile(root[1]["from"], root[1]["to"])
+				
+		elif operation=="move":
+			if (os.path.isfile(root[1]["from"]) and os.path.isfile(root[1]["to"])):
+				shutil.move(root[1]["from"], root[1]["to"])
+				
+			
+		elif operation=="exists":
+			if (os.path.isfile(root[1]["path"])):
+				print "File exist"
+			else:
+				print "File not exist"
+		elif operation=="get":
+			if (os.path.isfile(root[1]["path"])):
+				try:
+					file=open(root[1]["path"],"r")
+					content=file.read()
+					
+				except IOError:
+					print 'cannot open',root[1]["path"]
+				else:	
+					file.close()
+					return ("object",{},[content])
+			
+		ret=root[1].copy()
+		ret["do"]=root[0]
+		return ret
+	
 def getObject(config):
-	return FileSystem(config)
+	return file(config)
