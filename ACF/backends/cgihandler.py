@@ -18,7 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACF.backends.WSGIHandler import application
-"""Like run_wsgi_app() but doesn't add WSGI middleware."""
+
+def _start_response(status, headers, exc_info=None):
+  if exc_info is not None:
+    raise exc_info[0], exc_info[1], exc_info[2]
+  print "Status: %s" % status
+  for name, val in headers:
+    print "%s: %s" % (name, val)
+  print
+  return sys.stdout.write
+
 env = dict(os.environ)
 env["wsgi.input"] = sys.stdin
 env["wsgi.errors"] = sys.stderr
