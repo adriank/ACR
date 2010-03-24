@@ -27,7 +27,7 @@ def _start_response(status, headers, exc_info=None):
     print "%s: %s" % (name, val)
   print
   return sys.stdout.write
-
+ 
 env = dict(os.environ)
 env["wsgi.input"] = sys.stdin
 env["wsgi.errors"] = sys.stderr
