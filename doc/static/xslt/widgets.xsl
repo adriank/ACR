@@ -235,7 +235,7 @@
 			</x:if>
 			<x:for-each select="$doc//list[@name=current()/@datasource]/object">
 				<x:variable name="item" select="."/>
-				<div class="widget {$template/parent::*/@name}">
+				<!--<div class="widget {$template/parent::*/@name}">-->
 					<x:if test="$role='admin'">
 						<div class="edit">
 							<a href="/admin-edit_{$name}/{./@id}">edit</a>
@@ -247,7 +247,7 @@
 							<x:with-param name="datasource" select="$item"/>
 						</x:call-template>
 					</x:for-each>
-				</div>
+				<!--</div>-->
 			</x:for-each>
 			<x:for-each select="after/node()">
 				<x:call-template name="template">

@@ -5,19 +5,17 @@
 	<!--	select title,lang,date_trunc('minute',addtime) as addtime,content from texts where draft is false ORDER BY addtime DESC offset 0 limit 1-->
 	<!--</define>-->
 	<define name="tags" operation="db:query">
-		select * from tags ORDER BY popularity DESC offset 0 limit 15
+		select * from (select * from tags ORDER BY popularity DESC offset 0 limit 15) as subquery ORDER By tag
 	</define>
 	<define name="layout">
 		<pageTitle>Main page</pageTitle>
 		<block type="container" name="tags">
 			<widget name="tagsCloud" type="list" datasource="tags">
 				<template>
-					<a href="/article/">
+					<a href="/article/" class="tag">
 						<pars for="href"><node name='id'/>/<node name='title'/></pars>
-						<span class="tag">
-							<pars for="class"><node name="popularity"/></pars>
-							<node name="tag"/>
-						</span>
+						<pars for="class"><node name="popularity"/></pars>
+						<node name="tag"/>
 					</a>
 				</template>
 			</widget>

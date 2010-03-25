@@ -181,9 +181,9 @@ class View(object):
 					nodes[1]["view"]=self.name
 					acenv.generations.append(nodes)
 				elif type(nodes) is list:
-					acenv.generations.append(("list",{"name":instruction["name"],"view":self.name},nodes))
+					acenv.generations.append(("list",{"name":action["name"],"view":self.name},nodes))
 			elif action["type"]==SET:
-				if D: log.info("Executing SET=%s",instruction)
+				if D: log.info("Executing SET=%s",action)
 				getStorage(acenv,action.get("storage","rs"))[action["name"]]=nodes[2]
 
 	def transform(self,acenv):

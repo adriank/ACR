@@ -136,7 +136,6 @@ class DataBase(Component):
 
 	#parses one action config which is passed to object
 	def parseAction(self,root):
-		cdata=[]
 		query=""
 		output=None
 		for node in root[2]:
