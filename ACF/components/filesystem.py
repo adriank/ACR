@@ -21,6 +21,7 @@ from ACF import globals
 from ACF.components import Component
 from ACF.errors import *
 from ACF.utils import replaceVars
+from ACF.utils.xmlextras import tree2xml
 import os
 import shutil
 name="file"
@@ -32,90 +33,88 @@ class file(Component):
 		for i in config:
 			path=i[2][0]
 			self.path=path
-			print "dupa jasiu ", i, "dalej", i[2][0]
 	
-			
+	def list(self,acenv,conf):
+		for i in os.listdir(conf["path"]):
+			print i
+		return ("object",{"status":"ok"},None)	
+	
+	def create(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			raise os.error, "File exist"
+		else:
+			file = open(conf["path"], 'w')
+			file.write(conf["content"])
+			file.close()
+		return ("object",{"status":"ok"},None)
+
+	def update(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			file = open(conf["path"], 'w')
+			file.write(conf["content"])
+			file.close()
+		else:
+			raise os.error, "File not exist"
+		return ("object",{"status":"ok"},None)
+
+	def append(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			file = open(conf["path"], 'a')
+			file.write(conf["content"])
+			file.close()
+		else:
+			raise os.error, "File not exist"
+		return ("object",{"status":"ok"},None)
+
+	def delete(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			os.remove(conf["path"])
+		return ("object",{"status":"ok"},None)
+
+	def copy(self,acenv,conf):
+		if (os.path.isfile(conf["from"])):
+			shutil.copyfile(conf["from"], conf["to"])
+		return ("object",{"status":"ok"},None)
+
+	def move(self,acenv,conf):
+		if (os.path.isfile(conf["from"])):
+			shutil.move(conf["from"], conf["to"])
+		return ("object",{"status":"ok"},None)
+
+	def exists(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			exists="true"
+		else:
+			exists="false"
+		print "File exist: ", exists
+		return ("object",{},[exists])
+
+	def get(self,acenv,conf):
+		if (os.path.isfile(conf["path"])):
+			file=open(conf["path"],"r")
+			content=file.read()
+			print content
+			file.close()
+			return ("object",{},[content])
+		
+		
+		
 	def generate(self, acenv, conf):
-		print "generate: ",conf
-		#return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
+		return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
 		
 	def parseAction(self, root):
-		operation=root[0].split(':')[1]
-				
-		if operation=="list":
-			print "list"
-		elif operation=="add":
-			print "add"
-		elif operation=="set":
-			print "set"
-		elif operation=="create":
-			if (os.path.isfile(root[1]["path"])):
-				raise os.error, "File exist"
-			else:
-				try:
-					file = open(root[1]["path"], 'w')
-					file.write(root[2][0])
-				except IOError:
-					print 'cannot open', root[1]["path"]
-				else:
-					file.close()
-			print "jest create"
-		elif operation=="update":
-			if (os.path.isfile(root[1]["path"])):
-				try:
-					file = open(root[1]["path"], 'w')
-					file.write(root[2][0])
-				except IOError:
-					print 'cannot open', root[1]["path"]
-				else:	
-					file.close()
-			else:
-				raise os.error, "File not exist"
-			print "jest update"
-		elif operation=="append":
-			if (os.path.isfile(root[1]["path"])):
-				try:
-					file = open(root[1]["path"], 'a')
-					file.write(root[2][0])
-				except IOError:
-					print 'cannot open', root[1]["path"]
-				else:	
-					file.close()
-			else:
-				raise os.error, "File not exist"
-			
-		elif operation=="delete":
-			if (os.path.isfile(root[1]["path"])):
-				os.remove(root[1]["path"])
-			
-		elif operation=="copy":
-			if (os.path.isfile(root[1]["from"]) and os.path.isfile(root[1]["to"])):
-				shutil.copyfile(root[1]["from"], root[1]["to"])
-				
-		elif operation=="move":
-			if (os.path.isfile(root[1]["from"]) and os.path.isfile(root[1]["to"])):
-				shutil.move(root[1]["from"], root[1]["to"])
-				
-			
-		elif operation=="exists":
-			if (os.path.isfile(root[1]["path"])):
-				print "File exist"
-			else:
-				print "File not exist"
-		elif operation=="get":
-			if (os.path.isfile(root[1]["path"])):
-				try:
-					file=open(root[1]["path"],"r")
-					content=file.read()
-					
-				except IOError:
-					print 'cannot open',root[1]["path"]
-				else:	
-					file.close()
-					return ("object",{},[content])
-			
+		print "root: ",root	
 		ret=root[1].copy()
 		ret["do"]=root[0]
+		if root[2]:
+			s=[]
+			for elem in root[2]:
+				if type(elem) is tuple:
+					s.append(tree2xml(elem))
+				elif type(elem) is str:
+					s.append(elem)
+			ret["content"]="".join(s)
+			print "ret: ",ret
 		return ret
 	
 def getObject(config):
