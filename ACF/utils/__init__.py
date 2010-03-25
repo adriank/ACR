@@ -71,9 +71,12 @@ def replaceVars(env,s):
 			storage=getStorage(env,"rs")
 			path=p
 		ret=objectPath(storage,path)
+		if type(ret) is list:
+			return m.group(0)
 		if not ret:
 			raise Exception((storageName or "rs")+" storage does not have "+path+" property")
 		return str(ret)
+
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster
 	if type(s) is not str:
 		raise Exception("Not string, but "+str(s))

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View">
-	<add name="layout">
-	<widget name="form" type="form" values="values" action="add_text">
+	<define name="layout">
+	<widget name="form" type="form" values="values" action="doAddText">
 		<items>
 			<item name="title" type="text" langElement="title"/>
 			<item name="lang" type="lang" langElement="language"/>
@@ -13,5 +13,5 @@
 			<item name="langid" type="text" langElement="multilingualID"/>
 		</items>
 		</widget>
-	</add>
+	</define>
 </view>

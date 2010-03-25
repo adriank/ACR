@@ -11,8 +11,9 @@ import os
 
 log=logging.getLogger('ACF.core.View')
 D=logging.doLog
-ADD="add"
+DEFINE="define"
 SET="set"
+OPERATION="operation"
 
 def parseInputs(nodes):
 	if not nodes:
@@ -57,7 +58,7 @@ class View(object):
 		self.post=parseInputs(tree.get("/post/param")) or []
 		inputs=[]
 		self.conditions=[]
-		instructions=[]
+		actions=[]
 		self.output=None
 		for i in tree[2]:
 			if i[0]=="param":
@@ -67,11 +68,11 @@ class View(object):
 			elif i[0]=="output":
 				output=i
 			else:
-				instructions.append(i)
-		self.instructions=self.parseActions(instructions)
-		#print self.instructions
+				actions.append(i)
+		self.actions=self.parseActions(actions)
+		#print self.actions
 		self.inputs=parseInputs(inputs)
-		if not self.instructions:
+		if not self.actions:
 			self.immutable=True
 			return
 		#don't check type of default value. Might be an error msg.
@@ -96,18 +97,19 @@ class View(object):
 			for i in a:
 				attrs=i[1]
 				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
-				try:
-					ns,type=i[0].split(":")
-				except:
-					ns,type=(None,i[0])
+				action=NS2Tuple(i[0])[1]
+				ns=None
+				operation="default"
+				if i[1].has_key(OPERATION):
+					ns,operation=NS2Tuple(i[1][OPERATION])
 				componentName=self.namespaces.get(ns,"default")
 				ret.append({
-					"type":type,#action or SET
+					"type":action,#DEFINE or SET
+					"operation":operation,#operation name
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
-					"config":self.app.getComponent(componentName).parseAction(i),
-					"storage":attrs.get("storage","rs")
+					"config":self.app.getComponent(componentName).parseAction(i)
 				})
 		except Error,e:
 			pass
@@ -124,18 +126,16 @@ class View(object):
 		if not self.inputs or not len(self.inputs):
 			if D: log.debug("list of inputs empty. Returns 'True'.")
 			return True
-
-		#if not list or len(list)<len(self.inputDefaults):
-		#	if D: log.critical("TooFewGETParameters, Wrong number of parameters. Should be at least %s but is %s",len(self.inputDefaults),len(list or []))
-		#	raise Error("TooFewGETParameters","Wrong number of parameters. Should be at least "+str(len(self.inputs))+" but is "+str(len(list or [])))
-
 		if D: log.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		inputsLen=len(self.inputs)
 		for i in xrange(0,inputsLen):
 			type=self.inputs[i]["type"]
-			if not type or checkType(type,list[i]):
-				acenv.requestStorage[self.inputs[i]["name"]]=list[i]
+			value=list[i]
+			if not type or checkType(type,value):
+				if type=="csv":
+					value=value.split(",")
+				acenv.requestStorage[self.inputs[i]["name"]]=value
 			else:
 				if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
 		for i in xrange(i+1,inputsLen):
@@ -165,26 +165,26 @@ class View(object):
 			return
 		if D: log.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
-		for instruction in self.instructions:
-			if instruction["condition"] and not execute(acenv,instruction["condition"]):
+		for action in self.actions:
+			if action["condition"] and not execute(acenv,action["condition"]):
 				#TODO if SET is used in action -> log.error
-				if instruction["type"]==SET:
+				if action["type"]==SET:
 					break
 				continue
-			component=self.app.getComponent(instruction["component"])
+			component=self.app.getComponent(action["component"])
 			#object or list
-			nodes=component.generate(acenv,instruction["config"])
-			if instruction["type"]==ADD:
-				if D: log.info("Executing action=%s",instruction)
+			nodes=component.generate(acenv,action["config"])
+			if action["type"]==DEFINE:
+				if D: log.info("Executing action=%s",action)
 				if type(nodes) is tuple:
-					nodes[1]["name"]=instruction["name"]
+					nodes[1]["name"]=action["name"]
 					nodes[1]["view"]=self.name
 					acenv.generations.append(nodes)
 				elif type(nodes) is list:
 					acenv.generations.append(("list",{"name":instruction["name"],"view":self.name},nodes))
-			elif instruction["type"]==SET:
+			elif action["type"]==SET:
 				if D: log.info("Executing SET=%s",instruction)
-				getStorage(acenv,instruction.get("storage","rs"))[instruction["name"]]=nodes[2]
+				getStorage(acenv,action.get("storage","rs"))[action["name"]]=nodes[2]
 
 	def transform(self,acenv):
 		if not acenv.output["engine"]:

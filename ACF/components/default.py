@@ -22,6 +22,7 @@ from ACF.utils.xmlextras import tree2xml
 
 class Default(Component):
 	def generate(self, env,config):
+		print "ddd"
 		return ("object",{},replaceVars(env, config))
 
 	def parseAction(self,root):

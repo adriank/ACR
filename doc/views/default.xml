@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View"
 	xmlns:db="http://asyncode.com/DataBase">
-	<db:add name="recentTexts">
-		select title,lang,date_trunc('minute',addtime) as addtime,content from texts where draft is false ORDER BY addtime DESC offset 0 limit 1
-	</db:add>
-	<db:add name="tags">
+	<!--<define name="recentTexts" operation="db:query">-->
+	<!--	select title,lang,date_trunc('minute',addtime) as addtime,content from texts where draft is false ORDER BY addtime DESC offset 0 limit 1-->
+	<!--</define>-->
+	<define name="tags" operation="db:query">
 		select * from tags ORDER BY popularity DESC offset 0 limit 15
-	</db:add>
-	<add name="layout">
-
-	</add>
+	</define>
+	<define name="layout">
+		<pageTitle>Main page</pageTitle>
+		<block type="container" name="tags">
+			<widget name="tagsCloud" type="list" datasource="tags">
+				<template>
+					<a href="/article/">
+						<pars for="href"><node name='id'/>/<node name='title'/></pars>
+						<span class="tag">
+							<pars for="class"><node name="popularity"/></pars>
+							<node name="tag"/>
+						</span>
+					</a>
+				</template>
+			</widget>
+		</block>
+	</define>
 </view>

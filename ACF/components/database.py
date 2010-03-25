@@ -60,10 +60,11 @@ class DataBase(Component):
 		qt=self.determineQueryType(query)
 		if d: log.debug("determineQueryType returned with '%s'",qt)
 		q=[]
+		data=data[0]
 		if qt=="insert":
 			if d: log.debug("detected insert")
-			for i in data[0]:
-				q.append(replaceVars(env,query))
+			for i in data[1]:
+				q.append(re.sub("{\$"+data[0]+"}",db.escapeString(i),query))
 		elif qt=="update":
 			if d: log.warning("Update not implemented yet.")
 			return query
@@ -82,11 +83,11 @@ class DataBase(Component):
 		if d: log.debug("start with env=%s, actionConf=%s",env,actionConf)
 		multiRequest=[]
 		if d: log.debug("Doing escapeString on data")
-		data=env.requestStorage or []
+		data=env.requestStorage.copy()
 		for i in data:
 			if d: log.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
 			if type(data[i]) is list:
-				multiRequest.append(data[i])
+				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
 		query=replaceVars(env,actionConf['query'])

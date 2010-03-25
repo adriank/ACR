@@ -11,15 +11,15 @@ from ACF import globals
 #TODO export settings to /etc/ACF/config
 globals.ACFconf="/home/adrian/ACF/ACFconf.xml"
 #one app run
-globals.appDir="/home/adrian/ACFmain/doc/"
+globals.appDir="/home/adrian/ACF/adrian/doc/"
 #for multiple apps run - NotImplementedYet
 #globals.appsDir="/home/adrian/ACF/project/"
 host=""
 port=9999
-if len(sys.argv)>1:
-	port=sys.argv[1]
-print os.getpid()
+#if len(sys.argv)>1:
+#	port=sys.argv[1]
+#print os.getpid()
 httpd=make_server(host, port, standalone_server)
 #httpd.serve_forever()
-os.environ["PATH_INFO"]="/"
+os.environ["PATH_INFO"]=sys.argv[1]
 CGIHandler().run(standalone_server)

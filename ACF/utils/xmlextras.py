@@ -166,3 +166,10 @@ def tpath(root,path):
 	except (AttributeError, KeyError, TypeError,IndexError),e:
 		return None
 	return ret
+
+def NS2Tuple(s):
+	try:
+		ns,action=s.split(":")
+	except:
+		ns,action=(None,s)
+	return (ns,action)

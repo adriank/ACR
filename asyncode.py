@@ -11,7 +11,7 @@ from ACF import globals
 #TODO export settings to /etc/ACF/config
 #globals.ACFconf="/home/adrian/ACF/ACFconf.xml"
 #one app run
-globals.appDir="/home/adrian/ACFmain/doc/"
+globals.appDir="/home/adrian/ACF/adrian/doc/"
 #for multiple apps run - NotImplementedYet
 #globals.appsDir="/home/adrian/ACF/project/"
 host=""
