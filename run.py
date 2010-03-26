@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
+import logging 
 import sys,os
 from wsgiref.simple_server import make_server
 from wsgiref.handlers import CGIHandler
