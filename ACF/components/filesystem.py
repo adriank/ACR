@@ -2,7 +2,7 @@
 
 # AsynCode Framework - XML framework allowing developing internet
 # applications without using programming languages. 
-# Copyright (C) 2008-2010  Adrian Kalbarczyk
+# Copyright (C) 2008-2010  Adrian Kalbarczyk, Sebastian Lis
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the version 3 of GNU General Public License as published by
@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from ACF import globals
 from ACF.components import Component
 from ACF.errors import *
 from ACF.utils import replaceVars
@@ -25,7 +24,6 @@ from ACF.utils.xmlextras import tree2xml
 import os
 import shutil
 import fnmatch
-name="file"
 
 class file(Component):
 	def __init__(self,config):
@@ -46,6 +44,7 @@ class file(Component):
 						list.append(file)
 				else:
 					list.append(file)
+		print list			
 		list= " ".join(list)
 		return ("object",{"list":list},None)	
 	
@@ -55,37 +54,46 @@ class file(Component):
 		if (os.path.isfile(path)):
 			raise os.error, "File exist"
 		else:
-			file = open(path, 'w')
-			file.write(content)
-			file.close()
+			try:
+				file = open(path, 'w')
+				file.write(content)
+			except IOError:
+				print 'cannot open', path
+			else:
+				file.close()
 		return ("object",{"status":"ok"},None)
 
 	def update(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
-		if (os.path.isfile(path)):
+		try:
 			file = open(path, 'w')
 			file.write(content)
-			file.close()
+		except IOError:
+			print 'cannot open', path
 		else:
-			raise os.error, "File not exist"
+			file.close()
 		return ("object",{"status":"ok"},None)
 
 	def append(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
-		if (os.path.isfile(path)):
+		try:
 			file = open(path, 'a')
 			file.write(content)
-			file.close()
+		except IOError:
+			print 'cannot open', path
 		else:
-			raise os.error, "File not exist"
+			file.close()
 		return ("object",{"status":"ok"},None)
 
 	def delete(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
-		if (os.path.isfile(path)):
-			os.remove(path)
+		if (os.path.exists(path)):
+			if (os.path.isfile(path)):
+				os.remove(path)
+			else:
+				shutil.rmtree(path)
 		return ("object",{"status":"ok"},None)
 
 	def copy(self,acenv,conf):
@@ -104,20 +112,18 @@ class file(Component):
 
 	def exists(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
-		if (os.path.isfile(path)):
-			return ("object",{"exists":True},[])
-		else:
-			return ("object",{"exists":False},[])
+		return ("object",{"exists":os.path.isfile(path)},[])
 		
 	def get(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
-		if (os.path.isfile(path)):
+		try:
 			file=open(path,"r")
 			content=file.read()
+		except IOError:
+			print 'cannot open', path
+		else:	
 			file.close()
-			return ("object",{"get":content},None)
-		
-		
+		return ("object",{"status":"ok"},[content])
 		
 	def generate(self, acenv, conf):
 		return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
