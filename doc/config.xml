@@ -21,9 +21,9 @@
 		</server>
 	</component>
 	<output xsltfile="index.xsl"/>
-	<!--<component name="filesystem">-->
-	<!--	<absolutePath>/home/adrian/ACFStandalone/static</absolutePath>-->
-	<!--</component>-->
+	<component name="filesystem">
+		<absolutePath>/home/adrian/ACF/adrian/doc/static</absolutePath>
+	</component>
 	<engine name="acte">
 		<staticDomain>http://oyc.fstatic.eu/</staticDomain>
 		<backgroundcolor>#464646</backgroundcolor>

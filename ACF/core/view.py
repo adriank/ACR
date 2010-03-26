@@ -1,4 +1,22 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# AsynCode Framework - XML framework allowing developing internet
+# applications without using programming languages.
+# Copyright (C) 2008-2010  Adrian Kalbarczyk
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the version 3 of GNU General Public License as published by
+# the Free Software Foundation.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from ACF.utils.xmlextras import *
 from ACF import globals
 from ACF import components
@@ -13,7 +31,7 @@ log=logging.getLogger('ACF.core.View')
 D=logging.doLog
 DEFINE="define"
 SET="set"
-OPERATION="operation"
+OPERATION="command"
 
 def parseInputs(nodes):
 	if not nodes:
@@ -99,13 +117,13 @@ class View(object):
 				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
 				action=NS2Tuple(i[0])[1]
 				ns=None
-				operation="default"
-				if i[1].has_key(OPERATION):
-					ns,operation=NS2Tuple(i[1][OPERATION])
+				COMMAND="default"
+				if i[1].has_key(COMMAND):
+					ns,COMMAND=NS2Tuple(i[1][COMMAND])
 				componentName=self.namespaces.get(ns,"default")
 				ret.append({
 					"type":action,#DEFINE or SET
-					"operation":operation,#operation name
+					"COMMAND":COMMAND,#COMMAND name
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
