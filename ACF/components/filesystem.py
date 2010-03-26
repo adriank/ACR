@@ -24,8 +24,8 @@ from ACF.utils import replaceVars
 from ACF.utils.xmlextras import tree2xml
 import os
 import shutil
+import fnmatch
 name="file"
-templateDir="/home/templates/"
 
 class file(Component):
 	def __init__(self,config):
@@ -35,67 +35,87 @@ class file(Component):
 			self.path=path
 	
 	def list(self,acenv,conf):
-		for i in os.listdir(conf["path"]):
-			print i
-		return ("object",{"status":"ok"},None)	
+		path=self.path+replaceVars(acenv,conf["path"])
+		showDirs=conf["showdirs"]
+		filter=replaceVars(acenv,conf["filter"])
+		list=[]
+		for file in os.listdir(path):
+			if fnmatch.fnmatch(file, filter):
+				if os.path.isdir(os.path.join(path,file)):
+					if showDirs:
+						list.append(file)
+				else:
+					list.append(file)
+		list= " ".join(list)
+		return ("object",{"list":list},None)	
 	
 	def create(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
+		path=self.path+replaceVars(acenv,conf["path"])
+		content=replaceVars(acenv,conf["content"])
+		if (os.path.isfile(path)):
 			raise os.error, "File exist"
 		else:
-			file = open(conf["path"], 'w')
-			file.write(conf["content"])
+			file = open(path, 'w')
+			file.write(content)
 			file.close()
 		return ("object",{"status":"ok"},None)
 
 	def update(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
-			file = open(conf["path"], 'w')
-			file.write(conf["content"])
+		path=self.path+replaceVars(acenv,conf["path"])
+		content=replaceVars(acenv,conf["content"])
+		if (os.path.isfile(path)):
+			file = open(path, 'w')
+			file.write(content)
 			file.close()
 		else:
 			raise os.error, "File not exist"
 		return ("object",{"status":"ok"},None)
 
 	def append(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
-			file = open(conf["path"], 'a')
-			file.write(conf["content"])
+		path=self.path+replaceVars(acenv,conf["path"])
+		content=replaceVars(acenv,conf["content"])
+		if (os.path.isfile(path)):
+			file = open(path, 'a')
+			file.write(content)
 			file.close()
 		else:
 			raise os.error, "File not exist"
 		return ("object",{"status":"ok"},None)
 
 	def delete(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
-			os.remove(conf["path"])
+		path=self.path+replaceVars(acenv,conf["path"])
+		if (os.path.isfile(path)):
+			os.remove(path)
 		return ("object",{"status":"ok"},None)
 
 	def copy(self,acenv,conf):
-		if (os.path.isfile(conf["from"])):
-			shutil.copyfile(conf["from"], conf["to"])
+		copyFrom=self.path+replaceVars(acenv,conf["from"])
+		copyTo=self.path+replaceVars(acenv,conf["to"])
+		if (os.path.isfile(copyFrom)):
+			shutil.copyfile(copyFrom, copyTo)
 		return ("object",{"status":"ok"},None)
 
 	def move(self,acenv,conf):
-		if (os.path.isfile(conf["from"])):
-			shutil.move(conf["from"], conf["to"])
+		copyFrom=self.path+replaceVars(acenv,conf["from"])
+		copyTo=self.path+replaceVars(acenv,conf["to"])
+		if (os.path.isfile(copyFrom)):
+			shutil.move(copyFrom, copyTo)
 		return ("object",{"status":"ok"},None)
 
 	def exists(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
-			exists="true"
+		path=self.path+replaceVars(acenv,conf["path"])
+		if (os.path.isfile(path)):
+			return ("object",{"exists":True},[])
 		else:
-			exists="false"
-		print "File exist: ", exists
-		return ("object",{},[exists])
-
+			return ("object",{"exists":False},[])
+		
 	def get(self,acenv,conf):
-		if (os.path.isfile(conf["path"])):
-			file=open(conf["path"],"r")
+		path=self.path+replaceVars(acenv,conf["path"])
+		if (os.path.isfile(path)):
+			file=open(path,"r")
 			content=file.read()
-			print content
 			file.close()
-			return ("object",{},[content])
+			return ("object",{"get":content},None)
 		
 		
 		
