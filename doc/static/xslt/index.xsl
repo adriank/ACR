@@ -196,6 +196,9 @@
 			<x:when test="local-name(.)='node'">
 				<x:copy-of select="$datasource//*[local-name()=current()/@name]/node()"/>
 			</x:when>
+			<x:when test="local-name(.)='attr'">
+				<x:value-of select="$datasource/@*[local-name()=current()/@name]"/>
+			</x:when>
 			<x:when test="not(name())">
 				<x:value-of select="."/>
 			</x:when>

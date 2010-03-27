@@ -33,9 +33,12 @@ class FileSystem(Component):
 	def list(self,acenv,config):
 		conf={}
 		for i in config:
-			conf[i]=replaceVars(acenv,config["path"])
+			if type(config[i]) is str:
+				conf[i]=replaceVars(acenv,config[i])
+			else:
+				conf[i]=config[i]
 		path=self.path+conf["path"]
-		showDirs=conf.get("showdirs","t")
+		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
 		files=os.listdir(path)
 		if not showDirs:
@@ -130,7 +133,6 @@ class FileSystem(Component):
 		return ("object",{"status":"ok"},[content])
 
 	def generate(self, acenv, conf):
-		print conf
 		return self.__getattribute__(conf["command"])(acenv,conf)
 
 	def parseAction(self, conf):
