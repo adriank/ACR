@@ -44,9 +44,9 @@ class FileSystem(Component):
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
 		ret=[]
 		if len(files)==0:
-			return ("object",{"status":"ok","code":"dirEmpty"},[])
+			return ("object",{"status":"ok","code":"dirEmpty"},None)
 		for i in files:
-			ret.append(("object",{},[i]))
+			ret.append(("object",{"name":i},None))
 		if len(ret)==1:
 			ret=ret[0]
 			ret[1]["status"]="ok"
