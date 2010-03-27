@@ -22,12 +22,11 @@ from ACF.utils.xmlextras import tree2xml
 
 class Default(Component):
 	def generate(self, env,config):
-		print "ddd"
 		return ("object",{},replaceVars(env, config))
 
-	def parseAction(self,root):
+	def parseAction(self,config):
 		s=[]
-		for elem in root[2]:
+		for elem in config["content"]:
 			if type(elem) is tuple:
 				s.append(tree2xml(elem))
 			elif type(elem) is str:

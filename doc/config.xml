@@ -22,7 +22,7 @@
 	</component>
 	<output xsltfile="index.xsl"/>
 	<component name="filesystem">
-		<absolutePath>/home/adrian/ACF/adrian/doc/static</absolutePath>
+		<absolutePath>/home/adrian/ACF/adrian/doc</absolutePath>
 	</component>
 	<engine name="acte">
 		<staticDomain>http://oyc.fstatic.eu/</staticDomain>

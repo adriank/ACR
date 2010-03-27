@@ -31,7 +31,7 @@ log=logging.getLogger('ACF.core.View')
 D=logging.doLog
 DEFINE="define"
 SET="set"
-OPERATION="command"
+COMMAND="command"
 
 def parseInputs(nodes):
 	if not nodes:
@@ -117,17 +117,27 @@ class View(object):
 				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
 				action=NS2Tuple(i[0])[1]
 				ns=None
-				COMMAND="default"
+				command="default"
 				if i[1].has_key(COMMAND):
-					ns,COMMAND=NS2Tuple(i[1][COMMAND])
+					ns,command=NS2Tuple(i[1][COMMAND])
 				componentName=self.namespaces.get(ns,"default")
+				params={}
+				if ns:
+					for j in i[1]:
+						if j.startswith(ns+":") and not j==ns+command:
+							params[j.split(":").pop()]=i[1][j]
+				actionConfig={
+					"command":command,
+					"params":params,
+					"content":i[2]
+				}
 				ret.append({
 					"type":action,#DEFINE or SET
-					"COMMAND":COMMAND,#COMMAND name
+					"command":command,#COMMAND name
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
-					"config":self.app.getComponent(componentName).parseAction(i)
+					"config":self.app.getComponent(componentName).parseAction(actionConfig)
 				})
 		except Error,e:
 			pass

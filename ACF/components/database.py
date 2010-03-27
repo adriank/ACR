@@ -131,24 +131,19 @@ class DataBase(Component):
 			else:
 				return ret #("list",{},ret)
 		else:
-			return ("object",{"status":"done"},None)
+			return ("object",{"status":"ok"},None)
 		return ret
 
 	#parses one action config which is passed to object
-	def parseAction(self,root):
+	def parseAction(self,conf):
 		query=""
-		output=None
-		for node in root[2]:
+		for node in conf["content"]:
 			if type(node) is str:
 				query=str(" ".join(node.split()))
-			elif isinstance(node,tuple):
-				if node[0]=="output":
-					output=node
 		return {
 			"query":query,
-			"output":output,
-			"server":root[1].get("server", "default"),
-			"return":root[1].get("get","table")
+			"server":conf["params"].get("server", "default"),
+			"return":conf["params"].get("get","table")
 		}
 
 def getObject(config):
