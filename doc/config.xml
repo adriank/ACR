@@ -3,7 +3,7 @@
 <!-- Core congiguration -->
 	<name>optimizeyourcode.com</name>
 	<domain>http://localhost:9999/</domain>
-	<staticDir>/home/adrian/ACFmain/doc/static</staticDir>
+	<staticDir>/home/adrian/ACF/adrian/doc/static</staticDir>
 	<sessionDir>/home/adrian/ACFmain/doc/session</sessionDir>
 	<debug enable="False" level="error"/>
 	<lang default="en" supported="pl"/>

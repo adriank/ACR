@@ -19,7 +19,7 @@
 
 
 from ACF import globals
-from ACF.components.base import Component
+from ACF.components import Component
 from ACF.errors import *
 #from ACF.db import pgsql
 from ACF.utils import replaceVars,HTTP

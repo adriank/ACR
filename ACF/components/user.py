@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from ACF.utils import mail
-from ACF.components.base import Component
+from ACF.components import Component
 from ACF.utils import replaceVars,generateID
 from ACF import globals
 from ACF.errors import Error

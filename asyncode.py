@@ -25,24 +25,25 @@ port=9999
 if len(sys.argv)>1:
 	port=sys.argv[1]
 print os.getpid()
-#httpd=make_server(host, port, standalone_server)
-#httpd.serve_forever()
-#os.environ["PATH_INFO"]="/doLogIn"
-#CGIHandler().run(standalone_server)
-from twisted.web import server
-from twisted.web.wsgi import WSGIResource
-from twisted.python.threadpool import ThreadPool
-from twisted.internet import reactor
+httpd=make_server(host, port, standalone_server)
+httpd.serve_forever()
 
-# Create and start a thread pool,
-# ensuring that it will be stopped when the reactor shuts down
-thread_pool=ThreadPool()
-thread_pool.start()
-reactor.addSystemEventTrigger('after', 'shutdown', thread_pool.stop)
+# TWISTED.WEB
 
-# Create the WSGI resource
-wsgi_app_as_resource=WSGIResource(reactor, thread_pool, standalone_server)
-
-site=server.Site(wsgi_app_as_resource)
-reactor.listenTCP(port, site)
-reactor.run()
+#from twisted.web import server
+#from twisted.web.wsgi import WSGIResource
+#from twisted.python.threadpool import ThreadPool
+#from twisted.internet import reactor
+#
+## Create and start a thread pool,
+## ensuring that it will be stopped when the reactor shuts down
+#thread_pool=ThreadPool()
+#thread_pool.start()
+#reactor.addSystemEventTrigger('after', 'shutdown', thread_pool.stop)
+#
+## Create the WSGI resource
+#wsgi_app_as_resource=WSGIResource(reactor, thread_pool, standalone_server)
+#
+#site=server.Site(wsgi_app_as_resource)
+#reactor.listenTCP(port, site)
+#reactor.run()

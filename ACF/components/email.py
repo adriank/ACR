@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # AsynCode Framework - XML framework allowing developing internet
-# applications without using programming languages. 
+# applications without using programming languages.
 # Copyright (C) 2008-2010  Adrian Kalbarczyk
 
 # This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 from ACF import globals
 from ACF.utils import conditionchecker,mail,replaceVars
-from ACF.components.base import Component
+from ACF.components import Component
 from ACF.utils.xmlextras import dom2tree
 from ACF.errors import *
 

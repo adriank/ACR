@@ -17,18 +17,3 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from ACF.utils import conditionchecker,replaceVars
-from ACF.errors import *
-import logging
-
-log = logging.getLogger('ACF.component')
-
-class Component(object):
-	def __init__(self, config):
-		self.config=config
-
-	def generate(self,env,conf):
-		raise AbstractClass()
-
-	def parseAction(self,root):
-		return root

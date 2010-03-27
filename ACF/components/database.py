@@ -19,7 +19,7 @@
 from ACF import globals
 from ACF.errors import *
 from ACF.utils import replaceVars,xmlextras
-from ACF.components.base import Component
+from ACF.components import Component
 from ACF import db
 import time
 import re, logging

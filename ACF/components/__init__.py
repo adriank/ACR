@@ -46,15 +46,12 @@ def get(name):
 	return m
 
 #abstract class
-class ComponentNew(object):
+class Component(object):
 	def __init__(self, config):
 		self.config=config
 
-	def getRootElement(self):
+	def generate(self,env,conf):
 		raise AbstractClass()
 
-	def next():
-		raise AbstractClass()
-
-def parseConfig(fragment):
-	"""fragment is set of nodes"""
+	def parseAction(self,root):
+		return root
