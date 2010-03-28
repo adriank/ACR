@@ -33,7 +33,7 @@ DEFINE="define"
 SET="set"
 COMMAND="command"
 
-def parseInputs(nodes):
+def parseParams(nodes):
 	if not nodes:
 		return None
 	ret=[]
@@ -61,7 +61,7 @@ class View(object):
 			tree=xml2tree(self.path)
 		except:
 			self.immutable=True
-			raise Exception("view not found")
+			raise ViewNotFound("view '%s' not found"%(name))
 			return
 		#the order of inputs is meaningful - needs to be list
 		#__dict__ is used because I don't know if it is good idea, easily changeable to self.config
@@ -74,10 +74,10 @@ class View(object):
 				value=tree[1][i].split("/").pop().lower()
 				ns[key]=value
 		self.namespaces=ns
-		self.post=parseInputs(tree.get("/post/param")) or []
 		inputs=[]
 		self.conditions=[]
 		actions=[]
+		posts=[]
 		self.output=None
 		for i in tree[2]:
 			if i[0]=="param":
@@ -86,27 +86,17 @@ class View(object):
 				self.conditions.append(i)
 			elif i[0]=="output":
 				output=i
-			else:
+			elif i[0]=="post":
+				posts=i[2]
+			elif i[0] in ["set","define"]:
 				actions.append(i)
 		self.actions=self.parseActions(actions)
-		#print self.actions
-		self.inputs=parseInputs(inputs)
+		self.inputs=parseParams(inputs)
+		self.posts=parseParams(posts)
 		if not self.actions:
 			self.immutable=True
 			return
-		#don't check type of default value. Might be an error msg.
-		#inputs={}
-		#if D: log.debug("Setting defaults for inputs")
-		#for i in self.inputs:
-		#	if not i["default"]:
-		#		self.needsParameters=True
-		#	inputs[i["name"]]=i["default"]
-		#self.inputDefaults=inputs
 		if D: log.debug("Setting defaults for posts")
-		posts={}
-		for i in self.post:
-			posts[i["name"]]=i["default"]
-		self.postDefaults=posts
 		#past here this object MUST be immutable
 		self.immutable=True
 
@@ -118,23 +108,23 @@ class View(object):
 				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
 				action=NS2Tuple(i[0])[1]
 				ns=None
-				command="default"
+				cmd="default"
 				if i[1].has_key(COMMAND):
-					ns,command=NS2Tuple(i[1][COMMAND])
+					ns,cmd=NS2Tuple(i[1][COMMAND])
 				componentName=self.namespaces.get(ns,"default")
 				params={}
 				if ns:
 					for j in i[1]:
-						if j.startswith(ns+":") and not j==ns+command:
+						if j.startswith(ns+":") and not j==ns+cmd:
 							params[j.split(":").pop()]=i[1][j]
 				actionConfig={
-					"command":command,
+					"command":cmd,
 					"params":params,
 					"content":i[2]
 				}
 				ret.append({
 					"type":action,#DEFINE or SET
-					"command":command,#COMMAND name
+					"command":cmd,#command name
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
@@ -149,6 +139,19 @@ class View(object):
 			if D: log.error("%s is read only",name)
 			raise Exception("PropertyImmutable")
 		self.__dict__[name]=val
+
+	def fillPosts(self,acenv):
+		#TODO add default values support by doing ticket #13
+		list=acenv.posts
+		if not self.posts or not len(self.posts):
+			if D: log.debug("list of posts empty. Returns 'True'.")
+			return True
+		for i in list:
+			value=list[i]
+			if not type or checkType(type,value):
+				if type=="csv":
+					value=value.split(",")
+				acenv.requestStorage[i]=value
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
@@ -194,6 +197,7 @@ class View(object):
 			return
 		if D: log.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
+		self.fillPosts(acenv)
 		for action in self.actions:
 			if action["condition"] and not execute(acenv,action["condition"]):
 				#TODO if SET is used in action -> log.error

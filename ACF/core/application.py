@@ -19,6 +19,7 @@
 
 from ACF.utils.xmlextras import *
 from ACF.core.view import View
+from ACF.errors import *
 from ACF import components,te
 import time,os
 import logging
@@ -114,7 +115,13 @@ class Application(object):
 			if timestamp<=view.timestamp:
 				return view
 		#print "view not in cache"
-		v=View(name,self)
+		try:
+			v=View(name,self)
+		except ViewNotFound, e:
+			if name!="notFound":
+				self.getView("notFound")
+			else:
+				raise e
 		self.views[name]=v
 		return v
 

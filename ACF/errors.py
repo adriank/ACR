@@ -45,3 +45,6 @@ class AppError(Err):
 #terminate other actions
 class TerminatingError(Err):
 	pass
+
+class ViewNotFound(Exception):
+	pass

@@ -54,32 +54,32 @@ def application(env,start_response):
 	if env.get('HTTP_COOKIE',None):
 		acenv.cookies=HTTP.parseCookies(env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
-	##post=None
+	post=None
 	##if acenv.debug:
 	##	POST=""
 	##	XSLTtime=None
-	##if env.get('REQUEST_METHOD',"get").lower()=="post":
-	##	contentType=env['CONTENT_TYPE']
-	##	if contentType.startswith("application/x-www-form-urlencoded"):
-	##		POST=env['wsgi.input'].read()
-	##		post=HTTP.parsePOST(POST)
-	##	elif contentType.startswith("multipart/form-data"):
-	##		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
-	##		post={}
-	##		for i in form.keys():
-	##			if type(form[i]) is list:
-	##				l=[]
-	##				for item in form[i]:
-	##					l.append(item.value)
-	##				post[i]=l
-	##			elif form[i].filename is not None:
-	##				post[i]={
-	##					"filename":form[i].filename,
-	##					"content":form[i].value
-	##				}
-	##			else:
-	##				post[i]=form[i].value
-	##acenv.post=post
+	if env.get('REQUEST_METHOD',"").lower()=="post":
+		contentType=env['CONTENT_TYPE']
+		if contentType.startswith("application/x-www-form-urlencoded"):
+			POST=env['wsgi.input'].read()
+			post=HTTP.parsePOST(POST)
+		elif contentType.startswith("multipart/form-data"):
+			form=cgi.FieldStorage(env['wsgi.input'],environ=env)
+			post={}
+			for i in form.keys():
+				if type(form[i]) is list:
+					l=[]
+					for item in form[i]:
+						l.append(item.value)
+					post[i]=l
+				elif form[i].filename is not None:
+					post[i]={
+						"filename":form[i].filename,
+						"content":form[i].value
+					}
+				else:
+					post[i]=form[i].value
+	acenv.posts=post
 	if env.has_key('PATH_INFO'):
 		acenv.viewName, acenv.inputs=HTTP.parseURL(env['PATH_INFO'])
 	else:

@@ -49,10 +49,10 @@ class FileSystem(Component):
 			ret[1]["status"]="ok"
 		return ret
 
-	def create(self,acenv,conf):
+	def create(self,acenv,conf,update=False):
 		path=os.path.join(self.path+conf["path"])
 		#TODO if whole path do not exist -> create all dirs in path
-		if (os.path.isfile(path)):
+		if not update and os.path.isfile(path):
 			return ("object",{"status":"error","code":"fileExists"},None)
 		try:
 			file = open(path, 'w')
@@ -64,16 +64,7 @@ class FileSystem(Component):
 		return ("object",{"status":"ok"},None)
 
 	def update(self,acenv,conf):
-		path=self.path+replaceVars(acenv,conf["path"])
-		content=replaceVars(acenv,conf["content"])
-		try:
-			file = open(path, 'w')
-			file.write(content)
-		except IOError:
-			print 'cannot open', path
-		else:
-			file.close()
-		return ("object",{"status":"ok"},None)
+		return self.create(acenv,conf,True)
 
 	def append(self,acenv,conf):
 		path=self.path+replaceVars(acenv,conf["path"])
