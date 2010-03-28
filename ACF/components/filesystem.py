@@ -30,13 +30,7 @@ class FileSystem(Component):
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
 		self.path=config[0][2][0]
 
-	def list(self,acenv,config):
-		conf={}
-		for i in config:
-			if type(config[i]) is str:
-				conf[i]=replaceVars(acenv,config[i])
-			else:
-				conf[i]=config[i]
+	def list(self,acenv,conf):
 		path=self.path+conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
@@ -56,18 +50,17 @@ class FileSystem(Component):
 		return ret
 
 	def create(self,acenv,conf):
-		path=self.path+replaceVars(acenv,conf["path"])
-		content=replaceVars(acenv,conf["content"])
+		path=os.path.join(self.path+conf["path"])
+		#TODO if whole path do not exist -> create all dirs in path
 		if (os.path.isfile(path)):
-			raise os.error, "File exist"
+			return ("object",{"status":"error","code":"fileExists"},None)
+		try:
+			file = open(path, 'w')
+			file.write(conf["content"])
+		except IOError,e:
+			return ("object",{"status":"error","code":"IOError"},e)
 		else:
-			try:
-				file = open(path, 'w')
-				file.write(content)
-			except IOError:
-				print 'cannot open', path
-			else:
-				file.close()
+			file.close()
 		return ("object",{"status":"ok"},None)
 
 	def update(self,acenv,conf):
@@ -132,7 +125,13 @@ class FileSystem(Component):
 			file.close()
 		return ("object",{"status":"ok"},[content])
 
-	def generate(self, acenv, conf):
+	def generate(self, acenv, config):
+		conf={}
+		for i in config:
+			if type(config[i]) is str:
+				conf[i]=replaceVars(acenv,config[i])
+			else:
+				conf[i]=config[i]
 		return self.__getattribute__(conf["command"])(acenv,conf)
 
 	def parseAction(self, conf):
@@ -140,11 +139,11 @@ class FileSystem(Component):
 		ret.update(conf["params"])
 		if conf["content"]:
 			s=[]
-			for elem in command["content"]:
+			for elem in conf["content"]:
 				if type(elem) is tuple:
-					s.append(tree2xml(elem))
+					s.append(tree2xml(elem)+"\n")
 				elif type(elem) is str:
-					s.append(elem)
+					s.append(elem+"\n")
 			ret["content"]="".join(s)
 		return ret
 

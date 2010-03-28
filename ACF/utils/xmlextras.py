@@ -39,8 +39,7 @@ def escapeQuotes(s):
 	return escape(unescape(s,unescapeDict),escapeDict)
 
 def str2obj(s):
-	s=s.strip()
-	r=s.lower()
+	r=s.lower().strip()
 	if r=="true" or r=="t":
 		return True
 	elif r=="false" or r=="f":
@@ -99,7 +98,7 @@ class Reader(handler.ContentHandler):
 		if len(a)>0:
 			attrs={}
 			for i in a.keys():
-				attrs[str(i).lower()]=str2obj(str(a[i]))
+				attrs[str(i).lower()]=str2obj(str(a[i].strip()))
 		if not len(self.path):
 			self.root=ObjectTree([str(name).lower(),attrs,[]])
 			self.path.append(self.root)
@@ -109,12 +108,8 @@ class Reader(handler.ContentHandler):
 			self.path.append(last(l[2]))
 
 	def characters(self,data):
-		data=data.strip()
-		if len(data)>0:
+		if len(data.strip())>0:
 			last(self.path)[2].append(str(str2obj(data)))
-
-	def cdataBlock(self,data):
-		self.characters(data)
 
 	def endElement(self,x):
 		self.path.pop()

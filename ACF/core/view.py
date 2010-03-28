@@ -61,6 +61,7 @@ class View(object):
 			tree=xml2tree(self.path)
 		except:
 			self.immutable=True
+			raise Exception("view not found")
 			return
 		#the order of inputs is meaningful - needs to be list
 		#__dict__ is used because I don't know if it is good idea, easily changeable to self.config
