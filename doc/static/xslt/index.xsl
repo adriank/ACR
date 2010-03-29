@@ -57,7 +57,8 @@
 				<link href="http://e.fstatic.eu/css/admin.css" rel="stylesheet" type="text/css"/>
 			</x:if>
 			<script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js" type="text/javascript"/>
-			<script type="text/javascript" src="{$static}js/init.js"/>
+			<!--<script type="text/javascript" src="{$static}js/init.js"/>-->
+			<script type="text/javascript"><x:value-of select="$doc//*[@name='layout']/script"/></script>
 		</head>
 		<body>
 			<x:call-template name="layout">
@@ -101,15 +102,17 @@
 
 <!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
-		<x:variable name="values" select="$doc//*[local-name()=current()/@values]/item"/>
-		<x:value-of select="$values"/>
+		<x:variable name="values" select="$doc//*[local-name()=current()/@values]/object"/>
 		<form action="{@action}" method="post" enctype="multipart/form-data">
-			<x:for-each select="items/*">
+			<x:for-each select="item">
 				<x:variable name="value">
 					<x:variable name="helper" select="($values/@*|$values/*)[name()=current()/@name]"/>
 					<x:choose>
+						<x:when test="count(@value)">
+							<x:copy-of select="$doc//object[@name=current()/@value]/node()"/>
+						</x:when>
 						<x:when test="not($helper)">
-							<x:value-of select="@value"/>
+							<x:value-of select="."/>
 						</x:when>
 						<x:otherwise>
 							<x:value-of select="$helper"/>

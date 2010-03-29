@@ -31,10 +31,10 @@ class FileSystem(Component):
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
-		path=self.path+conf["path"]
+		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
-		files=os.listdir(path)
+		files=os.listdir(conf["path"])
 		if not showDirs:
 			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
 		if _filter:
@@ -51,12 +51,12 @@ class FileSystem(Component):
 		return ret
 
 	def create(self,acenv,conf,update=False):
-		path=os.path.join(self.path+conf["path"])
+		#path=os.path.join(self.path+conf["path"])
 		#TODO if whole path do not exist -> create all dirs in path
-		if not update and os.path.isfile(path):
+		if not update and os.path.isfile(conf["path"]):
 			return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file = open(path, 'w')
+			file = open(conf["path"], 'w')
 			file.write(conf["content"])
 		except IOError,e:
 			return ("object",{"status":"error","code":"IOError"},e)
@@ -107,15 +107,15 @@ class FileSystem(Component):
 		return ("object",{"exists":os.path.isfile(path)},[])
 
 	def get(self,acenv,conf):
-		path=self.path+replaceVars(acenv,conf["path"])
 		try:
-			file=open(path,"r")
+			file=open(conf["path"],"r")
 			content=file.read()
-		except IOError:
-			print 'cannot open', path
+		except IOError,e:
+			raise e
+			print 'cannot open', conf["path"]
 		else:
 			file.close()
-		return ("object",{"status":"ok"},[content])
+		return ("object",{"status":"ok"},["<![CDATA["+content+"]]>"])
 
 	def generate(self, acenv, config):
 		conf={}
@@ -124,6 +124,7 @@ class FileSystem(Component):
 				conf[i]=replaceVars(acenv,config[i])
 			else:
 				conf[i]=config[i]
+		conf["path"]=os.path.join(self.path+conf["path"])
 		return self.__getattribute__(conf["command"])(acenv,conf)
 
 	def parseAction(self, conf):
@@ -133,10 +134,10 @@ class FileSystem(Component):
 			s=[]
 			for elem in conf["content"]:
 				if type(elem) is tuple:
-					s.append(tree2xml(elem)+"\n")
+					s.append(tree2xml(elem))
 				elif type(elem) is str:
-					s.append(elem+"\n")
-			ret["content"]="".join(s)
+					s.append(elem)
+			ret["content"]="\n".join(s)
 		return ret
 
 def getObject(config):

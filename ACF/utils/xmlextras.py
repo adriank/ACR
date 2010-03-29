@@ -112,6 +112,20 @@ class Reader(handler.ContentHandler):
 			last(self.path)[2].append(str(str2obj(data)))
 
 	def endElement(self,x):
+		subelems=[]
+		lines=[]
+		elem=last(self.path)[2]
+		for i in elem:
+			if type(i) is tuple:
+				if len(lines):
+					subelems.append("\n".join(lines))
+					lines=[]
+				subelems.append(i)
+			elif type(i) is str:
+				lines.append(i)
+		if len(lines):
+			subelems.append("\n".join(lines))
+		elem[0:len(elem)]=subelems
 		self.path.pop()
 
 def xml2tree(xmlfile):

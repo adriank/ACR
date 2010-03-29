@@ -31,6 +31,7 @@ class Default(Component):
 				s.append(tree2xml(elem))
 			elif type(elem) is str:
 				s.append(elem)
+		#print "\n".join(s)
 		return "".join(s)
 
 def getObject(config):
