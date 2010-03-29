@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View"
+	xmlns:fs="http://asyncode.com/filesystem">
+	<define name="viewList" command="fs:list" fs:path="/views" fs:showDirs="false"/>
+	<define name="layout">
+		<pageTitle langElement=""/>
+		<block name="body">
+			<widget name="viewList" type="list" dataSource="viewList">
+				<before>
+					<h2>Edit View</h2>
+				</before>
+				<template>
+					<a href="/IDE:editView/">
+						<pars for="href">
+							<attr name="name"/>/
+						</pars>
+						<attr name="name"/><br/>
+					</a>
+				</template>
+			</widget>
+			<widget name="view" type="template">
+				<h2>Create new view and layout</h2>
+			</widget>
+			<widget name="createView" type="form" action="/IDE:createView">
+				<item name="viewName" type="text"/>
+			</widget>
+			<widget name="YUIWidget" type="template">
+				<h2>Create new YUI Widget</h2>
+			</widget>
+		</block>
+	</define>
+</view>
