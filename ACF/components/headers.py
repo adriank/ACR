@@ -42,13 +42,10 @@ class Headers(Component):
 				HTTP.setCookie(d)
 		return None
 
-	#def parseAction(self,config):
-	#	print "dupa"
-	#	print config
-	#	return {
-	#		"action":config[0],
-	#
-	#	}
+	def parseAction(self,config):
+		return {
+			"action":config[0]
+		}
 
 def getObject(config):
 	return Headers(config)

@@ -161,7 +161,7 @@ class View(object):
 		if D: log.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		inputsLen=len(self.inputs)
-		for i in xrange(0,inputsLen):
+		for i in xrange(0,len(list)):
 			type=self.inputs[i]["type"]
 			value=list[i]
 			if not type or checkType(type,value):
