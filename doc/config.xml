@@ -2,7 +2,7 @@
 <config>
 <!-- Core congiguration -->
 	<name>optimizeyourcode.com</name>
-	<domain>http://localhost:9999/</domain>
+	<domain>http://79.189.0.107:9999/</domain>
 	<staticDir>/home/adrian/ACF/adrian/doc/static</staticDir>
 	<sessionDir>/home/adrian/ACFmain/doc/session</sessionDir>
 	<debug enable="False" level="error"/>
