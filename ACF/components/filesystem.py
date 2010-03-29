@@ -39,6 +39,7 @@ class FileSystem(Component):
 			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
 		if _filter:
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
+		files.sort()
 		ret=[]
 		if len(files)==0:
 			return ("object",{"status":"ok","code":"dirEmpty"},None)
