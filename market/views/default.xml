@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:f="http://asyncode.com/filesystem">
   <param name="name" default="dupagosia"/>
-	<define name="posts" command="db:query">
-		<!--select id,title,create_date from posts order by create_date DESC limit 10-->
-		select *  from optimizeyourcode.articles
-	</define>
+	<!--<define name="posts" command="db:query">-->
+	<!--	select *  from optimizeyourcode.articles limit 2-->
+	<!--</define>-->
 	<define name="costam" command="fs:get" path="/litwo.txt"/>
 	
 	<define name="market">
-		jakas tresc {$name} bla bla
+		jakas tresc costam {$name} bla bla
 	</define>
 	<define name="product" condition="rs::name is 'aaa'">
 		jakas tresc {$name} bla bla

@@ -2,7 +2,7 @@
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:f="http://asyncode.com/filesystem">
   <param name="name" default="dupagosia"/>
 	<define name="posts" command="db:query">
-		<!--select id,title,create_date from posts order by create_date DESC limit 10-->
+		
 		select *  from optimizeyourcode.articles limit 2
 	</define>
 	<define name="costam" command="fs:get" path="/litwo.txt"/>
@@ -11,191 +11,72 @@
 		jakas tresc {$name} bla bla
 	</define>
 	<define name="product" condition="rs::name is 'aaa'">
-		jakas tresc {$name} bla bla
+		<!--<id>100</id>jakas tresc {$name} bla bla-->
+		<id>100</id><name>blog</name>
 	</define>
-	<!--<define name="layout">-->
-	<!--	<pageTitle langElement=""/>-->
-	<!--	<block name="body">-->
-	<!--		<widget name='mywidget'>-->
-	<!--			<node name='id'/>-->
-	<!--		</widget>-->
-	<!--	</block>-->
-	<!--	-->
-	<!--</define>-->
+	<define name="producent_card">
+		<id>100</id><card>market.asyncode.com/producent</card>
+	</define>
+	<define name="producent_page">
+		<id>100</id><page>producent.com</page>
+	</define>
+	<define name="applicationdemo">
+		<id>40</id><demo>market.asyncode.com/demoaplikacji</demo>
+	</define>
+	<define name="buydownload_application">
+		<id>40</id><buydownload>market.asyncode.com/appbuydownload</buydownload>
+	</define>
+	<define name="stats">
+		<id>40</id><downloadstats>482456</downloadstats><clickstats>891178</clickstats>
+	</define>
+	<define name="tags">
+		<id>5</id><tag>games</tag>
+	</define>
+	<define name="note">
+		<id>5</id><note>5.0</note>
+	</define>
+	<define name="tagname_docs">
+		<id>5</id><tag>games</tag>
+	</define>
+	<define name="licence">
+		<id>3</id><license>BSD</license>
+	</define>
+	<define name="screenshot">
+		<id>2543</id><link>market.asyncode.com/productscreenshot</link>
+	</define>
+	<define name="information">
+		<id>8</id><lang>pl</lang><info>Jakas tam informacja</info>
+	</define>
+	<define name="changelog">
+		
+	</define>
+	<define name="todo">
+		<id>59</id><todo>zrobic 1, 2, 3</todo>
+	</define>
+	<define name="qa">
+		
+	</define>
+	<define name="comments">
+		<id>709098</id><userid>102</userid><comment>komentarz usera</comment>
+	</define>
+	
 	<define name="layout">
 		<![CDATA[<pageTitle>Main page</pageTitle>
 		<block type="container" name="body">
-			<widget name="product_name" type="list" datasource="posts">
-				<template>
-					<node name='id'/><node name='title'/>
-				</template>
+			<widget name="product_name" type="template" datasource="product">
+				<node name='id'/><node name='name'/>
+			</widget>
+			<widget name="producent_card" type="template" datasource="producent_card">
+				<node name='id'/><node name='card'/>
+			</widget>
+			<widget name="producent_page" type="template" datasource="producent_page">
+				<node name='id'/><node name='page'/>
+			</widget>
+			<widget name="applicationdemo" type="template" datasource="applicationdemo">
+				<node name='id'/><node name='demo'/>
 			</widget>
 		</block>
-		<block type="container" name="body">
-			<widget name="producent_card" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="producent_page" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="applicationdemo" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="buydownload_application" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="stats" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="tags" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="note" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="tagname_docs" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="licence" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="screenshot" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="information" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="changelog" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="todo" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="qa" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
-		<block type="container" name="body">
-			<widget name="comments" type="list" datasource="posts">
-				<template>
-					<a href="/article/" class="tag">
-						<node name='id'/><node name='title'/>
-						<!--<pars for="href"><node name='id'/>/<node name='title'/></pars>-->
-					</a>&#160;
-					
-				</template>
-			</widget>
-		</block>
+		
 		]]>
 	</define>
 	  
