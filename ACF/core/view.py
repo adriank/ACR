@@ -160,8 +160,11 @@ class View(object):
 			return True
 		if D: log.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
-		inputsLen=len(self.inputs)
-		for i in xrange(0,len(list)):
+		if list:
+			inputsLen=min([len(self.inputs),len(list)])
+		else:
+			inputsLen=0
+		for i in xrange(0,inputsLen):
 			type=self.inputs[i]["type"]
 			value=list[i]
 			if not type or checkType(type,value):
@@ -170,7 +173,7 @@ class View(object):
 				acenv.requestStorage[self.inputs[i]["name"]]=value
 			else:
 				if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
-		for i in xrange(i+1,inputsLen):
+		for i in xrange(i+1,len(self.inputs)):
 			default=self.inputs[i]["default"]
 			if default:
 				acenv.requestStorage[self.inputs[i]["name"]]=default
