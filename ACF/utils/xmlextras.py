@@ -176,9 +176,9 @@ def tpath(root,path):
 		return None
 	return ret
 
-def NS2Tuple(s):
+def NS2Tuple(s,delimiter=":"):
 	try:
-		ns,action=s.split(":")
+		ns,action=s.split(delimiter)
 	except:
 		ns,action=(None,s)
 	return (ns,action)

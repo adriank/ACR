@@ -5,7 +5,7 @@
 	<post>
 		<param name="viewName"/>
 	</post>
-	<set name="fileCreated" command="fs:create" fs:path="/views/{$viewName}.xml">
+	<set name="rs::fileCreated" command="fs:create" fs:path="/views/{$viewName}.xml">
 		<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View">
 	<param name="name"/>
@@ -14,5 +14,6 @@
 </view>
 ]]>
 	</set>
-	<define command="h:redirect" h:location="/IDE:editView" condition="rs::fileCreated is 'ok'"/>
+	<define name="ddd">{$fileCreated[1]}</define>
+	<!--<define command="h:redirect" h:location="/IDE:editView" condition="rs::fileCreated.status is 'ok'"/>-->
 </view>

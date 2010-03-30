@@ -207,7 +207,9 @@ class View(object):
 					acenv.generations.append(("list",{"name":action["name"],"view":self.name},nodes))
 			elif action["type"]==SET:
 				if D: log.info("Executing SET=%s",action)
-				getStorage(acenv,action.get("storage","rs"))[action["name"]]=nodes[2]
+				ns,name=NS2Tuple(action["name"],"::")
+				getStorage(acenv,ns or "rs")[name]=nodes
+				print getStorage(acenv,ns or "rs")
 
 	def transform(self,acenv):
 		if not acenv.output["engine"]:
