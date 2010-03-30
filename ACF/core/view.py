@@ -21,7 +21,7 @@ from ACF.utils.xmlextras import *
 from ACF import globals
 from ACF import components
 from ACF.errors import *
-from ACF.utils import conditionchecker,getStorage
+from ACF.utils import getStorage
 from ACF.utils.interpreter import execute,make_tree
 from ACF.utils.checktype import checkType
 import logging
@@ -144,7 +144,7 @@ class View(object):
 		#TODO add default values support by doing ticket #13
 		list=acenv.posts
 		if not self.posts or not len(self.posts):
-			if D: log.debug("list of posts empty. Returns 'True'.")
+			if D: log.debug("list of posts is empty. Returning 'True'.")
 			return True
 		for i in list:
 			value=list[i]
@@ -156,7 +156,7 @@ class View(object):
 	def fillInputs(self,acenv):
 		list=acenv.inputs
 		if not self.inputs or not len(self.inputs):
-			if D: log.debug("list of inputs empty. Returns 'True'.")
+			if D: log.debug("list of inputs is empty. Returning 'True'.")
 			return True
 		if D: log.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
@@ -174,19 +174,6 @@ class View(object):
 			default=self.inputs[i]["default"]
 			if default:
 				acenv.requestStorage[self.inputs[i]["name"]]=default
-
-	def checkConditions(self,acenv, conditions):
-		if D: log.debug("Executed with acenv=%s and conditions=%s",acenv,conditions)
-		try:
-			for cond in conditions:
-				r=conditionchecker.check(cond,data)
-		except Error,e:
-			if D: log.warning("Condition not fulfilled, %s",e)
-			if cond["showError"]:
-				raise Error(e)
-			else:
-				return False
-		return True
 
 	def generate(self,acenv):
 		try:

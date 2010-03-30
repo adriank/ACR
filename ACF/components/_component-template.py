@@ -17,15 +17,3 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class component:
-	def __init__(self,config):
-		pass
-
-	def handle(self,data):
-		pass
-
-def parseConfig(root):
-	return tree2xml(d)
-
-def getObject(config):
-	return component(config)
