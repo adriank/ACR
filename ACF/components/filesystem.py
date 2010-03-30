@@ -57,7 +57,8 @@ class FileSystem(Component):
 			return ("object",{"status":"error","code":"fileExists"},None)
 		try:
 			file = open(conf["path"], 'w')
-			file.write(conf["content"])
+			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
+			file.write(conf["content"].replace("\r\n","\n"))
 		except IOError,e:
 			return ("object",{"status":"error","code":"IOError"},e)
 		else:
@@ -72,7 +73,7 @@ class FileSystem(Component):
 		content=replaceVars(acenv,conf["content"])
 		try:
 			file = open(path, 'a')
-			file.write(content)
+			file.write(content.replace("\r\n","\n"))
 		except IOError:
 			print 'cannot open', path
 		else:
