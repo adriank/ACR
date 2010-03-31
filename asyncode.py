@@ -9,11 +9,12 @@ from ACF import globals
 import getpass
 username=getpass.getuser()
 print username
-__import__(username+"_conf")
+username=getpass.getuser()
 try:
 	__import__(username+"_conf")
 except:
 	raise Exception("This is development version of ACF! You should download the ACF GA.")
+
 #this is ugly but we need to set the absolute path so whole system knows where get files from
 #TODO export settings to /etc/ACF/config
 #globals.ACFconf="/home/adrian/ACF/ACFconf.xml"
