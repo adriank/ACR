@@ -9,7 +9,7 @@
 	<!--<x:variable name="lang">pl</x:variable>-->
 <!-- TODO create generator which sets domain -->
 <!-- IE don't understand relative paths so domain MUST be predefined -->
-	<x:variable name="configdoc" select="document('http://79.189.0.107:9999/xml/config.xml')/config"/>
+	<x:variable name="configdoc" select="document('http://asyncode.com:9999/xml/config.xml')/config"/>
 	<x:variable name="domain" select="$configdoc/domain/node()"/>
 	<x:variable name="langdoc" select="document(concat($domain,'xml/texts_',$lang,'.xml'))/t"/>
 	<x:variable name="static" select="$configdoc/staticdomain/node()"/>
@@ -203,7 +203,7 @@
 				<x:value-of select="$datasource/@*[local-name()=current()/@name]"/>
 			</x:when>
 			<x:when test="not(name())">
-				<x:value-of select="."/>
+				<x:value-of select="normalize-space(.)"/>
 			</x:when>
 			<x:otherwise>
 				<x:element name="{local-name()}">

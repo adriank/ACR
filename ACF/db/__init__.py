@@ -27,10 +27,11 @@ CONFIG_CACHE={}
 
 def get(conf,reload=False):
 	"""
-		Returns component of given config. Manages components cache.
-		appName secures driver from being used by other apps
+		Returns connection object of given config. Manages connection cache.
+		config's "appName" value secures driver from being used by other apps
 		conf can contain only the "name" if we are sure the connection exists.
-		WARNING! connections can be broken by external events such as dbms restart! CONFIG_CACHE is for reseting connections.
+		WARNING! connections can be broken by external events such as dbms 
+		restart! CONFIG_CACHE is for reseting connections.
 	"""
 	log.debug("Executing with conf=%s and reload=%s",conf,reload)
 	uid=str(conf)

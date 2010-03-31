@@ -9,7 +9,7 @@
 	<!--<x:variable name="lang">pl</x:variable>-->
 <!-- TODO create generator which sets domain -->
 <!-- IE don't understand relative paths so domain MUST be predefined -->
-	<x:variable name="configdoc" select="document('http://localhost:9999/xml/config.xml')/config"/>
+	<x:variable name="configdoc" select="document('http://asyncode.com:9999/xml/config.xml')/config"/>
 	<x:variable name="domain" select="$configdoc/domain/node()"/>
 	<x:variable name="langdoc" select="document(concat($domain,'xml/texts_',$lang,'.xml'))/t"/>
 	<x:variable name="static" select="$configdoc/staticdomain/node()"/>
@@ -57,7 +57,8 @@
 				<link href="http://e.fstatic.eu/css/admin.css" rel="stylesheet" type="text/css"/>
 			</x:if>
 			<script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js" type="text/javascript"/>
-			<script type="text/javascript" src="{$static}js/init.js"/>
+			<!--<script type="text/javascript" src="{$static}js/init.js"/>-->
+			<script type="text/javascript"><x:value-of select="$doc//*[@name='layout']/script"/></script>
 		</head>
 		<body>
 			<x:call-template name="layout">
@@ -101,15 +102,17 @@
 
 <!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
-		<x:variable name="values" select="$doc//*[local-name()=current()/@values]/item"/>
-		<x:value-of select="$values"/>
+		<x:variable name="values" select="$doc//*[local-name()=current()/@values]/object"/>
 		<form action="{@action}" method="post" enctype="multipart/form-data">
-			<x:for-each select="items/*">
+			<x:for-each select="item">
 				<x:variable name="value">
 					<x:variable name="helper" select="($values/@*|$values/*)[name()=current()/@name]"/>
 					<x:choose>
+						<x:when test="count(@value)">
+							<x:copy-of select="$doc//object[@name=current()/@value]/node()"/>
+						</x:when>
 						<x:when test="not($helper)">
-							<x:value-of select="@value"/>
+							<x:value-of select="."/>
 						</x:when>
 						<x:otherwise>
 							<x:value-of select="$helper"/>
@@ -196,8 +199,11 @@
 			<x:when test="local-name(.)='node'">
 				<x:copy-of select="$datasource//*[local-name()=current()/@name]/node()"/>
 			</x:when>
+			<x:when test="local-name(.)='attr'">
+				<x:value-of select="$datasource/@*[local-name()=current()/@name]"/>
+			</x:when>
 			<x:when test="not(name())">
-				<x:value-of select="."/>
+				<x:value-of select="normalize-space(.)"/>
 			</x:when>
 			<x:otherwise>
 				<x:element name="{local-name()}">
