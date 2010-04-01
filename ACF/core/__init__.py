@@ -62,7 +62,7 @@ class Environment(object):
 		if not lang:
 			return
 		if self.cookies.has_key(self.prefix+"pagelang"):
-			self.lang=globals.request.cookies[self.prefix+"pagelang"]
+			self.lang=self.cookies[self.prefix+"pagelang"]
 		elif lang:
 			l=lang.split(",")[0].split("-")[0]
 			if l in self.app.langs:

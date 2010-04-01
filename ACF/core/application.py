@@ -119,7 +119,7 @@ class Application(object):
 			v=View(name,self)
 		except ViewNotFound, e:
 			if name!="notFound":
-				self.getView("notFound")
+				return self.getView("notFound")
 			else:
 				raise e
 		self.views[name]=v

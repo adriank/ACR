@@ -84,10 +84,10 @@ def parseMultipart(f,tag):
 			ret.append(d)
 	raise str(ret)
 
-def printHeaders():
+def printHeaders(headers):
 	if D: log.debug("Printing headers")
 	t=[]
-	h=globals.headers
+	h=headers
 	for i in h:
 		t.append(i[0]+":"+i[1]+"\n")
 	return "".join(t)
@@ -101,7 +101,7 @@ def getCookieDate(epoch_seconds=None):
 	rfcdate = formatdate(epoch_seconds)
 	return '%s-%s-%s GMT' % (rfcdate[:7], rfcdate[8:11], rfcdate[12:25])
 
-def parseCookies(s):
+def parseCookies(acenv,s):
 	"""
 	input: key=val;key=val
 	returns: d={name:val}
@@ -112,13 +112,13 @@ def parseCookies(s):
 	for i in t:
 		t2=i.split("=")
 		t2[0]=t2[0].strip()
-		if t2[0].startswith(globals.prefix):
+		if t2[0].startswith(acenv.prefix):
 			d[t2[0]]=escapeQuotes(urllib.unquote(t2[1].replace("+"," ")))
 	return d
 
-def setCookie(cookie):
+def setCookie(acenv,cookie):
 	if D: log.debug("Adding %s to globals.request.headers",cookie)
-	s=globals.prefix+cookie['name']+"="+cookie['value']
+	s=acenv.prefix+cookie['name']+"="+cookie['value']
 	if cookie.has_key("date"):
 		date=cookie['date']
 	else:

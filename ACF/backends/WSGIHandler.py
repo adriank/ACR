@@ -19,7 +19,7 @@
 
 #TODO this file is mess. Need for full rewrite.
 
-import sys,re,time,logging
+import sys,os,re,time,logging
 logging.doLog=True
 logging.doLog=False
 from ACF import globals,errors
@@ -52,7 +52,7 @@ def application(env,start_response):
 	if app.debug["enabled"]:
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
-		acenv.cookies=HTTP.parseCookies(env['HTTP_COOKIE'])
+		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
 	post=None
 	##if acenv.debug:

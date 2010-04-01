@@ -208,7 +208,7 @@ class View(object):
 			elif action["type"]==SET:
 				if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
-				getStorage(acenv,ns or "rs")[name]=nodes
+				getStorage(acenv,ns or "rs")[name]=nodes[2]
 				print getStorage(acenv,ns or "rs")
 
 	def transform(self,acenv):

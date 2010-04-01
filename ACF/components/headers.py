@@ -41,7 +41,7 @@ class Headers(Component):
 		return ("object",{"status":"ok"},None)
 
 	def generate(self,env,config):
-		return self.__getattribute__(config["command"].split(":").pop())(acenv,config["params"])
+		return self.__getattribute__(config["command"].split(":").pop())(env,config["params"])
 
 def getObject(config):
 	return Headers(config)
