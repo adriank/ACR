@@ -40,16 +40,13 @@ class FileSystem(Component):
 			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
 		if _filter:
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
+		if extension=="hide":
+			files=map(lambda f:	os.path.splitext(f)[0],files)
 		files.sort()
 		ret=[]
 		if len(files)==0:
 			return ("object",{"status":"ok","code":"dirEmpty"},None)
 		for i in files:
-			if extension == "hide":
-				ext='.'+i.split(".").pop()
-				if i[-len(ext):] == ext:
-					newfname=i[:-len(ext)]
-					print i + ' renamed ' + newfname
 			ret.append(("object",{"name":i},None))
 		if len(ret)==1:
 			ret=ret[0]
