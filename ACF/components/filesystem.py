@@ -31,6 +31,7 @@ class FileSystem(Component):
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
+		extension=conf["extension"]
 		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
@@ -44,6 +45,11 @@ class FileSystem(Component):
 		if len(files)==0:
 			return ("object",{"status":"ok","code":"dirEmpty"},None)
 		for i in files:
+			if extension == "hide":
+				ext='.'+i.split(".").pop()
+				if i[-len(ext):] == ext:
+					newfname=i[:-len(ext)]
+					print i + ' renamed ' + newfname
 			ret.append(("object",{"name":i},None))
 		if len(ret)==1:
 			ret=ret[0]
