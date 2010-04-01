@@ -43,11 +43,15 @@ APP_CACHE={}
 def application(env,start_response):
 	t=time.time()
 	response=[]
-	if APP_CACHE.has_key(globals.appDir):
-		app=APP_CACHE[globals.appDir]
+	if globals.appsDir:
+		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
 	else:
-		app=Application(globals.appDir)
-		APP_CACHE[globals.appDir]=app
+		path=globals.appDir
+	if APP_CACHE.has_key(path):
+		app=APP_CACHE[path]
+	else:
+		app=Application(path)
+		APP_CACHE[path]=app
 	acenv=Environment(app)
 	if app.debug["enabled"]:
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))

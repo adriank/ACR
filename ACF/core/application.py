@@ -40,6 +40,7 @@ class Application(object):
 	views={}
 	storage=None
 	immutable=False
+	appDir=""
 	#cache for component objects
 	COMPONENTS_CACHE={}
 	DEFAULT_DB=None
@@ -50,6 +51,7 @@ class Application(object):
 		except IOError:
 			if D: log.critical("Application config not found!")
 			raise Exception("Application config not found at %s!"%(appDir+"/config.xml"))
+		self.appDir=appDir
 		self.config=config
 		try:
 			self.appName=config.get("/name/text()")[0]

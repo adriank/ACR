@@ -19,6 +19,7 @@
 
 import logging
 import re
+import os
 import mimetypes
 from ACF.backends.WSGIHandler import application
 from ACF import globals
@@ -33,11 +34,11 @@ def serve_static(env,start_response):
 	status="200 OK"
 	extension=env["PATH_INFO"].split(".").pop()
 	try:
-		config=xml2tree(globals.appDir+"/config.xml")
+		config=xml2tree(os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0],"config.xml"))
 	except IOError:
 		logging.critical("Application config not found!")
 		raise Exception("Application config not found!")
-	staticDir=config.get("/staticdir/text()")[0]
+	staticDir=os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0],"static")
 	try:
 		f=open(staticDir+env["PATH_INFO"])
 	except:

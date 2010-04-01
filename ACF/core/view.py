@@ -55,7 +55,7 @@ class View(object):
 		#All "static" computations should be here. Don't do it inside handle!
 		self.name=name
 		self.app=app
-		self.path=globals.appDir+"/views/"+name+".xml"
+		self.path=os.path.join(app.appDir,"views/"+name+".xml")
 		try:
 			self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)
@@ -209,7 +209,6 @@ class View(object):
 				if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=nodes[2]
-				print getStorage(acenv,ns or "rs")
 
 	def transform(self,acenv):
 		if not acenv.output["engine"]:

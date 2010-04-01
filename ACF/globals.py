@@ -24,7 +24,6 @@ import logging
 #output=""
 dbschema="asyncode"
 SECRET_KEY="MySecret"
-#appDir=""
 #appDomain=""
 #appName=""
 #appURL=""
@@ -34,6 +33,7 @@ SECRET_KEY="MySecret"
 #sessionStorage=None
 #XSLTCache=None
 appDir=""
+dirs=None
 
 logLevels= {
 	'debug': logging.DEBUG,
