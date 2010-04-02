@@ -31,7 +31,8 @@ class FileSystem(Component):
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
-		extension=conf["extension"]
+		if conf.has_key("extension"):
+			extension=conf["extension"]
 		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
