@@ -29,10 +29,9 @@ class FileSystem(Component):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
 		self.path=config[0][2][0]
+		print self.path
 
 	def list(self,acenv,conf):
-		if conf.has_key("extension"):
-			extension=conf["extension"]
 		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
@@ -41,7 +40,7 @@ class FileSystem(Component):
 			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
 		if _filter:
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
-		if extension=="hide":
+		if conf.get("extension","")=="hide":
 			files=map(lambda f:	os.path.splitext(f)[0],files)
 		files.sort()
 		ret=[]
@@ -123,6 +122,7 @@ class FileSystem(Component):
 		return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
 	def generate(self, acenv, config):
+		print self
 		conf={}
 		for i in config:
 			if type(config[i]) is str:

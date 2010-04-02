@@ -157,5 +157,5 @@ def application(env,start_response):
 	#else:
 	#	return []
 
-#from paste.exceptions.errormiddleware import ErrorMiddleware
-#application = ErrorMiddleware(application, debug=True)
+from paste.exceptions.errormiddleware import ErrorMiddleware
+application = ErrorMiddleware(application, debug=True)

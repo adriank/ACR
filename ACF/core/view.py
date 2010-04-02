@@ -48,7 +48,7 @@ def parseParams(nodes):
 
 class View(object):
 	immutable=False
-	timestamp=0 #file modification timestamp
+#	timestamp=0 #file modification timestamp
 	path="" #file path
 	def __init__(self,name,app):
 		if D: log.info("Created %s",name)

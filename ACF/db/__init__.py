@@ -38,7 +38,7 @@ def get(conf,reload=False):
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
 		if object:
-			print "aaa"
+			print "DB from cache"
 			log.debug("Returning from cache")
 			return object
 	else:
@@ -54,6 +54,7 @@ def get(conf,reload=False):
 	if conf.get("default",False):
 		DRIVER_CACHE[uid+"default"]=driver
 		CONFIG_CACHE[uid+"default"]=conf
+	print "DB not from cache"
 	return driver
 
 def escapeString(s):

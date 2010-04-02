@@ -36,15 +36,17 @@ class Application(object):
 	debug=None
 	lang="en"
 	prefix="ACF_"
-	langs=[]
-	views={}
+#	langs=[]
+#	views={}
 	storage=None
 	immutable=False
 	appDir=""
 	#cache for component objects
-	COMPONENTS_CACHE={}
-	DEFAULT_DB=None
 	def __init__(self,appDir):
+		self.COMPONENTS_CACHE={}
+		self.DEFAULT_DB=None
+		self.views={}
+		self.langs=[]
 		if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
 			config=xml2tree(appDir+"/config.xml")
@@ -174,3 +176,6 @@ class Application(object):
 			return simplejson.dumps(acenv.tree)
 		except:
 			raise Exception("simplejson module not installed. Can't output JSON.")
+
+	def __str__(self):
+		return str(self.__dict__)

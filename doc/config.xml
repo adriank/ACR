@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 <!-- Core congiguration -->
-	<name>optimizeyourcode.com</name>
-	<domain>http://79.189.0.107:9999/</domain>
-	<staticDir>/home/adrian/ACF/adrian/doc/static</staticDir>
-	<sessionDir>/home/adrian/ACFmain/doc/session</sessionDir>
+	<name>doc.asyncode.com</name>
+	<domain>http://doc.asyncode.com:9999/</domain>
+	<staticDir>/var/ACF/doc/static</staticDir>
+	<sessionDir>/var/ACF/doc/session</sessionDir>
 	<debug enable="False" level="error"/>
 	<lang default="en" supported="pl"/>
 	<plugin name="language">
@@ -14,15 +14,15 @@
 		<server dbms="pgsql" name="main" default="true">
 			<host><!--keep empty for socket connections--></host>
 			<port><!--default 5432--></port>
-			<defaultdb>adrian</defaultdb>
+			<defaultdb>asyncode_com</defaultdb>
 			<user>adrian</user>
-			<password>aaa</password>
-			<schema>texts</schema>
+			<password>adrkal</password>
+			<schema>doc</schema>
 		</server>
 	</component>
 	<output xsltfile="index.xsl"/>
 	<component name="filesystem">
-		<absolutePath>/home/adrian/ACF/adrian/doc</absolutePath>
+		<absolutePath>/var/ACF/doc.asyncode.com/</absolutePath>
 	</component>
 	<engine name="acte">
 		<staticDomain>http://oyc.fstatic.eu/</staticDomain>
