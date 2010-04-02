@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
 	<param name="name" default="dupagosia"/>
+	<!--<define name="fileList" command="fs:list" fs:path="/" fs:filter="*" fs:showDirs="True" />-->
 	<define name="producent" command="db:query">
 		select * from market.producent where id = 1
 	</define>
@@ -21,7 +22,8 @@
 			<tag>action</tag>
 		</object>
 	</define>	
-	<define name="qa">
+	<define name="costam">
+		<list name="qa">
 		<object>
 		<id>1</id>
 			<question>
@@ -46,12 +48,14 @@
 				Fuck you.
 			</answer>
 			<user>
-				SomeUser
+				SomeAnotherUser
 			</user>
 			<author>
-				SomeAuthor
+				SomeAnotherAuthor
 			</author>
 		</object>
+		</list>
+		<!--select * from market.qa -->
 	</define>
 	<define name="comments">
 		<id>1</id>
@@ -111,9 +115,13 @@
 			<widget name="todo" type="template" datasource="todo">
 				<b>TODO: &#160;</b><node name='content'/>
 			</widget>
-			<widget name="qa" type="template" datasource="qa">
-				<p><node name='user'/>&#160;:<node name='question'/></p>
+			<widget name="qa" type="list" datasource="qa">
+				<template>
+				<p class="warning" style="color:red"><b ><node name='user'/></b>:&#160;<node name='question'/></p>
+				<p><b><node name='author'/></b>:&#160;<node name='answer'/></p>
+				</template>
 			</widget>
+			
 		</block>
 		
 		]]>
