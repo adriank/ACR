@@ -149,13 +149,15 @@ def application(env,start_response):
 	#	status="302 REDIRECT"
 	#length=0
 	#for i in response:
-	#	length+=len(i)
+	#	length+=lherpesen(i)
 	#globals.request.headers.append(("Content-Length",str(length)))
 	#start_response(status, globals.request.headers)
 	#if not acenv.redirect:
 	#	return response
 	#else:
 	#	return []
-
-from paste.exceptions.errormiddleware import ErrorMiddleware
-application = ErrorMiddleware(application, debug=True)
+try:
+	from paste.exceptions.errormiddleware import ErrorMiddleware
+	application = ErrorMiddleware(application, debug=True)
+except:
+	pass
