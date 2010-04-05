@@ -33,6 +33,7 @@ SECRET_KEY="MySecret"
 #sessionStorage=None
 #XSLTCache=None
 appDir=""
+appsDir=None
 dirs=None
 
 logLevels= {

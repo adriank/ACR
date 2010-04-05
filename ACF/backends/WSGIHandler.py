@@ -85,9 +85,10 @@ def application(env,start_response):
 					post[i]=form[i].value
 	acenv.posts=post
 	if env.has_key('PATH_INFO'):
-		acenv.viewName, acenv.inputs=HTTP.parseURL(env['PATH_INFO'])
+		acenv.viewName, acenv.inputs=HTTP.parseURL(env['PATH_INFO'].decode("utf-8"))
 	else:
 		acenv.viewName="default"
+	print acenv.inputs
 	xml=app.generate(acenv)
 	headers=acenv.outputHeaders
 	headers.append(("Content-Type","application/xml"))
@@ -97,7 +98,7 @@ def application(env,start_response):
 	start_response(status, headers)
 	#print round((time.time()-t)*1000,2)
 	if not acenv.doRedirect:
-		response.append(xml)
+		response.append(xml.encode("utf-8"))
 	return response
 
 	#if acenv.debug:

@@ -89,7 +89,7 @@ class DataBase(Component):
 			if type(data[i]) is list:
 				multiRequest.append((i,data[i]))
 			else:
-				data[i]=db.escapeString(str(data[i]))
+				data[i]=db.escapeString(data[i])
 		query=replaceVars(env,actionConf['query'])
 		if d: log.debug("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
@@ -138,8 +138,8 @@ class DataBase(Component):
 	def parseAction(self,conf):
 		query=""
 		for node in conf["content"]:
-			if type(node) is str:
-				query=str(" ".join(node.split()))
+			if type(node) is unicode:
+				query=" ".join(node.split())
 		return {
 			"query":query,
 			"server":conf["params"].get("server", "default"),

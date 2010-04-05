@@ -119,6 +119,7 @@ class FileSystem(Component):
 			print 'cannot open', conf["path"]
 		else:
 			file.close()
+			print type(content)
 		return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
 	def generate(self, acenv, config):

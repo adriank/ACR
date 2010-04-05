@@ -22,7 +22,7 @@ from ACF.errors import Error
 from xml.sax.saxutils import escape,unescape
 import logging,re
 
-RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
+RE_ATTR=re.compile("u?'([^']+)': u?'([^']*)',*")
 log=logging.getLogger('ACF.utils.xmlextras')
 D=logging.doLog
 unescapeDict={"&apos;":"'","&quot;":"\""}
@@ -54,6 +54,7 @@ def tree2xml(root):
 	def rec(node,tab):
 		tab.append("<"+node[0])
 		if node[1] and len(node[1])>0:
+			#print str(node[1])
 			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(node[1])[1:-1]))
 			#n=node[1]
 			#for i in n:
@@ -69,10 +70,10 @@ def tree2xml(root):
 			for i in node[2]:
 				if type(i) is tuple:
 					rec(i,tab)
-				elif type(i) is str:
+				elif type(i) in [str,unicode]:
 					tab.append(i)
 				else:
-					tab.append(str(i))
+					tab.append(unicode(i))
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+node[0]+">")
@@ -98,18 +99,18 @@ class Reader(handler.ContentHandler):
 		if len(a)>0:
 			attrs={}
 			for i in a.keys():
-				attrs[str(i).lower()]=str2obj(str(a[i].strip()))
+				attrs[i.lower()]=str2obj(a[i].strip())
 		if not len(self.path):
-			self.root=ObjectTree([str(name).lower(),attrs,[]])
+			self.root=ObjectTree([name.lower(),attrs,[]])
 			self.path.append(self.root)
 		else:
 			l=last(self.path)
-			l[2].append((str(name).lower(),attrs,[]))
+			l[2].append((name.lower(),attrs,[]))
 			self.path.append(last(l[2]))
 
 	def characters(self,data):
 		if len(data.strip())>0:
-			last(self.path)[2].append(str(str2obj(data)))
+			last(self.path)[2].append(str2obj(data))
 
 	def endElement(self,x):
 		subelems=[]
@@ -121,7 +122,7 @@ class Reader(handler.ContentHandler):
 					subelems.append("\n".join(lines))
 					lines=[]
 				subelems.append(i)
-			elif type(i) is str:
+			elif type(i) in [str,unicode]:
 				lines.append(i)
 		if len(lines):
 			subelems.append("\n".join(lines))
@@ -146,7 +147,6 @@ def tpath(root,path):
 			for i in t:
 				if type(ret) is list:
 					ret=ret[0]
-				#print i
 				splitter=i.find("[")
 				_filter=None
 				if splitter>0:
@@ -156,7 +156,7 @@ def tpath(root,path):
 				if i=="*":
 					ret=ret[2]
 				if i=="text()":
-					ret=list(filter(lambda x: type(x[0]) is str,ret[2]))
+					ret=list(filter(lambda x: type(x[0]) in [str,unicode], ret[2]))
 				else:
 					tags=i.split("|")
 					ret=list(filter(lambda x: x[0] in tags, ret[2]))

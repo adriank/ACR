@@ -76,8 +76,8 @@ class Application(object):
 			"xsltfile":config.get("/output[@xsltfile]") or None,
 			"format":config.get("/output[@format]") or "objectml"
 		}
-		engineConf=config.get("/engine")[0]
-		self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
+		#engineConf=config.get("/engine")[0]
+		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACF")+"_"
 		for component in config.get("/component"):
 			if D: log.debug("setting default configuration to %s component",component[1]["name"])
@@ -161,7 +161,7 @@ class Application(object):
 			#make it log.warning and fall back to en
 			raise Exception("Misconfiguration of 'langs' setting in app configuration file.")
 		#["","aaa"," dd   "]->["aaa","ddd"]
-		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
+		self.langs=filter(len, map(unicode.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
 
 	def getXML(self,acenv):
 		if D: log.info("Generating XML")
