@@ -51,7 +51,7 @@ def parsePOST(s):
 	d={name:val}
 	"""
 	if D: log.info("Parsing POST data: %s",escapeQuotes(s))
-	t=str(s).split("&")
+	t=s.split("&")
 	d={}
 	for i in t:
 		t2=i.split("=")

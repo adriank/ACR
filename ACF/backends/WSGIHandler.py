@@ -65,7 +65,7 @@ def application(env,start_response):
 	if env.get('REQUEST_METHOD',"").lower()=="post":
 		contentType=env['CONTENT_TYPE']
 		if contentType.startswith("application/x-www-form-urlencoded"):
-			POST=env['wsgi.input'].read()
+			POST=env['wsgi.input'].read().decode("utf-8")
 			post=HTTP.parsePOST(POST)
 		elif contentType.startswith("multipart/form-data"):
 			form=cgi.FieldStorage(env['wsgi.input'],environ=env)
@@ -75,6 +75,8 @@ def application(env,start_response):
 					l=[]
 					for item in form[i]:
 						l.append(item.value)
+					#TODO test it and change
+					#post[i]=map(lambda x: x.value,form[i])
 					post[i]=l
 				elif form[i].filename is not None:
 					post[i]={

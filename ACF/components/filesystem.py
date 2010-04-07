@@ -21,6 +21,7 @@ from ACF.errors import *
 from ACF.utils import replaceVars
 from ACF.utils.xmlextras import tree2xml#,str2obj
 import os
+import codecs
 import shutil
 import fnmatch
 
@@ -112,13 +113,14 @@ class FileSystem(Component):
 
 	def get(self,acenv,conf):
 		try:
-			file=open(conf["path"],"r")
+			file=codecs.open(conf["path"],"r", "utf-8")
 			content=file.read()
 		except IOError,e:
 			raise e
 			print 'cannot open', conf["path"]
 		else:
 			file.close()
+			print "aaa"
 			print type(content)
 		return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
@@ -126,7 +128,7 @@ class FileSystem(Component):
 		print self
 		conf={}
 		for i in config:
-			if type(config[i]) is str:
+			if type(config[i]) is unicode:
 				conf[i]=replaceVars(acenv,config[i])
 			else:
 				conf[i]=config[i]
@@ -141,9 +143,10 @@ class FileSystem(Component):
 			for elem in conf["content"]:
 				if type(elem) is tuple:
 					s.append(tree2xml(elem))
-				elif type(elem) is str:
+				elif type(elem) is unicode:
 					s.append(elem)
 			ret["content"]="\n".join(s)
+		print ret
 		return ret
 
 def getObject(config):
