@@ -12,7 +12,7 @@ else:
 	randrange=random.randrange
 
 PREFIX_DELIMITER="::"
-RE_PATH=re.compile("{\$([^}]+)}")
+RE_PATH=re.compile("{\$([^}]+)}",re.U)
 log=logging.getLogger('ACF.util')
 D=logging.doLog
 
@@ -75,9 +75,11 @@ def replaceVars(env,s):
 			return m.group(0)
 		if not ret:
 			raise Exception((storageName or "rs")+" storage does not have "+path+" property")
-		return ret
+		print type(ret)
+		return ret.decode("utf-8")
 
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster
+	print s
 	if type(s) not in [str,unicode]:
 		raise Exception("Not string, but "+str(s))
 	return RE_PATH.sub(parse, s)

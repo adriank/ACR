@@ -60,7 +60,7 @@ class FileSystem(Component):
 		if not update and os.path.isfile(conf["path"]):
 			return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file = open(conf["path"], 'w')
+			file = codecs.open(conf["path"], 'w',"utf-8")
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"].replace("\r\n","\n"))
 		except IOError,e:
@@ -76,10 +76,10 @@ class FileSystem(Component):
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
 		try:
-			file = open(path, 'a')
+			file = codecs.open(path, 'a',"utf-8")
 			file.write(content.replace("\r\n","\n"))
-		except IOError:
-			print 'cannot open', path
+		except IOError,e:
+			return ("object",{"status":"error","code":"IOError"},e)
 		else:
 			file.close()
 		return ("object",{"status":"ok"},None)
@@ -116,16 +116,12 @@ class FileSystem(Component):
 			file=codecs.open(conf["path"],"r", "utf-8")
 			content=file.read()
 		except IOError,e:
-			raise e
-			print 'cannot open', conf["path"]
+			return ("object",{"status":"error","code":"fileNotFound"},None)
 		else:
 			file.close()
-			print "aaa"
-			print type(content)
 		return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
 	def generate(self, acenv, config):
-		print self
 		conf={}
 		for i in config:
 			if type(config[i]) is unicode:

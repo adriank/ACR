@@ -29,15 +29,15 @@ log=logging.getLogger('ACF.component.headers')
 class Headers(Component):
 	def setcookie(self,env,config):
 		if a[1]["action"].lower()=="set":
-			d={"name":replaceVars(env,a["name"]), "value":replaceVars(env,config["value"])}
+			d={"name":replaceVars(env,a["name"]), "value":replaceVars(env,config["value"]).encode("utf-8")}
 			if a[1].has_key("path"):
-				d["path"]=str(replaceVars(env,a[1]["path"]))
+				d["path"]=replaceVars(env,a[1]["path"]).encode("utf-8")
 			HTTP.setCookie(d)
 
 	def redirect(self,env,config):
 		log.info("Requested redirect to <a href=\"%s\">%s</a>",replaceVars(env,config["location"]))
 		env.doRedirect=True
-		env.outputHeaders.append(("Location",replaceVars(env,config["location"])))
+		env.outputHeaders.append(("Location",replaceVars(env,config["location"]).encode("utf-8")))
 		return ("object",{"status":"ok"},None)
 
 	def generate(self,env,config):
