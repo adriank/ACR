@@ -17,10 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import psycopg2
-from psycopg2 import extensions
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-dbapi=psycopg2
+import psycopg2 as dbapi
 from ACF import globals
 from ACF.errors import Error
 from ACF.utils.xmlextras import escapeQuotes
@@ -38,14 +35,12 @@ class handler(object):
 		if D: log.debug("Host is %s (None means socket)",host)
 		self.conn=dbapi.connect("dbname='"+conf["defaultdb"]+"' host='"+host+"' user='"+conf["user"]+"' password='"+conf["password"]+"'")
 		self.conn.set_isolation_level(0)
-		self.conn.set_client_encoding('UNICODE')
 		if D: log.info("Successfuly connected to PostgreSQL.")
 		q="SET search_path TO "+globals.dbschema+", public"
 		if conf.has_key("schema"):
 			q+=", "+conf["schema"]
 		#TODO lazy query - should be executed with first query
 		if D: log.warning("Internal database query. Change debug level to 'debug' to see details.")
-		self.schemasql=q+";"
 		try:
 			self.query(q)
 		except:
@@ -58,12 +53,13 @@ class handler(object):
 		#	t=time.time()
 		cursor=self.conn.cursor()
 		try:
-			cursor.execute(self.schemasql+sql)
+			cursor.execute(sql)
 			#self.conn.commit()
 		except Exception ,e:
 			if D: log.error("SQLError %s",str(e))
 			raise Error("SQLError",escapeQuotes(str(e))+": "+sql)
 		if D: log.info("Query returned rows (there was SELECT)")
+		#this is most most memory efficient structure but needs to be replaced with yield by merging it with pygresql
 		try:
 			d={
 				"rows":cursor.fetchall(),

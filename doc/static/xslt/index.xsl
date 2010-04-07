@@ -19,7 +19,7 @@
 	<!--<x:variable name="layoutdoc" select="document($layoutfile)/layout"/>-->
 	<x:include href="widgets.xsl"/>
 
-	<x:template match="/"> 
+	<x:template match="/">
 		<html>
 		<head>
 			<!-- TODO make it template -->

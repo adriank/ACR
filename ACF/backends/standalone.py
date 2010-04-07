@@ -33,16 +33,12 @@ def serve_static(env,start_response):
 	length=0
 	status="200 OK"
 	extension=env["PATH_INFO"].split(".").pop()
-	if globals.appDir:
-		path=globals.appDir
-	else:
-		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0])
 	try:
-		config=xml2tree(os.path.join(path,"config.xml"))
+		config=xml2tree(os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0],"config.xml"))
 	except IOError:
 		logging.critical("Application config not found!")
 		raise Exception("Application config not found!")
-	staticDir=os.path.join(path,"static")
+	staticDir=os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0],"static")
 	try:
 		f=open(staticDir+env["PATH_INFO"])
 	except:

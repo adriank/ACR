@@ -29,7 +29,7 @@ class Default(Component):
 		for elem in config["content"]:
 			if type(elem) is tuple:
 				s.append(tree2xml(elem))
-			elif type(elem) in [str,unicode]:
+			elif type(elem) is str:
 				s.append(elem)
 		return "".join(s)
 

@@ -21,7 +21,6 @@ from ACF.errors import *
 from ACF.utils import replaceVars
 from ACF.utils.xmlextras import tree2xml#,str2obj
 import os
-import codecs
 import shutil
 import fnmatch
 
@@ -60,7 +59,7 @@ class FileSystem(Component):
 		if not update and os.path.isfile(conf["path"]):
 			return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file = codecs.open(conf["path"], 'w',"utf-8")
+			file = open(conf["path"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"].replace("\r\n","\n"))
 		except IOError,e:
@@ -76,10 +75,10 @@ class FileSystem(Component):
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
 		try:
-			file = codecs.open(path, 'a',"utf-8")
+			file = open(path, 'a')
 			file.write(content.replace("\r\n","\n"))
-		except IOError,e:
-			return ("object",{"status":"error","code":"IOError"},e)
+		except IOError:
+			print 'cannot open', path
 		else:
 			file.close()
 		return ("object",{"status":"ok"},None)
@@ -113,18 +112,20 @@ class FileSystem(Component):
 
 	def get(self,acenv,conf):
 		try:
-			file=codecs.open(conf["path"],"r", "utf-8")
+			file=open(conf["path"],"r")
 			content=file.read()
 		except IOError,e:
-			return ("object",{"status":"error","code":"fileNotFound"},None)
+			raise e
+			print 'cannot open', conf["path"]
 		else:
 			file.close()
 		return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
 	def generate(self, acenv, config):
+		print self
 		conf={}
 		for i in config:
-			if type(config[i]) is unicode:
+			if type(config[i]) is str:
 				conf[i]=replaceVars(acenv,config[i])
 			else:
 				conf[i]=config[i]
@@ -139,10 +140,9 @@ class FileSystem(Component):
 			for elem in conf["content"]:
 				if type(elem) is tuple:
 					s.append(tree2xml(elem))
-				elif type(elem) is unicode:
+				elif type(elem) is str:
 					s.append(elem)
 			ret["content"]="\n".join(s)
-		print ret
 		return ret
 
 def getObject(config):

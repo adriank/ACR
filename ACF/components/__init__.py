@@ -45,23 +45,10 @@ def get(name):
 	MODULE_CACHE[name]=m
 	return m
 
-class Generation(object):
-	status="ok"
-	error=""
-	value=""
-
-	def __str__(self):
-		if type(self.value) is str:
-			return unicode(self.value,"utf-8")
-		return self.value
-
 #abstract class
 class Component(object):
 	def __init__(self, config):
 		self.config=config
-
-	def createGeneration():
-		return Generation()
 
 	def generate(self,env,conf):
 		raise AbstractClass()
