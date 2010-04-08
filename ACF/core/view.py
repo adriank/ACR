@@ -24,6 +24,7 @@ from ACF.errors import *
 from ACF.utils import getStorage
 from ACF.utils.interpreter import execute,make_tree
 from ACF.utils.checktype import checkType
+from ACF.components import Generation
 import logging
 import os
 
@@ -196,22 +197,18 @@ class View(object):
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list
-			nodes=component.generate(acenv,action["config"])
+			generation=component.generate(acenv,action["config"])
 			if action["type"]==DEFINE:
 				if D: log.info("Executing action=%s",action)
-				if type(nodes) is tuple:
-					nodes[1]["name"]=action["name"]
-					nodes[1]["view"]=self.name
-					acenv.generations.append(nodes)
-				elif type(nodes) is list:
-					acenv.generations.append(("list",{"name":action["name"],"view":self.name},nodes))
+				#if type(nodes) is Generation:
+				if type(generation) is list:
+					generation=Generation(generation)
+				generation.name=action["name"]
+				generation.view=self.name
+				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
 				if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
-				getStorage(acenv,ns or "rs")[name]=nodes[2]
-
-	def transform(self,acenv):
-		if not acenv.output["engine"]:
-			acenv.tree=("list",{},[])
-			for i in acenv.generations:
-				acenv.tree[2].append(i)
+				getStorage(acenv,ns or "rs")[name]=generation
+		print "generations"
+		print acenv.generations

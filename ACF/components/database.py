@@ -19,7 +19,7 @@
 from ACF import globals
 from ACF.errors import *
 from ACF.utils import replaceVars,xmlextras
-from ACF.components import Component
+from ACF.components import Component, Generation
 from ACF import db
 import time
 import re, logging
@@ -30,7 +30,7 @@ d=logging.doLog
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
-	CONNECTIONS={}
+	CONNECTIONS={}#class variable, dont overwrite
 	def __init__(self,config):
 		if d: log.debug("Instance created with config=%s",config)
 		#should implement lazy db connections
@@ -121,17 +121,17 @@ class DataBase(Component):
 					if d and first: log.info("'%s' appended as node",col)
 					nodes.append((fields[i],None,[row[i]]))
 				first=False
-				ret.append(("object",{},nodes))
+				ret.append(Generation(nodes))
 			if len(ret) is 1:
 				#row
 				ret=ret[0]
 				if len(ret[2]) is 1:
 					#value
-					return ("object",{},ret[2][0][2][0])
+					return Generation(ret[2][0][2][0])
 			else:
 				return ret #("list",{},ret)
 		else:
-			return ("object",{"status":"ok"},None)
+			return Generation()
 		return ret
 
 	#parses one action config which is passed to object

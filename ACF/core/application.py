@@ -19,6 +19,7 @@
 
 from ACF.utils.xmlextras import *
 from ACF.core.view import View
+from ACF.components import Generation
 from ACF.errors import *
 from ACF import components,te
 import time,os
@@ -76,8 +77,8 @@ class Application(object):
 			"xsltfile":config.get("/output[@xsltfile]") or None,
 			"format":config.get("/output[@format]") or "objectml"
 		}
-		engineConf=config.get("/engine")[0]
-		self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
+		#engineConf=config.get("/engine")[0]
+		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACF")+"_"
 		for component in config.get("/component"):
 			if D: log.debug("setting default configuration to %s component",component[1]["name"])
@@ -143,8 +144,10 @@ class Application(object):
 		view=self.getView(acenv.viewName)
 		#tree=
 		view.generate(acenv)
-		acenv.generations.append(("object",{"name":"lang", "current":acenv.lang}, None))
-		view.transform(acenv)
+		g=Generation()
+		g.lang=acenv.lang
+		acenv.generations["lang"]=g
+		self.transform(acenv)
 		if not True:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)
@@ -152,6 +155,9 @@ class Application(object):
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))
 		return self.getXML(acenv)
+
+	def transform(self,acenv):
+		self.getXML(acenv)
 
 	def computeLangs(self):
 		attrs=self.config.get("/lang")[0][1]
@@ -168,7 +174,7 @@ class Application(object):
 		xsl=""
 		if acenv.output["xsltfile"]:
 			xsl="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%acenv.output["xsltfile"]
-		return """<?xml version="1.0" encoding="UTF-8"?>\n%s%s"""%(xsl,tree2xml(acenv.tree))
+		return """<?xml version="1.0" encoding="UTF-8"?>\n%s%s"""%(xsl,gen2xml(acenv.generations))
 
 	def getJSON(self,acenv):
 		if D: log.info("Generating JSON")

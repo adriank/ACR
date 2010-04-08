@@ -48,7 +48,7 @@ class Environment(object):
 	tree=None
 
 	def __init__(self,app):
-		self.generations=[]
+		self.generations={}
 		#populate with app defaults; the class attributes are not in __dict__!
 		self.__dict__.update(filter(lambda t: t[0] in Environment.__dict__, list(app.__dict__.iteritems())))
 		self.requestStorage={}

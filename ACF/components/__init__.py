@@ -45,6 +45,24 @@ def get(name):
 	MODULE_CACHE[name]=m
 	return m
 
+class Generation(object):
+	status="ok"
+	error=None
+	_value=None
+	name=""
+	view=""
+
+	def __init__(self, value=None):
+		self._value=value
+
+	def __str__(self):
+		if type(self._value) is str:
+			return self._value
+		return "unprintable"
+
+	def __repr__(self):
+		return "'"+self.__str__()+"'"
+
 #abstract class
 class Component(object):
 	def __init__(self, config):

@@ -33,9 +33,10 @@ SECRET_KEY="MySecret"
 #sessionStorage=None
 #XSLTCache=None
 appDir=""
+appsDir=""
 dirs=None
 
-logLevels= {
+logLevels={
 	'debug': logging.DEBUG,
 	'info': logging.INFO,
 	'warning': logging.WARNING,

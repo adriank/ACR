@@ -17,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACF.utils import replaceVars
-from ACF.components import Component
+from ACF.components import Component,Generation
 from ACF.utils.xmlextras import tree2xml
 
 class Default(Component):
 	def generate(self, env,config):
-		return ("object",{},replaceVars(env, config))
+		return Generation(replaceVars(env, config))
 
 	def parseAction(self,config):
 		s=[]

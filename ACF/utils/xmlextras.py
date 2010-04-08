@@ -46,7 +46,7 @@ def str2obj(s):
 		return False
 	elif r=="none":
 		return None
-	return s
+	return r
 
 def tree2xml(root):
 	#TODO check if it can be changed into regexp
@@ -55,12 +55,6 @@ def tree2xml(root):
 		tab.append("<"+node[0])
 		if node[1] and len(node[1])>0:
 			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(node[1])[1:-1]))
-			#n=node[1]
-			#for i in n:
-			#	val=n[i]
-			#	if type(val) is not str:
-			#		val=str(val)
-			#	tab.append(' '+i+'="'+val+'"')
 		nodes=[]
 		if not node[2]:
 			tab.append("/>")
@@ -109,7 +103,7 @@ class Reader(handler.ContentHandler):
 
 	def characters(self,data):
 		if len(data.strip())>0:
-			last(self.path)[2].append(str(str2obj(data)))
+			last(self.path)[2].append(str2obj(data).encode("utf-8"))
 
 	def endElement(self,x):
 		subelems=[]
