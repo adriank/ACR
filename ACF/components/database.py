@@ -19,20 +19,20 @@
 from ACF import globals
 from ACF.errors import *
 from ACF.utils import replaceVars,xmlextras
-from ACF.components import Component, Generation
+from ACF.components import *
 from ACF import db
 import time
 import re, logging
 
 log=logging.getLogger('ACF.component.database')
-d=logging.doLog
+D=logging.doLog
 #re.I==case-insensitive
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
 	CONNECTIONS={}#class variable, dont overwrite
 	def __init__(self,config):
-		if d: log.debug("Instance created with config=%s",config)
+		if D: log.debug("Instance created with config=%s",config)
 		#should implement lazy db connections
 		self.config=config
 		for i in config:
@@ -49,65 +49,66 @@ class DataBase(Component):
 				self.CONNECTIONS["default"]=conn
 
 	def determineQueryType(self,q):
-		if d: log.debug("started with q=%s",q)
+		if D: log.debug("started with q=%s",q)
 		rs=RE_CACHE.search(q)
 		return q[rs.start():rs.end()].lower()
 
 	#data is list of complex values
 	def evaluateMR(self,env,query,data):
-		if d: log.debug("start with query='%s' and data=%s",query,data)
+		if D: log.debug("start with query='%s' and data=%s",query,data)
 		#dt=self.determineDataType(data)
 		qt=self.determineQueryType(query)
-		if d: log.debug("determineQueryType returned with '%s'",qt)
+		if D: log.debug("determineQueryType returned with '%s'",qt)
 		q=[]
 		data=data[0]
 		if qt=="insert":
-			if d: log.debug("detected insert")
+			if D: log.debug("detected insert")
 			for i in data[1]:
 				q.append(re.sub("{\$"+data[0]+"}",db.escapeString(i),query))
 		elif qt=="update":
-			if d: log.warning("Update not implemented yet.")
+			if D: log.warning("Update not implemented yet.")
 			return query
 		elif qt=="select":
-			if d: log.warning("Select not implemented yet.")
+			if D: log.warning("Select not implemented yet.")
 			return query
 		elif qt=="update":
-			if d: log.warning("Delete not implemented yet.")
+			if D: log.warning("Delete not implemented yet.")
 			return query
 		else:
-			if d: log.warning("Query type not detected. Returning unchanged SQL.")
+			if D: log.warning("Query type not detected. Returning unchanged SQL.")
 			return query
 		return ";".join(q)
 
 	def generate(self,env,actionConf):
-		if d: log.debug("start with env=%s, actionConf=%s",env,actionConf)
+		if D: log.debug("start with env=%s, actionConf=%s",env,actionConf)
 		multiRequest=[]
-		if d: log.debug("Doing escapeString on data")
+		if D: log.debug("Doing escapeString on data")
 		data=env.requestStorage.copy()
 		for i in data:
-			if d: log.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
+			if D: log.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
 			if type(data[i]) is list:
 				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
 		query=replaceVars(env,actionConf['query'])
-		if d: log.debug("replaceVars returned '%s'",query)
+		if D: log.debug("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
 		if len(multiRequest)>0:
-			if d: log.info("multirequest detected")
+			if D: log.info("multirequest detected")
 			query=self.evaluateMR(env,query,multiRequest)
-			if d: log.debug("evaluateMR returned %s",query)
+			if D: log.debug("evaluateMR returned %s",query)
 		else:
-			if d: log.debug("multiRequest not needed")
-		if d: log.info("Querying database with '%s'",query)
+			if D: log.debug("multiRequest not needed")
+		if D: log.info("Querying database with '%s'",query)
 		if True: #env.debug:
 			t=time.time()
 		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
 		if True: #env.debug:
 			env.debug["dbtimer"]+=time.time()-t
-		if d: log.debug("'query' returned %s",result)
+		if D: log.debug("'query' returned %s",result)
 		if result:
-			if d: log.debug("Creating list of ordered dicts.")
+			print result
+			if D: log.debug("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
 			first=True #for debugging purposes
 			ret=[]
@@ -118,20 +119,20 @@ class DataBase(Component):
 				for i in xrange(len(row)):
 					#if col in actionConf["cdata"]:
 					#	s="<![CDATA["+s.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-					if d and first: log.info("'%s' appended as node",col)
+					if D and first: log.info("'%s' appended as node",col)
 					nodes.append((fields[i],None,[row[i]]))
 				first=False
-				ret.append(Generation(nodes))
+				ret.append(Object(nodes))
 			if len(ret) is 1:
 				#row
-				ret=ret[0]
-				if len(ret[2]) is 1:
-					#value
-					return Generation(ret[2][0][2][0])
+				return ret[0]
+				#if len(ret[2]) is 1:
+				#	#value
+				#	return Object(ret[2][0][2][0])
 			else:
-				return ret #("list",{},ret)
+				return List(ret) #("list",{},ret)
 		else:
-			return Generation()
+			return Object()
 		return ret
 
 	#parses one action config which is passed to object

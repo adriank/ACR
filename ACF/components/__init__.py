@@ -22,8 +22,9 @@ from ACF import globals
 from ACF.errors import *
 import logging
 import sys
+from ACF.utils.generations import *
 
-log = logging.getLogger('ACF.component')
+log=logging.getLogger('ACF.component')
 
 #dict of component modules
 MODULE_CACHE={}
@@ -44,24 +45,6 @@ def get(name):
 	m=sys.modules[path]
 	MODULE_CACHE[name]=m
 	return m
-
-class Generation(object):
-	status="ok"
-	error=None
-	_value=None
-	name=""
-	view=""
-
-	def __init__(self, value=None):
-		self._value=value
-
-	def __str__(self):
-		if type(self._value) is str:
-			return self._value
-		return "unprintable"
-
-	def __repr__(self):
-		return "'"+self.__str__()+"'"
 
 #abstract class
 class Component(object):

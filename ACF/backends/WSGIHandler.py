@@ -53,6 +53,7 @@ def application(env,start_response):
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
+	acenv.mime=env["HTTP_ACCEPT"].split(";")[0].split(",")
 	if app.debug["enabled"]:
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):

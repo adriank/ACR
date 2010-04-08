@@ -28,7 +28,6 @@ class Environment(object):
 	viewName=""
 	appName=""
 	inputs=None
-	posts={}
 	debug=None
 	cookies=None
 	outputHeaders=None
@@ -49,12 +48,14 @@ class Environment(object):
 
 	def __init__(self,app):
 		self.generations={}
+		self.mime=[]
 		#populate with app defaults; the class attributes are not in __dict__!
 		self.__dict__.update(filter(lambda t: t[0] in Environment.__dict__, list(app.__dict__.iteritems())))
 		self.requestStorage={}
 		self.outputHeaders=[]
 		self.cookies={}
 		self.inputs=[]
+		self.posts={}
 		self.debug=app.debug.copy()
 		self.app=app
 

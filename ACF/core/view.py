@@ -24,7 +24,7 @@ from ACF.errors import *
 from ACF.utils import getStorage
 from ACF.utils.interpreter import execute,make_tree
 from ACF.utils.checktype import checkType
-from ACF.components import Generation
+from ACF.components import Object, List
 import logging
 import os
 
@@ -79,14 +79,14 @@ class View(object):
 		self.conditions=[]
 		actions=[]
 		posts=[]
-		self.output=None
+		self.output=[]
 		for i in tree[2]:
 			if i[0]=="param":
 				inputs.append(i)
 			elif i[0]=="condition":
 				self.conditions.append(i)
 			elif i[0]=="output":
-				output=i
+				output.append(i)
 			elif i[0]=="post":
 				posts=i[2]
 			elif i[0] in ["set","define"]:
@@ -200,9 +200,6 @@ class View(object):
 			generation=component.generate(acenv,action["config"])
 			if action["type"]==DEFINE:
 				if D: log.info("Executing action=%s",action)
-				#if type(nodes) is Generation:
-				if type(generation) is list:
-					generation=Generation(generation)
 				generation.name=action["name"]
 				generation.view=self.name
 				acenv.generations[action["name"]]=generation

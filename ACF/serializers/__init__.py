@@ -33,7 +33,7 @@ def get(name):
 	module=TE_CACHE.get(name,None)
 	if module:
 		return module
-	path="ACF.te."+name
+	path="ACF.serializers."+name
 	try:
 		__import__(path)
 	except ImportError,e:
@@ -42,14 +42,3 @@ def get(name):
 	m=sys.modules[path]
 	TE_CACHE[name]=m
 	return m
-
-#abstract class
-class Plugin(object):
-	def __init__(self, config):
-		self.config=config
-
-	def getRootElement(self):
-		raise AbstractClass()
-
-def parseConfig(fragment):
-	"""fragment is set of nodes"""

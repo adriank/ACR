@@ -19,9 +19,10 @@
 
 from ACF.utils.xmlextras import *
 from ACF.core.view import View
-from ACF.components import Generation
+#from ACF.components import
 from ACF.errors import *
-from ACF import components,te
+from ACF import components,serializers
+from ACF.components import *
 import time,os
 import logging
 try:
@@ -144,17 +145,18 @@ class Application(object):
 		view=self.getView(acenv.viewName)
 		#tree=
 		view.generate(acenv)
-		g=Generation()
+		g=Object()
 		g.lang=acenv.lang
 		acenv.generations["lang"]=g
-		self.transform(acenv)
+		#self.transform(acenv)
+		s=serializers.get("objectml")
 		if not True:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)
 			print("Generated in %s"%(all))
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))
-		return self.getXML(acenv)
+		return s.serialize(acenv.generations)
 
 	def transform(self,acenv):
 		self.getXML(acenv)
@@ -169,19 +171,6 @@ class Application(object):
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
 
-	def getXML(self,acenv):
-		if D: log.info("Generating XML")
-		xsl=""
-		if acenv.output["xsltfile"]:
-			xsl="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%acenv.output["xsltfile"]
-		return """<?xml version="1.0" encoding="UTF-8"?>\n%s%s"""%(xsl,gen2xml(acenv.generations))
-
-	def getJSON(self,acenv):
-		if D: log.info("Generating JSON")
-		try:
-			return simplejson.dumps(acenv.tree)
-		except:
-			raise Exception("simplejson module not installed. Can't output JSON.")
 
 	def __str__(self):
 		return str(self.__dict__)
