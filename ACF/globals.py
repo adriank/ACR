@@ -43,3 +43,9 @@ logLevels={
 	'error': logging.ERROR,
 	'critical': logging.CRITICAL
 }
+supportedMIME=[
+	"text/html",
+	"application/xml",
+	"application/json",
+	"application/xhtml+xml"
+]

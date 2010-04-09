@@ -25,10 +25,6 @@ from ACF import components,serializers
 from ACF.components import *
 import time,os
 import logging
-try:
-	import simplejson
-except:
-	pass
 
 log=logging.getLogger('ACF.core.Application')
 D=logging.doLog
@@ -149,7 +145,8 @@ class Application(object):
 		g.lang=acenv.lang
 		acenv.generations["lang"]=g
 		#self.transform(acenv)
-		s=serializers.get("objectml")
+		format=self.determineOutputFormat(acenv)
+		s=serializers.get(format)
 		if not True:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)
@@ -157,9 +154,6 @@ class Application(object):
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))
 		return s.serialize(acenv.generations)
-
-	def transform(self,acenv):
-		self.getXML(acenv)
 
 	def computeLangs(self):
 		attrs=self.config.get("/lang")[0][1]
@@ -171,6 +165,10 @@ class Application(object):
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
 
-
 	def __str__(self):
 		return str(self.__dict__)
+		
+	def determineOutputFormat(self,acenv):
+		UA=acenv.UA
+		mime=acenv.mime
+			

@@ -207,5 +207,4 @@ class View(object):
 				if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-		print "generations"
-		print acenv.generations
+

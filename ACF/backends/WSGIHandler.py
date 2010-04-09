@@ -58,6 +58,7 @@ def application(env,start_response):
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
+	acenv.UA=env.get("USER-AGENT","")
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
 	post=None
 	##if acenv.debug:
