@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from ACF.components import *
 
-def serialize(conf,structure):
+def serialize(structure):
 	def rec(node,tab):
 		if type(node) in [Object,List]:
 			tag=node.__class__.__name__.lower()
@@ -34,7 +34,4 @@ def serialize(conf,structure):
 	tab=[]
 	for i in structure.values():
 		rec(i,tab)
-	xslt=""
-	if conf.has_key("xsltfile"):
-		xslt="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%conf["xsltfile"]
-	return """<?xml version="1.0" encoding="UTF-8"?>%s<list>%s</list>\n"""%(xslt,"".join(tab))
+	return """<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(tab))

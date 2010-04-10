@@ -86,7 +86,7 @@ class View(object):
 			elif i[0]=="condition":
 				self.conditions.append(i)
 			elif i[0]=="output":
-				output.append(i)
+				self.output.append(i)
 			elif i[0]=="post":
 				posts=i[2]
 			elif i[0] in ["set","define"]:
@@ -207,4 +207,5 @@ class View(object):
 				if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-
+		print "generations"
+		print acenv.generations
