@@ -3,7 +3,7 @@ import logging,re
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
 
-class Object(dict):
+class Object(object):
 	status="ok"
 	error=""
 	_value=None
@@ -18,7 +18,7 @@ class Object(dict):
 	def __repr__(self):
 		return "'"+self.__str__()+"'"
 
-class List(list):
+class List(object):
 	status="ok"
 	error=""
 	_value=None

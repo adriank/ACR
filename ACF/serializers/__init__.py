@@ -38,7 +38,7 @@ def get(name):
 		__import__(path)
 	except ImportError,e:
 		raise e
-		raise Error("ComponentNotFound",str(e))
+		raise Error("SerializerNotFound",str(e))
 	m=sys.modules[path]
 	TE_CACHE[name]=m
 	return m
