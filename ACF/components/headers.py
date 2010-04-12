@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACF import globals
-from ACF.components import Component
+from ACF.components import *
 from ACF.errors import *
 #from ACF.db import pgsql
 from ACF.utils import replaceVars,HTTP
@@ -38,7 +38,7 @@ class Headers(Component):
 		log.info("Requested redirect to <a href=\"%s\">%s</a>",replaceVars(env,config["location"]))
 		env.doRedirect=True
 		env.outputHeaders.append(("Location",replaceVars(env,config["location"])))
-		return ("object",{"status":"ok"},None)
+		return Object() #("object",{"status":"ok"},None)
 
 	def generate(self,env,config):
 		return self.__getattribute__(config["command"].split(":").pop())(env,config["params"])

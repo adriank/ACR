@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.components import Component
+from ACF.components import *
 from ACF.utils import replaceVars,generateID
 from ACF import globals
 from ACF.errors import Error
@@ -36,11 +36,11 @@ class User(Component):
 			result=acenv.app.getDBConn().query(sql)
 		except IndexError:
 			if D: log.error("Account not found")
-			return ("object", {"error":"AccountNotFound"},None)
+			return Object() #("object", {"error":"AccountNotFound"},None)
 
 	def logout(self,acenv,conf):
 		acenv.session.delete()
-		return ("object",{"status":"ok"},None)
+		return Object() #("object",{"status":"ok"},None)
 
 	def register(self,acenv,conf):
 		email=replaceVars(acenv,conf["email"])
@@ -49,7 +49,7 @@ class User(Component):
 		key=md5_constructor(password).hexdigest()
 		#returns False if email is not registered yet
 		if acenv.app.getDBConn().query(sql)["rows"][0][0]:
-			return ("object", {"error":"EmailAdressAllreadySubscribed"},None)
+			return Object() #("object", {"error":"EmailAdressAllreadySubscribed"},None)
 		id="SELECT currval('%s.users_id_seq')"%(globals.dbschema)
 		sql="""INSERT into %s.users
 		(password)
@@ -61,7 +61,7 @@ class User(Component):
 		('%s', (%s), '%s')"""%(globals.dbschema,key,globals.dbschema,email,id,generateID())
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
-		return ("object", {"status":"ok"},None)
+		return Object()#("object", {"status":"ok"},None)
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
