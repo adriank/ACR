@@ -31,6 +31,11 @@
 						
 					</x:call-template>
 				</x:if>
+				<x:if test="//*[@view='producent']">
+					<x:call-template name="producentlayout">
+						
+					</x:call-template>
+				</x:if>
 			</div>
 			<div class="container w974 footer">
 				<div class="widget template" id="copyright">Adrian Kalbarczyk all rigths reserved</div>
@@ -98,4 +103,47 @@
 			<p><x:value-of select="content"/></p>
 		</x:for-each>		
 	</x:template>
+	
+	<x:template name="producentlayout">
+		<x:for-each select="//*[@name='product']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="demo"/></p>
+			<p><x:value-of select="buydownload"/></p>
+			<p><x:value-of select="downloadstats"/></p>
+			<p><x:value-of select="clickstats"/></p>
+			<p><x:value-of select="note"/></p>
+			<p><x:value-of select="docstag"/></p>
+			<p><x:value-of select="licence"/></p>
+			<p><x:value-of select="screenshot"/></p>
+			<p><x:value-of select="producent"/></p>
+			<p><x:value-of select="licence"/></p>
+		</x:for-each>
+		
+		<x:for-each select="//*[@name='producent']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="card"/></p>
+			<p><x:value-of select="link"/></p>
+			<p><x:value-of select="info"/></p>
+		</x:for-each>
+		
+		<x:for-each select="//*[@name='comments']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="content"/></p>
+		</x:for-each>
+		
+		<x:for-each select="//*[@name='producent_product']/object">
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="producentname"/></p>
+		</x:for-each>
+		
+		<x:for-each select="//*[@name='producent_info']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="card"/></p>
+			<p><x:value-of select="link"/></p>
+			<p><x:value-of select="info"/></p>
+		</x:for-each>	
+	</x:template>	
 </x:stylesheet>
