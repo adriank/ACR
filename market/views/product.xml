@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
-	<param name="name" default="dupagosia"/>
-	<!--<define name="fileList" command="fs:list" fs:path="/" fs:filter="*" fs:showDirs="True" />-->
+	<param name="name"/>
+	<post>
+		<param name="user"/>
+		<param name="developer"/>
+	</post>
+	<define name="user" condition="rs::user is not ''">
+		<question>/add_userquestion</question>
+		<comment>/add_usercomment</comment>
+		<note>/add_usernote</note>
+	</define>
+	<define name="developer" condition="rs::developer is not ''">
+		<setstatus>/set_productstatus</setstatus>
+		<answer>/add_developeranswer</answer>
+		<addchangelog>/add_developerchangelog</addchangelog>
+		<editinfo>/edit_info</editinfo>
+	</define>
 	<define name="producent" command="db:query">
 		select * from market.producent where id = 1
 	</define>
@@ -63,12 +77,7 @@
 			Some comment
 		</content>	
 	</define>
-	<define  name="changelog" command="db:query">
-		select * from market.changelog where id = 1
-	</define>
-	<define name="information" command="db:query">
-		select * from market.information where id = 1
-	</define>	
+	
 	<define name="layout">
 		<![CDATA[<pageTitle>Main page</pageTitle>
 		<block type="container" name="body">
@@ -121,7 +130,6 @@
 				<p><b><node name='author'/></b>:&#160;<node name='answer'/></p>
 				</template>
 			</widget>
-			
 		</block>
 		
 		]]>
