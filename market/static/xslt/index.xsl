@@ -26,9 +26,11 @@
 				</div>
 			</div>
 			<div class="w974 body">
-				<x:call-template name="layout">
-					
-				</x:call-template>
+				<x:if test="//*[@view='product']">
+					<x:call-template name="productlayout">
+						
+					</x:call-template>
+				</x:if>
 			</div>
 			<div class="container w974 footer">
 				<div class="widget template" id="copyright">Adrian Kalbarczyk all rigths reserved</div>
@@ -37,7 +39,7 @@
 		</html>
 	</x:template>
 	
-	<x:template name="layout">
+	<x:template name="productlayout">
 		<p><b>Information:</b></p>
 		<x:for-each select="//*[@name='information']">
 		<p><x:value-of select="id"/></p>
