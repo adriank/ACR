@@ -14,14 +14,25 @@
 			<link rel="stylesheet" type="text/css" href="http://e.fstatic.eu/css/yui-rf.css"/>
 			<link href="http://e.fstatic.eu/css/grids.css" rel="stylesheet" type="text/css"/>
 			<link href="http://e.fstatic.eu/css/style.css" rel="stylesheet" type="text/css"/>
+			<link href="http://e.fstatic.eu/css/style2.css" rel="stylesheet" type="text/css"/>
 			<link href="http://e.fstatic.eu/css/article.css" rel="stylesheet" type="text/css"/>
 			<script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js" type="text/javascript"/>
 			<style>html,body{background:#464646;}</style>
 		</head>
 		<body>
-			<x:call-template name="layout">
-				
-			</x:call-template>	
+			<div class="container w974 header">
+				<div class="widget template" id="logo">
+					<h1>AsynCode Market</h1>
+				</div>
+			</div>
+			<div class="w974 body">
+				<x:call-template name="layout">
+					
+				</x:call-template>
+			</div>
+			<div class="container w974 footer">
+				<div class="widget template" id="copyright">Adrian Kalbarczyk all rigths reserved</div>
+			</div>
 		</body>
 		</html>
 	</x:template>
@@ -47,26 +58,32 @@
 		<!--	</x:if>	-->
 		<!--</x:for-each>-->
 		<p><b>Information:</b></p>
-		<p><x:value-of select="//*[@name='information']/id"/></p>
-		<p><x:value-of select="//*[@name='information']/lang"/></p>
-		<p><x:value-of select="//*[@name='information']/info"/></p>
+		<x:for-each select="//*[@name='information']">
+		<p><x:value-of select="id"/></p>
+		<p><x:value-of select="lang"/></p>
+		<p><x:value-of select="info"/></p>
+		</x:for-each>
 		
 		<p><b>Changelog:</b></p>
-		<p><x:value-of select="//*[@name='changelog']/id"/></p>
-		<p><x:value-of select="//*[@name='changelog']/content"/></p>
+		<x:for-each select="//*[@name='changelog']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="content"/></p>
+		</x:for-each>
 		
 		<p><b>Product:</b></p>
-		<p><x:value-of select="//*[@name='product']/id"/></p>
-		<p><x:value-of select="//*[@name='product']/name"/></p>
-		<p><x:value-of select="//*[@name='product']/demo"/></p>
-		<p><x:value-of select="//*[@name='product']/buydownload"/></p>
-		<p><x:value-of select="//*[@name='product']/downloadstats"/></p>
-		<p><x:value-of select="//*[@name='product']/clickstats"/></p>
-		<p><x:value-of select="//*[@name='product']/note"/></p>
-		<p><x:value-of select="//*[@name='product']/docstag"/></p>
-		<p><x:value-of select="//*[@name='product']/lecence"/></p>
-		<p><x:value-of select="//*[@name='product']/screenshot"/></p>
-		<p><x:value-of select="//*[@name='product']/producent"/></p>
+		<x:for-each select="//*[@name='product']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="demo"/></p>
+			<p><x:value-of select="buydownload"/></p>
+			<p><x:value-of select="downloadstats"/></p>
+			<p><x:value-of select="clickstats"/></p>
+			<p><x:value-of select="note"/></p>
+			<p><x:value-of select="docstag"/></p>
+			<p><x:value-of select="lecence"/></p>
+			<p><x:value-of select="screenshot"/></p>
+			<p><x:value-of select="producent"/></p>
+		</x:for-each>
 		
 		<p><b>QA:</b></p>
 		<x:for-each select="//*[@name='qa']/object">
@@ -78,15 +95,19 @@
 		</x:for-each>
 		
 		<p><b>Producent:</b></p>
-		<p><x:value-of select="//*[@name='producent']/id"/></p>
-		<p><x:value-of select="//*[@name='producent']/name"/></p>
-		<p><x:value-of select="//*[@name='producent']/card"/></p>
-		<p><x:value-of select="//*[@name='producent']/link"/></p>
-		<p><x:value-of select="//*[@name='producent']/info"/></p>
+		<x:for-each select="//*[@name='producent']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="card"/></p>
+			<p><x:value-of select="link"/></p>
+			<p><x:value-of select="info"/></p>
+		</x:for-each>
 		
 		<p><b>Comments:</b></p>
-		<p><x:value-of select="//*[@name='comments']/id"/></p>
-		<p><x:value-of select="//*[@name='comments']/content"/></p>
+		<x:for-each select="//*[@name='comments']">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="content"/></p>
+		</x:for-each>
 		
 		<p><b>TODO:</b></p>
 		<x:for-each select="//*[@name='todo']/object">
