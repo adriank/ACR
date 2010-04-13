@@ -14,7 +14,7 @@
 			<link rel="stylesheet" type="text/css" href="http://e.fstatic.eu/css/yui-rf.css"/>
 			<link href="http://e.fstatic.eu/css/grids.css" rel="stylesheet" type="text/css"/>
 			<link href="http://e.fstatic.eu/css/style.css" rel="stylesheet" type="text/css"/>
-			<link href="http://e.fstatic.eu/css/style2.css" rel="stylesheet" type="text/css"/>
+			<link href="http://oyc.fstatic.eu/css/style2.css" rel="stylesheet" type="text/css"/>
 			<link href="http://e.fstatic.eu/css/article.css" rel="stylesheet" type="text/css"/>
 			<script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js" type="text/javascript"/>
 			<style>html,body{background:#464646;}</style>
@@ -38,25 +38,6 @@
 	</x:template>
 	
 	<x:template name="layout">
-		<!--<x:for-each select="/list/object">-->
-		<!--	<x:if test="@name='product' ">	-->
-		<!--		<p><x:value-of select="id"/></p>-->
-		<!--		<p><x:value-of select="name"/></p>-->
-		<!--		<p><x:value-of select="demo"/></p>-->
-		<!--		<p><x:value-of select="buydownload"/></p>-->
-		<!--		<p><x:value-of select="downloadstats"/></p>-->
-		<!--		<p><x:value-of select="clickstats"/></p>-->
-		<!--		<p><x:value-of select="note"/></p>-->
-		<!--		<p><x:value-of select="docstag"/></p>-->
-		<!--		<p><x:value-of select="lecence"/></p>-->
-		<!--		<p><x:value-of select="screenshot"/></p>-->
-		<!--		<p><x:value-of select="producent"/></p>-->
-		<!--	</x:if>-->
-		<!--	<x:if test="@name='changelog' ">-->
-		<!--		<p><x:value-of select="id"/></p>-->
-		<!--		<p><x:value-of select="content"/></p>-->
-		<!--	</x:if>	-->
-		<!--</x:for-each>-->
 		<p><b>Information:</b></p>
 		<x:for-each select="//*[@name='information']">
 		<p><x:value-of select="id"/></p>
