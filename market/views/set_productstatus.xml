@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
+	<param name="name"/>
+	<post>
+		<param name="id"/>
+		<param name="developer"/>
+		<param name="productstatus"/> <!--hidden, test, beta, -->
+	</post>
+	<define name="productstatus" command="db:query" condition="rs::developer is not ''">
+		update market.poroduct set
+	    productstatus='{$productstatus}'
+		where id={$id}
+	</define>
+</view>

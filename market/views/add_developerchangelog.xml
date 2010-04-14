@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
+	<param name="name"/>
+	<post>
+		<param name="developer"/>
+		<param name="content"/> <!--hidden, test, beta, -->
+	</post>
+	<define name="add_developerchangelog" command="db:query" condition="rs::developer is not ''">
+		INSERT INTO market.changelog(content) VALUES ($content)
+	</define>
+</view>
