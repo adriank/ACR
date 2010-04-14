@@ -26,6 +26,11 @@
 				</div>
 			</div>
 			<div class="w974 body">
+				<x:if test="//*[@view='default']">
+					<x:call-template name="defaultlayout">
+						
+					</x:call-template>
+				</x:if>
 				<x:if test="//*[@view='product']">
 					<x:call-template name="productlayout">
 						
@@ -44,6 +49,19 @@
 		</html>
 	</x:template>
 	
+	<x:template name="defaultlayout">
+		<p><b>Product list:</b></p>
+		<x:for-each select="//*[@name='productlist']/object">
+			<p><x:value-of select="name"/></p>
+			<p><x:value-of select="productname"/></p>
+		</x:for-each>	
+		<p><b>Developers info:</b></p>
+		<x:for-each select="//*[@name='developers_info']/object">
+			<p><x:value-of select="id"/></p>
+			<p><x:value-of select="content"/></p>
+		</x:for-each>	
+		
+	</x:template>
 	<x:template name="productlayout">
 		<p><b>Information:</b></p>
 		<x:for-each select="//*[@name='information']">
