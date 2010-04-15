@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
 	<param name="name"/>
-	<post>
+	<!--<post>-->
 		<param name="developer"/>
 		<param name="answer"/>
-	</post>
-	<define name="add_developeranswer" command="db:query" condition="rs::developer is not ''">
-		INSERT INTO market.qa(answer) VALUES ($answer)
-	</define>
+	<!--</post>-->
+	<!--<define name="add_developeranswer" command="db:query" condition="rs::developer is not ''">-->
+	<!--	INSERT INTO market.qa(answer) VALUES ($answer)-->
+	<!--</define>-->
+	<define name="add_developeranswer">
+		<id>1</id>
+		<answer>Becouse bla bla bla bla bla</answer>
+	</define>	
 </view> 

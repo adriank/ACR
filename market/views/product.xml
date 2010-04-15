@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
 	<param name="name"/>
-	<post>
+	<!--<post>-->
 		<param name="user"/>
 		<param name="developer"/>
-	</post>
+	<!--</post>-->
 	<define name="user" condition="rs::user is not ''">
 		<question>/add_userquestion</question>
 		<comment>/add_usercomment</comment>
@@ -78,61 +78,61 @@
 		</content>	
 	</define>
 	
-	<define name="layout">
-		<![CDATA[<pageTitle>Main page</pageTitle>
-		<block type="container" name="body">
-			<widget name="product_name" type="template" datasource="product">
-				<b>Product name:&#160;</b><node name='name'/>
-			</widget>
-			<widget name="producent_name_card" type="template" datasource="producent">
-				<b>Producent: &#160;</b><node name='name'/><node name='card'/>
-			</widget>
-			<widget name="producent_link" type="template" datasource="producent">
-				<b>Strona producenta: &#160;</b><node name='link'/>
-			</widget>
-			<widget name="product_demo" type="template" datasource="product">
-				<b>Demo aplikacji: &#160;</b><node name='demo'/>
-			</widget>
-			<widget name="product_buydownload" type="template" datasource="product">
-				<b>Buy or Download: &#160;</b><node name='buydownload'/>
-			</widget>
-			<widget name="product_clickdownloadstats" type="template" datasource="product">
-				<p><b>Downloads: &#160;</b><node name='downloadstats'/></p>
-				<p><b>Clicks: &#160;</b><node name='clickstats'/></p>
-			</widget>
-			<widget name="tags" type="template" datasource="tags">
-				<b>Tagi: &#160;</b><node name='tag'/>
-			</widget>
-			<widget name="product_note" type="template" datasource="product">
-				<b>Note: &#160;</b><node name='note'/>
-			</widget>
-			<widget name="product_note" type="template">
-				<b>Docs tag:&#160;</b>
-			</widget>
-			<widget name="product_licence" type="template" datasource="product">
-				<b>Licence: &#160;</b><node name='licence'/>
-			</widget>
-			<widget name="product_screenshot" type="template" datasource="product">
-				<b>Screenshots: &#160;</b><node name='screenshot'/>
-			</widget>
-			<widget name="product_information" type="template" datasource="information">
-				<b>Informations: &#160;</b><node name='lang'/><node name='info'/>
-			</widget>
-			<widget name="changelog" type="template" datasource="changelog">
-				<b>Changelog: &#160;</b><node name='content'/>
-			</widget>
-			<widget name="todo" type="template" datasource="todo">
-				<b>TODO: &#160;</b><node name='content'/>
-			</widget>
-			<widget name="qa" type="list" datasource="qa">
-				<template>
-				<p class="warning" style="color:red"><b ><node name='user'/></b>:&#160;<node name='question'/></p>
-				<p><b><node name='author'/></b>:&#160;<node name='answer'/></p>
-				</template>
-			</widget>
-		</block>
-		
-		]]>
-	</define>
+	<!--<define name="layout">-->
+	<!--	<![CDATA[<pageTitle>Main page</pageTitle>-->
+	<!--	<block type="container" name="body">-->
+	<!--		<widget name="product_name" type="template" datasource="product">-->
+	<!--			<b>Product name:&#160;</b><node name='name'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="producent_name_card" type="template" datasource="producent">-->
+	<!--			<b>Producent: &#160;</b><node name='name'/><node name='card'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="producent_link" type="template" datasource="producent">-->
+	<!--			<b>Strona producenta: &#160;</b><node name='link'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_demo" type="template" datasource="product">-->
+	<!--			<b>Demo aplikacji: &#160;</b><node name='demo'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_buydownload" type="template" datasource="product">-->
+	<!--			<b>Buy or Download: &#160;</b><node name='buydownload'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_clickdownloadstats" type="template" datasource="product">-->
+	<!--			<p><b>Downloads: &#160;</b><node name='downloadstats'/></p>-->
+	<!--			<p><b>Clicks: &#160;</b><node name='clickstats'/></p>-->
+	<!--		</widget>-->
+	<!--		<widget name="tags" type="template" datasource="tags">-->
+	<!--			<b>Tagi: &#160;</b><node name='tag'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_note" type="template" datasource="product">-->
+	<!--			<b>Note: &#160;</b><node name='note'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_note" type="template">-->
+	<!--			<b>Docs tag:&#160;</b>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_licence" type="template" datasource="product">-->
+	<!--			<b>Licence: &#160;</b><node name='licence'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_screenshot" type="template" datasource="product">-->
+	<!--			<b>Screenshots: &#160;</b><node name='screenshot'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="product_information" type="template" datasource="information">-->
+	<!--			<b>Informations: &#160;</b><node name='lang'/><node name='info'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="changelog" type="template" datasource="changelog">-->
+	<!--			<b>Changelog: &#160;</b><node name='content'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="todo" type="template" datasource="todo">-->
+	<!--			<b>TODO: &#160;</b><node name='content'/>-->
+	<!--		</widget>-->
+	<!--		<widget name="qa" type="list" datasource="qa">-->
+	<!--			<template>-->
+	<!--			<p class="warning" style="color:red"><b ><node name='user'/></b>:&#160;<node name='question'/></p>-->
+	<!--			<p><b><node name='author'/></b>:&#160;<node name='answer'/></p>-->
+	<!--			</template>-->
+	<!--		</widget>-->
+	<!--	</block>-->
+	<!--	-->
+	<!--	]]>-->
+	<!--</define>-->
 	  
 </view>

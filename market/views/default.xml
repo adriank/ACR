@@ -10,24 +10,24 @@
 		</object>	
 	</define>
 	
-	<define name="layout">
-		<![CDATA[<pageTitle>Main page</pageTitle>
-		<block type="container" name="body">
-			<widget name="login" type="form" action="#">
-				<item name="Login user:" type="text"/>
-			</widget>
-			<widget name="producent_applications" type="list" datasource="productlist">
-				<before>
-					<b>Market applications:</b>
-				</before>
-				<template>
-					<p><node name='producentname'/>:&#160;<node name='name'/></p>
-				</template>
-			</widget>
-			<widget name="developers_info" type="template" datasource="developers_info">
-				<p><node name="content"/></p>
-			</widget>
-		</block>
-		]]>
-	</define>
+	<!--<define name="layout">-->
+	<!--	<![CDATA[<pageTitle>Main page</pageTitle>-->
+	<!--	<block type="container" name="body">-->
+	<!--		<widget name="login" type="form" action="#">-->
+	<!--			<item name="Login user:" type="text"/>-->
+	<!--		</widget>-->
+	<!--		<widget name="producent_applications" type="list" datasource="productlist">-->
+	<!--			<before>-->
+	<!--				<b>Market applications:</b>-->
+	<!--			</before>-->
+	<!--			<template>-->
+	<!--				<p><node name='producentname'/>:&#160;<node name='name'/></p>-->
+	<!--			</template>-->
+	<!--		</widget>-->
+	<!--		<widget name="developers_info" type="template" datasource="developers_info">-->
+	<!--			<p><node name="content"/></p>-->
+	<!--		</widget>-->
+	<!--	</block>-->
+	<!--	]]>-->
+	<!--</define>-->
 </view>
