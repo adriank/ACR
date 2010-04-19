@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
+	<define name="add_developerchangelog">
+		<id>1</id>
+		<content>Changelog ....</content>
+	</define>	
+</view>
