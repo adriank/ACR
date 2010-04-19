@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:f="http://asyncode.com/filesystem">
 	<define name="productlist"  command="db:query">
-		select product.name, producent.name as producentname from market.producent inner join market.product on producent.id = product.producent
+		select producent.id as producentid, product.id as productid, product.name, producent.name as producentname from market.producent inner join market.product on producent.id = product.producent
 	</define>
 	<define name="developers_info">
 		<object>

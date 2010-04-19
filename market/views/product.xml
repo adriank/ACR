@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
-	<param name="name"/>
-	<!--<post>-->
-		<param name="user"/>
-		<param name="developer"/>
-	<!--</post>-->
+	<param name="id"/>
+	
 	<define name="user" condition="rs::user is not ''">
 		<question>/add_userquestion</question>
 		<comment>/add_usercomment</comment>
@@ -16,11 +13,17 @@
 		<addchangelog>/add_developerchangelog</addchangelog>
 		<editinfo>/edit_info</editinfo>
 	</define>
+	<define name="producent_product" command="db:query">
+		select product.name as productname, producent.name as producentname from market.product inner join market.producent on producent.id = product.producent where product.producent = {$id}
+	</define>
+	<define name="product_producent" command="db:query">
+		select product.name as productname, producent.name as producentname, producent.card, producent.link from market.product inner join market.producent on producent.id = product.producent where product.id = {$id}
+	</define>
 	<define name="producent" command="db:query">
-		select * from market.producent where id = 1
+		select * from market.producent where id = {$id}
 	</define>
 	<define name="product" command="db:query">
-		select * from market.product where id = 1
+		select * from market.product where id = {$id}
 	</define>
 	<define name="todo" command="db:query">
 		select * from market.todo 
@@ -36,40 +39,8 @@
 			<tag>action</tag>
 		</object>
 	</define>	
-	<define name="costam">
-		<list name="qa">
-		<object>
-		<id>1</id>
-			<question>
-				Why in this game is so full blooded?
-			</question>
-			<answer>
-				Becouse ....
-			</answer>
-			<user>
-				SomeUser
-			</user>
-			<author>
-				SomeAuthor
-			</author>
-		</object>
-		<object>
-			<id>2</id>
-			<question>
-				What is this shit?
-			</question>
-			<answer>
-				Fuck you.
-			</answer>
-			<user>
-				SomeAnotherUser
-			</user>
-			<author>
-				SomeAnotherAuthor
-			</author>
-		</object>
-		</list>
-		<!--select * from market.qa -->
+	<define name="qa" command="db:query">
+		select * from market.qa 
 	</define>
 	<define name="comments">
 		<id>1</id>
