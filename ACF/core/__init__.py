@@ -28,7 +28,7 @@ class Environment(object):
 	viewName=""
 	appName=""
 	inputs=None
-	debug=None
+	#debug=None
 	cookies=None
 	outputHeaders=None
 	session=None
@@ -45,6 +45,8 @@ class Environment(object):
 	doRedirect=False
 	redirect=False
 	tree=None
+	_debugStr=None
+	_debug=None
 
 	def __init__(self,app):
 		self.generations={}
@@ -56,8 +58,10 @@ class Environment(object):
 		self.cookies={}
 		self.inputs=[]
 		self.posts={}
-		self.debug=app.debug.copy()
+		#self.debug=app.debug.copy()
 		self.app=app
+		self._debugStr=[]
+		self._debug=10
 
 	def setLang(self,lang):
 		if not lang:
@@ -77,3 +81,31 @@ class Environment(object):
 				s.append(str(i)+": "+str(d[i]))
 		s.append(")")
 		return ", ".join(s)
+
+	def dbg(self, *s):
+		if self._debug <= 10:
+			self.dbgfn("DEBUG", s)
+	
+	def info(self, *s):
+		if self._debug <= 20:
+			self.dbgfn("INFO", s)
+	
+	def warning(self, *s):
+		if self._debug <= 30:
+			self.dbgfn("WARNING", s)
+
+	def error(self, *s):
+		if self._debug <= 40:
+			self.dbgfn("ERROR", s)
+		
+	def	critical(self, *s):
+		if self._debug <= 50:
+			self.dbgfn("CRITICAL", s)
+
+	def dbgfn(self, msg, s):
+		if len(s)>1:
+			self._debugStr.append((msg, s[0] % s[1:]))
+			print msg+": ", s[0] % s[1:]
+		else:
+			self._debugStr.append((msg, s[0]))
+			print msg+": ",s[0]

@@ -25,14 +25,14 @@ import time
 import re, logging
 
 log=logging.getLogger('ACF.component.database')
-D=logging.doLog
+D=True#logging.doLog
 #re.I==case-insensitive
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
 	CONNECTIONS={}#class variable, dont overwrite
 	def __init__(self,config):
-		if D: log.debug("Instance created with config=%s",config)
+		#if D: log.debug("Instance created with config=%s",config)
 		#should implement lazy db connections
 		self.config=config
 		for i in config:
@@ -49,66 +49,67 @@ class DataBase(Component):
 				self.CONNECTIONS["default"]=conn
 
 	def determineQueryType(self,q):
-		if D: log.debug("started with q=%s",q)
+		#if D: log.debug("started with q=%s",q)
 		rs=RE_CACHE.search(q)
 		return q[rs.start():rs.end()].lower()
 
 	#data is list of complex values
 	def evaluateMR(self,env,query,data):
-		if D: log.debug("start with query='%s' and data=%s",query,data)
+		if D:env.dbg("start with query='%s' and data=%s",query,data)
 		#dt=self.determineDataType(data)
 		qt=self.determineQueryType(query)
-		if D: log.debug("determineQueryType returned with '%s'",qt)
+		if D: env.dbg("determineQueryType returned with '%s'",qt)
 		q=[]
 		data=data[0]
 		if qt=="insert":
-			if D: log.debug("detected insert")
+			if D: env.dbg("detected insert")
 			for i in data[1]:
 				q.append(re.sub("{\$"+data[0]+"}",db.escapeString(i),query))
 		elif qt=="update":
-			if D: log.warning("Update not implemented yet.")
+			#if D: env.warning("Update not implemented yet.")
 			return query
 		elif qt=="select":
-			if D: log.warning("Select not implemented yet.")
+			#if D: env.warning("Select not implemented yet.")
 			return query
 		elif qt=="update":
-			if D: log.warning("Delete not implemented yet.")
+			#if D: env.warning("Delete not implemented yet.")
 			return query
 		else:
-			if D: log.warning("Query type not detected. Returning unchanged SQL.")
+			if D: env.warning("Query type not detected. Returning unchanged SQL.")
 			return query
 		return ";".join(q)
 
 	def generate(self,env,actionConf):
-		if D: log.debug("start with env=%s, actionConf=%s",env,actionConf)
+		env.info("Component: 'DB'")
+		if D: env.dbg("start with actionConf=%s",actionConf)
 		multiRequest=[]
-		if D: log.debug("Doing escapeString on data")
+		if D: env.dbg("Doing escapeString on data")
 		data=env.requestStorage.copy()
 		for i in data:
-			if D: log.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
+			if D: env.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
 			if type(data[i]) is list:
 				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
 		query=replaceVars(env,actionConf['query'])
-		if D: log.debug("replaceVars returned '%s'",query)
+		if D: env.dbg("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
 		if len(multiRequest)>0:
-			if D: log.info("multirequest detected")
+			if D: env.info("multirequest detected")
 			query=self.evaluateMR(env,query,multiRequest)
-			if D: log.debug("evaluateMR returned %s",query)
+			if D: env.dbg("evaluateMR returned %s",query)
 		else:
-			if D: log.debug("multiRequest not needed")
-		if D: log.info("Querying database with '%s'",query)
+			if D: env.dbg("multiRequest not needed")
+		if D: env.info("Querying database with '%s'",query)
 		if True: #env.debug:
 			t=time.time()
 		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
-		if True: #env.debug:
-			env.debug["dbtimer"]+=time.time()-t
-		if D: log.debug("'query' returned %s",result)
+		#if True: #env.debug:
+		#	env.debug["dbtimer"]+=time.time()-t
+		if D: env.dbg("'query' returned %s",result)
 		if result:
 			print result
-			if D: log.debug("Creating list of ordered dicts.")
+			if D: env.dbg("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
 			first=True #for debugging purposes
 			ret=[]
@@ -119,7 +120,7 @@ class DataBase(Component):
 				for i in xrange(len(row)):
 					#if col in actionConf["cdata"]:
 					#	s="<![CDATA["+s.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-					if D and first: log.info("'%s' appended as node",col)
+					#if D and first: env.info("'%s' appended as node",col)
 					nodes.append((fields[i],None,[row[i]]))
 				first=False
 				ret.append(Object(nodes))

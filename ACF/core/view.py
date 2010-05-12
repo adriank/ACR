@@ -29,7 +29,7 @@ import logging
 import os
 
 log=logging.getLogger('ACF.core.View')
-D=logging.doLog
+D=True#logging.doLog
 DEFINE="define"
 SET="set"
 COMMAND="command"
@@ -52,7 +52,7 @@ class View(object):
 #	timestamp=0 #file modification timestamp
 	path="" #file path
 	def __init__(self,name,app):
-		if D: log.info("Created %s",name)
+		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.name=name
 		self.app=app
@@ -97,7 +97,7 @@ class View(object):
 		if not self.actions:
 			self.immutable=True
 			return
-		if D: log.debug("Setting defaults for posts")
+		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
 
@@ -106,7 +106,7 @@ class View(object):
 		try:
 			for i in a:
 				attrs=i[1]
-				if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
+				#if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
 				action=NS2Tuple(i[0])[1]
 				ns=None
 				cmd="default"
@@ -137,15 +137,16 @@ class View(object):
 
 	def __setattr__(self, name, val):
 		if self.immutable:
-			if D: log.error("%s is read only",name)
+			#if D: log.error("%s is read only",name)
 			raise Exception("PropertyImmutable")
 		self.__dict__[name]=val
 
 	def fillPosts(self,acenv):
 		#TODO add default values support by doing ticket #13
+		if D: acenv.info("Create '%s' view",(self.name))
 		list=acenv.posts
 		if not self.posts or not len(self.posts):
-			if D: log.debug("list of posts is empty. Returning 'True'.")
+			#if D: log.debug("list of posts is empty. Returning 'True'.")
 			return True
 		for i in list:
 			value=list[i]
@@ -157,9 +158,9 @@ class View(object):
 	def fillInputs(self,acenv):
 		list=acenv.inputs
 		if not self.inputs or not len(self.inputs):
-			if D: log.debug("list of inputs is empty. Returning 'True'.")
+			#if D: log.debug("list of inputs is empty. Returning 'True'.")
 			return True
-		if D: log.debug("All parameters were specified")
+		#if D: log.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		if list:
 			inputsLen=min([len(self.inputs),len(list)])
@@ -172,8 +173,8 @@ class View(object):
 				if type=="csv":
 					value=value.split(",")
 				acenv.requestStorage[self.inputs[i]["name"]]=value
-			else:
-				if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
+			#else:
+			#	if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
 		for i in xrange(i+1,len(self.inputs)):
 			default=self.inputs[i]["default"]
 			if default:
@@ -186,10 +187,11 @@ class View(object):
 			acenv.generations.append(("object",{"type":"view","name":self.name},None))
 			self.transform(acenv)
 			return
-		if D: log.debug("Executing with env=%s",acenv)
+		#if D: log.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
 		for action in self.actions:
+			acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):
 				#TODO if SET is used in action -> log.error
 				if action["type"]==SET:
@@ -199,12 +201,12 @@ class View(object):
 			#object or list
 			generation=component.generate(acenv,action["config"])
 			if action["type"]==DEFINE:
-				if D: log.info("Executing action=%s",action)
+				#if D: log.info("Executing action=%s",action)
 				generation.name=action["name"]
 				generation.view=self.name
 				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
-				if D: log.info("Executing SET=%s",action)
+				#if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
 		print "generations"

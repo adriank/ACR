@@ -24,6 +24,8 @@ import os
 import shutil
 import fnmatch
 
+D=True
+
 class FileSystem(Component):
 	def __init__(self,config):
 		#self.config=config
@@ -38,6 +40,8 @@ class FileSystem(Component):
 		files=os.listdir(conf["path"])
 		if not showDirs:
 			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
+		else:
+			if D: acenv.warning("'list' has bad value: showDirs=%s", showDirs)
 		if _filter:
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
 		if conf.get("extension","")=="hide":
@@ -146,12 +150,25 @@ class FileSystem(Component):
 		return g #return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
 
 	def generate(self, acenv, config):
+		if D:
+			acenv.info("Component: 'FS'")
+			acenv.info("Command: '%s'",replaceVars(acenv,config["command"]))
+			if replaceVars(acenv,config["command"]) not in ("list", "create", "update", "append", "delete", "copy", "move", "exists", "get"):
+				acenv.error("Command '%s' not exist!",replaceVars(acenv,config["command"]))
 		conf={}
 		for i in config:
 			if type(config[i]) is str:
 				conf[i]=replaceVars(acenv,config[i])
 			else:
 				conf[i]=config[i]
+			if D:
+				if i!= "command":acenv.dbg("attribute: '%s', value: '%s'", i, conf[i])
+				
+		if D:
+			if not conf["path"]:
+				acenv.warning("missning '/' character at the begginig of 'path' attribute")
+			elif conf["path"][0] !=  '/':
+				acenv.warning("missning '/' character at the begginig of 'path' attribute")
 		conf["path"]=os.path.join(self.path+conf["path"])
 		return self.__getattribute__(conf["command"])(acenv,conf)
 
