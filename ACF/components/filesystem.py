@@ -16,15 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.components import *
+from ACF.components import Component
 from ACF.errors import *
 from ACF.utils import replaceVars
-from ACF.utils.xmlextras import tree2xml#,str2obj
+from ACF.utils.xmlextras import tree2xml
 import os
 import shutil
 import fnmatch
-
-D=True
 
 class FileSystem(Component):
 	def __init__(self,config):
@@ -33,7 +31,7 @@ class FileSystem(Component):
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
-		l=Object()
+		D=acenv.debug
 		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
@@ -47,112 +45,113 @@ class FileSystem(Component):
 		if conf.get("extension","")=="hide":
 			files=map(lambda f:	os.path.splitext(f)[0],files)
 		files.sort()
-		ret=[]
+		ret=List()
 		if len(files)==0:
-			l.status="ok"
-			l.code="dirEmpty"
-			return l #return ("object",{"status":"ok","code":"dirEmpty"},None)
+			o=Object()
+			o.code="dirEmpty"
+			return o
 		for i in files:
-			l=Object()
-			l.name=i
-			ret.append(l) #ret.append(("object",{"name":i},None))
-		if len(ret)==1:
-			ret[0].status="ok"
-			#ret=ret[0]
-			#ret[1]["status"]="ok"
-		return List(ret)
+			o=Object()
+			o.name=i
+			ret.append(l)
+		return ret
 
 	def create(self,acenv,conf,update=False):
+		D=acenv.debug
 		#path=os.path.join(self.path+conf["path"])
 		#TODO if whole path do not exist -> create all dirs in path
-		cr=Object()
+		o=Object()
 		if not update and os.path.isfile(conf["path"]):
-			cr.status="error"
-			cr.code="fileExists"
-			return cr #return ("object",{"status":"error","code":"fileExists"},None)
+			o.status="error"
+			o.code="fileExists"
+			return o #return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file = open(conf["path"], 'w')
+			file=open(conf["path"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"].replace("\r\n","\n"))
 		except IOError,e:
-			cr.status="error"
-			cr.code="IOError"
+			o.status="error"
+			o.code="IOError"
 			return cr #return ("object",{"status":"error","code":"IOError"},e)
 		else:
 			file.close()
-		cr.status="ok"	
-		return cr #return ("object",{"status":"ok"},None)
+		#o.status="ok"
+		return o #return ("object",{"status":"ok"},None)
 
 	def update(self,acenv,conf):
 		return self.create(acenv,conf,True)
 
 	def append(self,acenv,conf):
-		ap=Object()
+		D=acenv.debug
+		o=Object()
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
 		try:
-			file = open(path, 'a')
+			file=open(path, 'a')
 			file.write(content.replace("\r\n","\n"))
 		except IOError:
+			#FIXIT
 			print 'cannot open', path
 		else:
 			file.close()
-		ap.status="ok"	
+		#o.status="ok"
 		return ("object",{"status":"ok"},None)
 
 	def delete(self,acenv,conf):
-		dl=Object()
+		D=acenv.debug
+		o=Object()
 		path=self.path+replaceVars(acenv,conf["path"])
 		if (os.path.exists(path)):
 			if (os.path.isfile(path)):
 				os.remove(path)
 			else:
 				shutil.rmtree(path)
-		dl.status="ok"		
-		return dl #return ("object",{"status":"ok"},None)
+		#o.status="ok"
+		return o
 
 	def copy(self,acenv,conf):
-		cp=Object()
+		D=acenv.debug
+		o=Object()
 		copyFrom=self.path+replaceVars(acenv,conf["from"])
 		copyTo=self.path+replaceVars(acenv,conf["to"])
 		if (os.path.isfile(copyFrom)):
 			shutil.copyfile(copyFrom, copyTo)
-		cp.status="ok"	
-		return cp #return ("object",{"status":"ok"},None)
+		return o
 
 	def move(self,acenv,conf):
-		mv=Object()
+		o=Object()
 		copyFrom=self.path+replaceVars(acenv,conf["from"])
 		copyTo=self.path+replaceVars(acenv,conf["to"])
 		if (os.path.isfile(copyFrom)):
 			shutil.move(copyFrom, copyTo)
-		mv.status="ok"	
-		return mv #return ("object",{"status":"ok"},None)
+		return o
 
 	def exists(self,acenv,conf):
-		ex=Object()
+		o=Object()
 		path=self.path+replaceVars(acenv,conf["path"])
-		ex.exists=os.path.isfile(path)
-		return ex #return ("object",{"exists":os.path.isfile(path)},[])
+		o.exists=os.path.isfile(path)
+		return o
 
 	def get(self,acenv,conf):
-		g=Object()
 		try:
 			file=open(conf["path"],"r")
 			content=file.read()
 		except IOError,e:
+			#FIXIT
 			raise e
-			print 'cannot open', conf["path"]
+			#print 'cannot open', conf["path"]
 		else:
 			file.close()
-		g.status="ok"
-		g.content="<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-		return g #return ("object",{"status":"ok"},["<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"])
+		o=Object()
+		o.content="<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
+		return g
 
 	def generate(self, acenv, config):
+		D=acenv.debug
 		if D:
 			acenv.info("Component: 'FS'")
-			acenv.info("Command: '%s'",replaceVars(acenv,config["command"]))
+			acenv.info("Command: '%s'", replaceVars(acenv,config["command"]))
+			# do poprawki
 			if replaceVars(acenv,config["command"]) not in ("list", "create", "update", "append", "delete", "copy", "move", "exists", "get"):
 				acenv.error("Command '%s' not exist!",replaceVars(acenv,config["command"]))
 		conf={}
@@ -162,8 +161,7 @@ class FileSystem(Component):
 			else:
 				conf[i]=config[i]
 			if D:
-				if i!= "command":acenv.dbg("attribute: '%s', value: '%s'", i, conf[i])
-				
+				if i!= "command": acenv.dbg("attribute: '%s', value: '%s'", i, conf[i])
 		if D:
 			if not conf["path"]:
 				acenv.warning("missning '/' character at the begginig of 'path' attribute")

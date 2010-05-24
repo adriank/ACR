@@ -8,7 +8,7 @@ from ACF.backends.standalone import standalone_server
 from ACF import globals
 import getpass
 username=getpass.getuser()
-print username
+#print username
 username=getpass.getuser()
 try:
 	__import__(username+"_conf")

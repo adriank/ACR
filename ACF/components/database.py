@@ -24,9 +24,8 @@ from ACF import db
 import time
 import re, logging
 
-log=logging.getLogger('ACF.component.database')
-D=True#logging.doLog
-#re.I==case-insensitive
+#log=logging.getLogger('ACF.component.database')
+#re.I==case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
@@ -55,7 +54,7 @@ class DataBase(Component):
 
 	#data is list of complex values
 	def evaluateMR(self,env,query,data):
-		if D:env.dbg("start with query='%s' and data=%s",query,data)
+		if D: env.dbg("start with query='%s' and data=%s",query,data)
 		#dt=self.determineDataType(data)
 		qt=self.determineQueryType(query)
 		if D: env.dbg("determineQueryType returned with '%s'",qt)
@@ -81,6 +80,7 @@ class DataBase(Component):
 
 	def generate(self,env,actionConf):
 		env.info("Component: 'DB'")
+		D=env.debug
 		if D: env.dbg("start with actionConf=%s",actionConf)
 		multiRequest=[]
 		if D: env.dbg("Doing escapeString on data")
@@ -108,7 +108,6 @@ class DataBase(Component):
 		#	env.debug["dbtimer"]+=time.time()-t
 		if D: env.dbg("'query' returned %s",result)
 		if result:
-			print result
 			if D: env.dbg("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
 			first=True #for debugging purposes

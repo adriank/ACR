@@ -107,12 +107,6 @@ class Application(object):
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
-	def __setattr__(self, name, val):
-		if self.immutable and not name=="DEFAULT_DB":
-			if D: log.error("%s is read only",name)
-			raise Exception("PropertyImmutable")
-		self.__dict__[name]=val
-
 	#lazy view objects creation
 	def getView(self,name):
 		if self.views.has_key(name):
@@ -145,9 +139,9 @@ class Application(object):
 		view=self.getView(acenv.viewName)
 		#tree=
 		view.generate(acenv)
-		g=Object()
-		g.lang=acenv.lang
-		acenv.generations["lang"]=g
+		o=Object()
+		o.lang=acenv.lang
+		acenv.generations["lang"]=o
 		#self.transform(acenv)
 		s=serializers.get("objectml")
 		if not True:
@@ -171,6 +165,11 @@ class Application(object):
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
 
-
 	def __str__(self):
 		return str(self.__dict__)
+
+	def __setattr__(self, name, val):
+		if self.immutable and not name=="DEFAULT_DB":
+			if D: log.error("%s is read only",name)
+			raise Exception("PropertyImmutable")
+		self.__dict__[name]=val

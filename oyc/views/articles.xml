@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://asyncode.com/View"
 	xmlns:db="http://asyncode.com/DataBase">
-	<param name="offset" default="0"/>
-	<param name="limit" default="10"/>
+	<param name="offset" default="0" type="number"/>
+	<param name="limit" default="10" type="number"/>
 	<!--<condition/>-->
 	<!--<output format="xml"/>-->
-	<db:set storage="rs" name="quantity">
+	<set name="quantity">
 		select count(id) from optimizeyourcode.articles where draft is not true
-	</db:set>
-	<db:add name="drafts" condition="session.loggedIn">
+	</set>
+	<define name="drafts" command="db:query" condition="session.loggedIn">
 		select id,title,lang,date_trunc('minute',create_date) as create_date from  optimizeyourcode.articles where draft is true order by create_date DESC
-	</db:add>
-	<db:add name="articles">
+	</define>
+	<define name="articles" command="db:query">
 		select id,title,lang,date_trunc('minute',create_date) as create_date,abstract from optimizeyourcode.articles where draft is not true order by create_date DESC offset {$offset} limit {$limit}
-	</db:add>
-	<add name="articlesPars">
+	</define>
+	<define name="articlesPars">
 		<![CDATA[<offset>{$offset}</offset>
 		<limit>{$limit}</limit>
 		<quantity>{$quantity}</quantity>]]>
-	</add>
+	</define>
 
 	<add name="layout">
 	<pageTitle langElement="articles"/>

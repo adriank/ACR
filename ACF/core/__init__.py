@@ -45,8 +45,15 @@ class Environment(object):
 	doRedirect=False
 	redirect=False
 	tree=None
+	debug=False
 	_debugStr=None
-	_debug=None
+	dbgfn=None
+	level=40
+	CRITICAL=50
+	ERROR=40
+	WARNING=30
+	INFO=20
+	DEBUG=10
 
 	def __init__(self,app):
 		self.generations={}
@@ -61,7 +68,6 @@ class Environment(object):
 		#self.debug=app.debug.copy()
 		self.app=app
 		self._debugStr=[]
-		self._debug=10
 
 	def setLang(self,lang):
 		if not lang:
@@ -83,29 +89,29 @@ class Environment(object):
 		return ", ".join(s)
 
 	def dbg(self, *s):
-		if self._debug <= 10:
+		if self.dbgfn and self.level <= self.DEBUG:
 			self.dbgfn("DEBUG", s)
-	
+
 	def info(self, *s):
-		if self._debug <= 20:
+		if self.dbgfn and self.level <= self.INFO:
 			self.dbgfn("INFO", s)
-	
+
 	def warning(self, *s):
-		if self._debug <= 30:
+		if self.dbgfn and self.level <= self.WARNING:
 			self.dbgfn("WARNING", s)
 
 	def error(self, *s):
-		if self._debug <= 40:
+		if self.dbgfn and self.level <= self.ERROR:
 			self.dbgfn("ERROR", s)
-		
+
 	def	critical(self, *s):
-		if self._debug <= 50:
+		if self.dbgfn and self.level<= self.CRITICAL:
 			self.dbgfn("CRITICAL", s)
 
-	def dbgfn(self, msg, s):
-		if len(s)>1:
-			self._debugStr.append((msg, s[0] % s[1:]))
-			print msg+": ", s[0] % s[1:]
-		else:
-			self._debugStr.append((msg, s[0]))
-			print msg+": ",s[0]
+def consolelog(self, lvl, s):
+	if len(s)>1:
+		self._debugStr.append((lvl, s[0] % s[1:]))
+		#print msg+": ", s[0] % s[1:]
+	#else:
+		#self._debugStr.append((lvl, s[0]))
+		#print msg+": ",s[0]

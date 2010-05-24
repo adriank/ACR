@@ -30,7 +30,7 @@ def get(conf,reload=False):
 		Returns connection object of given config. Manages connection cache.
 		config's "appName" value secures driver from being used by other apps
 		conf can contain only the "name" if we are sure the connection exists.
-		WARNING! connections can be broken by external events such as dbms 
+		WARNING! connections can be broken by external events such as dbms
 		restart! CONFIG_CACHE is for reseting connections.
 	"""
 	log.debug("Executing with conf=%s and reload=%s",conf,reload)
@@ -38,7 +38,7 @@ def get(conf,reload=False):
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
 		if object:
-			print "DB from cache"
+			#print "DB from cache"
 			log.debug("Returning from cache")
 			return object
 	else:
@@ -54,7 +54,7 @@ def get(conf,reload=False):
 	if conf.get("default",False):
 		DRIVER_CACHE[uid+"default"]=driver
 		CONFIG_CACHE[uid+"default"]=conf
-	print "DB not from cache"
+	#print "DB not from cache"
 	return driver
 
 def escapeString(s):
