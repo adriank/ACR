@@ -150,6 +150,9 @@ class View(object):
 			return True
 		for i in list:
 			value=list[i]
+			print "aaa"
+			print list[i]
+			type=self.inputs[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
 					value=value.split(",")

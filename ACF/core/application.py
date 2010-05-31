@@ -25,6 +25,8 @@ from ACF import components,serializers
 from ACF.components import *
 import time,os
 import logging
+from guppy import hpy
+
 try:
 	import simplejson
 except:
@@ -43,8 +45,8 @@ class Application(object):
 	storage=None
 	immutable=False
 	appDir=""
-	#cache for component objects
 	def __init__(self,appDir):
+		#cache for component objects
 		self.COMPONENTS_CACHE={}
 		self.DEFAULT_DB=None
 		self.views={}
@@ -150,7 +152,9 @@ class Application(object):
 			print("Generated in %s"%(all))
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))
-		return s.serialize(acenv.generations)
+		h = hpy()
+		print h.heap()
+		return s.serialize(acenv)
 
 	def transform(self,acenv):
 		self.getXML(acenv)

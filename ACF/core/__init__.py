@@ -80,13 +80,12 @@ class Environment(object):
 				self.lang=l
 
 	def __str__(self):
-		s=["Environment("]
+		s=[]
 		d=dict(Environment.__dict__.items()+self.__dict__.items())
 		for i in d:
-			if i[0]!="_":
+			if i[0]!="_" and type(Environment.__dict__[i]) is not function:
 				s.append(str(i)+": "+str(d[i]))
-		s.append(")")
-		return ", ".join(s)
+		return "Environment("+", ".join(s)+")"
 
 	def dbg(self, *s):
 		if self.dbgfn and self.level <= self.DEBUG:

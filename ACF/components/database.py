@@ -54,6 +54,7 @@ class DataBase(Component):
 
 	#data is list of complex values
 	def evaluateMR(self,env,query,data):
+		D=env.debug
 		if D: env.dbg("start with query='%s' and data=%s",query,data)
 		#dt=self.determineDataType(data)
 		qt=self.determineQueryType(query)
@@ -91,6 +92,7 @@ class DataBase(Component):
 				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
+		print multiRequest
 		query=replaceVars(env,actionConf['query'])
 		if D: env.dbg("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
