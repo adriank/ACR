@@ -3,6 +3,7 @@
 import logging
 import sys,os
 from wsgiref.simple_server import make_server
+from wsgiref import simple_server
 #from wsgiref.handlers import CGIHandler
 from ACF.backends.standalone import standalone_server
 from ACF import globals
@@ -31,8 +32,21 @@ port=9999
 if len(sys.argv)>1:
 	port=int(sys.argv[1])
 print os.getpid()
-httpd=make_server(host, port, standalone_server)
+class PimpedWSGIServer(simple_server.WSGIServer):
+    # To increase the backlog
+    request_queue_size = 500
+
+class PimpedHandler(simple_server.WSGIRequestHandler):
+    # to disable logging
+    def log_message(self, *args):
+        pass
+
+httpd = PimpedWSGIServer((host,port), PimpedHandler)
+httpd.set_app(standalone_server)
 httpd.serve_forever()
+
+#httpd=make_server(host, port, standalone_server)
+#httpd.serve_forever()
 # TWISTED.WEB
 
 #from twisted.web import server

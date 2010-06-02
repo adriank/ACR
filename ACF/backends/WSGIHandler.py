@@ -20,7 +20,7 @@
 #TODO this file is mess. Need for full rewrite.
 
 import sys,os,re,time,logging
-logging.doLog=True
+#logging.doLog=True
 logging.doLog=False
 from ACF import globals,errors
 from ACF.utils import HTTP
@@ -28,16 +28,18 @@ from ACF.core import Environment
 from ACF.core.application import Application
 from cStringIO import StringIO
 import cgi
-logging.basicConfig()
-log=logging.getLogger("ACF.WSGIHandler")
-logStream=StringIO()
-handler=logging.StreamHandler()#(sys.stdout)#(strm=logStream)
-handler.setFormatter(logging.Formatter('<item origin="%(name)s.%(funcName)s" line="%(lineno)d" level="%(levelname)s" file="%(filename)s"><message>%(message)s</message></item>'))
-#log.addHandler(handler)
-logging.logThreads=0
-logging.logProcesses=0
-logging.logMultiprocessing=0
-log.setLevel(logging.ERROR)
+#from guppy import hpy
+
+#logging.basicConfig()
+#log=logging.getLogger("ACF.WSGIHandler")
+#logStream=StringIO()
+#handler=logging.StreamHandler()#(sys.stdout)#(strm=logStream)
+#handler.setFormatter(logging.Formatter('<item origin="%(name)s.%(funcName)s" line="%(lineno)d" level="%(levelname)s" file="%(filename)s"><message>%(message)s</message></item>'))
+##log.addHandler(handler)
+#logging.logThreads=0
+#logging.logProcesses=0
+#logging.logMultiprocessing=0
+#log.setLevel(logging.ERROR)
 APP_CACHE={}
 
 def application(env,start_response):
@@ -99,7 +101,10 @@ def application(env,start_response):
 	#print round((time.time()-t)*1000,2)
 	if not acenv.doRedirect:
 		response.append(xml)
+	#h = hpy()
+	#print h.heap()
 	return response
+
 
 	#if acenv.debug:
 	#	dbg=[]

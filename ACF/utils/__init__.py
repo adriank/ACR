@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys,time,random,base64,logging
+import sys,time,random,base64
 from datetime import datetime, timedelta
 from ACF.errors import *
 from ACF.utils.hashcompat import md5_constructor
@@ -13,8 +13,9 @@ else:
 
 PREFIX_DELIMITER="::"
 RE_PATH=re.compile("{\$([^}]+)}")
-log=logging.getLogger('ACF.util')
-D=logging.doLog
+#log=logging.getLogger('ACF.util')
+#D=logging.doLog
+D=False
 
 def getStorage(env,s):
 	if D: log.debug("Executed with s=%s",s)

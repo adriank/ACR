@@ -24,16 +24,13 @@ from ACF.errors import *
 from ACF import components,serializers
 from ACF.components import *
 import time,os
-import logging
-from guppy import hpy
 
 try:
 	import simplejson
 except:
 	pass
 
-log=logging.getLogger('ACF.core.Application')
-D=logging.doLog
+D=False
 
 class Application(object):
 	appName=""
@@ -152,8 +149,6 @@ class Application(object):
 			print("Generated in %s"%(all))
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))
-		h = hpy()
-		print h.heap()
 		return s.serialize(acenv)
 
 	def transform(self,acenv):

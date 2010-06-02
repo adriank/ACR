@@ -17,13 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib,time,logging
+import urllib,time
 from ACF.utils.xmlextras import escapeQuotes
 from ACF import globals
 from email.Utils import formatdate
 
-log = logging.getLogger('ACF.util.HTTP')
-D=logging.doLog
+D=False
 
 def parseURL(path):
 	"""

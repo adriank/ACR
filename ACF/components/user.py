@@ -64,15 +64,15 @@ class User(Component):
 		return Object()#("object", {"status":"ok"},None)
 
 	def generate(self,acenv,conf):
-		return self.__getattribute__(conf["do"].split(":").pop())(acenv,conf)
+		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
 
-	def parseAction(self,root):
-		if D and root[0] not in ["register","logout","login"]:
-			log.error("Bad command %s",root[0])
-		if root[0] in ["register","login"] and not ("email" and "password") in root[1].keys():
-			raise Error("Email or password is not set in %s action."%(root[0]))
-		ret=root[1].copy()
-		ret["do"]=root[0]
+	def parseAction(self,config):
+		if config["command"] not in ["register","logout","login"]:
+			raise Error("Bad command %s",config["command"])
+		if config["command"] in ["register","login"] and not ("email" and "password") in config["params"].keys():
+			raise Error("Email or password is not set in %s action."%(config["command"]))
+		ret=config["params"].copy()
+		ret["command"]=config["command"]
 		return ret
 
 def getObject(config):

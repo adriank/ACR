@@ -20,11 +20,10 @@
 from xml.sax import make_parser, handler
 from ACF.errors import Error
 from xml.sax.saxutils import escape,unescape
-import logging,re
+import re
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
-log=logging.getLogger('ACF.utils.xmlextras')
-D=logging.doLog
+D=False
 unescapeDict={"&apos;":"'","&quot;":"\""}
 escapeDict={"'":"&apos;","\"":"&quot;"}
 
