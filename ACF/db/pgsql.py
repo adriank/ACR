@@ -31,7 +31,7 @@ class handler(object):
 		if D: log.debug("Initialized with conf=%s",conf)
 		host=""
 		if conf.get("host"):
-			host=conf["host"]+":"+(conf.get("port","") or "5432")
+			host=conf["host"]#+":"+(conf.get("port","") or "5432")
 		if D: log.debug("Host is %s (None means socket)",host)
 		self.conn=dbapi.connect("dbname='"+conf["defaultdb"]+"' host='"+host+"' user='"+conf["user"]+"' password='"+conf["password"]+"'")
 		self.conn.set_isolation_level(0)
