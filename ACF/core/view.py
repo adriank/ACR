@@ -203,6 +203,10 @@ class View(object):
 			component=self.app.getComponent(action["component"])
 			#object or list
 			generation=component.generate(acenv,action["config"])
+			if not generation:
+				raise Error("ComponentError","Component did not return proper value. Please contact component author.")
+			if not action["name"]:
+					continue
 			if action["type"]==DEFINE:
 				#if D: log.info("Executing action=%s",action)
 				generation.name=action["name"]
