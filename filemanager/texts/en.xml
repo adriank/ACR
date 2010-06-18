@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<t>
+	<admin>Admin panel</admin>
+	<login>Log in</login>
+	<motto>Half of a success is the skill to ask right questions</motto>
+	<rmotp>Report mistake on this page</rmotp>
+	<words>
+		<date>date</date>
+		<posted>posted</posted>
+		<create_date>added</create_date>
+		<language>language</language>
+		<polish>polish</polish>
+		<english>English</english>
+	</words>
+	<submit>submit</submit>
+	<moreNews>More logs...</moreNews>
+	<menu>
+		<default>home</default>
+		<about>about</about>
+		<discography>discography</discography>
+		<news>the log</news>
+		<snippets>code snippets</snippets>
+		<articles>articles</articles>
+		<links>links</links>
+		<portfolio>portfolio</portfolio>
+		<contact>contact</contact>
+		<other>other</other>
+	</menu>
+	<drafts>drafts</drafts>
+	<abstract>Abstract</abstract>
+	<toc>Table of Contents</toc>
+	<notFound>Requested page not found</notFound>
+	<notFoundAdmin>Click here to create this view.</notFoundAdmin>
+	<previousPage>previous page</previousPage>
+	<nextPage>next page</nextPage>
+	<siteMap>
+		<allArticles>all articles</allArticles>
+		<lastArticle>last article</lastArticle>
+		<popularArticle>most popular</popularArticle>
+		<allNews>all news</allNews>
+		<siteSpecific>others</siteSpecific>
+		<aboutSite>about site</aboutSite>
+		<aboutMe>about me</aboutMe>
+	</siteMap>
+	<adminForm>
+		<multilingualID>Multilingual ID</multilingualID>
+		<draft>draft</draft>
+		<image>image</image>
+		<content>content</content>
+		<title>title</title>
+	</adminForm>
+	<warning><p>WARNING! This site is under heavy development. It may crash, contain glitches etc. You can send bug report by "Report mistake on this page" link at the bottom of each page.</p></warning>
+	<defaultPage>Main page</defaultPage>
+	<myEnglish><h2>About OYC</h2>
+		<p>Optimize Your code serve as my personal home site and testing environment for upcoming AsynCode Web Platform.</p>
+		<p>I am not native English speaker so forgive me any grammar or other errors in my articles. Any help with improving these texts will be appreciated. If you wish, you can do it with "report mistake on this page" feature placed in the footer of each page!</p></myEnglish>
+	<pageChrashed>Page crashed</pageChrashed>
+	<notFilled>-- not selected --</notFilled>
+	<misspeling>misspelling</misspeling>
+	<grammarError>grammar error</grammarError>
+	<reportMistake><a id="reportMistake" href="/report">report mistake on this page</a></reportMistake>
+	<rmotpText><p>Here you can let me know about errors on page. Reporting misspelings, grammar errors are very welcomed. If you are experiencing serious site bug please write how it is reproducable. <b>You don't need to fill any of these fields!</b></p></rmotpText>
+		<contactMe><h1>Contact</h1>
+			<p>You can send me an e-mail at adrian.kalbarczy,k@gmail.com (remove coma), or you can fill following form:</p></contactMe>
+	<contactForm>
+		<yourName>Your name</yourName>
+		<message>Message</message>
+	</contactForm>
+	<email>Your e-mail</email>
+	<issueType>Issue type</issueType>
+	<description>Description</description>
+</t>

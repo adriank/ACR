@@ -45,7 +45,7 @@ class FileSystem(Component):
 		if conf.get("extension","")=="hide":
 			files=map(lambda f:	os.path.splitext(f)[0],files)
 		files.sort()
-		ret=List()
+		ret=[]
 		if len(files)==0:
 			o=Object()
 			o.code="dirEmpty"
@@ -54,7 +54,7 @@ class FileSystem(Component):
 			o=Object()
 			o.name=i
 			ret.append(l)
-		return ret
+		return List(ret)
 
 	def create(self,acenv,conf,update=False):
 		D=acenv.debug

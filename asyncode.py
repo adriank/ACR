@@ -32,14 +32,13 @@ port=9999
 if len(sys.argv)>1:
 	port=int(sys.argv[1])
 print os.getpid()
+
 class PimpedWSGIServer(simple_server.WSGIServer):
-    # To increase the backlog
-    request_queue_size = 500
+	request_queue_size = 500
 
 class PimpedHandler(simple_server.WSGIRequestHandler):
-    # to disable logging
-    def log_message(self, *args):
-        pass
+	def log_message(self, *args):
+		pass
 
 httpd = PimpedWSGIServer((host,port), PimpedHandler)
 httpd.set_app(standalone_server)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+	<block type="container" name="header">
+		<widget name="logo">
+			<h1>Documentation</h1>
+		</widget>
+	</block>
+	<body/>
+	<block type="container" name="footer">
+		<widget name="copyright">
+			&#169; AsynCode all rigths reserved
+		</widget>
+	</block>
+	<widget name="debug" type="debug" docElement="debug"/>
+</template>
