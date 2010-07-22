@@ -22,6 +22,8 @@ from ACF.utils import replaceVars,generateID
 from ACF import globals
 from ACF.errors import Error
 from ACF.utils.hashcompat import md5_constructor
+from ACF.session.file import FileSession
+
 #import logging
 #
 #log=logging.getLogger('ACF.components.User')
@@ -29,15 +31,30 @@ from ACF.utils.hashcompat import md5_constructor
 
 class User(Component):
 	def login(self,acenv,conf):
+		D=acenv.debug
 		email=replaceVars(acenv,conf["email"])
 		password=replaceVars(acenv,conf["password"])
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
 		except IndexError:
-			pass
-			#if D: log.error("Account not found")
-		return Object()
+			if D: acenv.error("Account not found")
+		if result['password']==md5_constructor(password).hexdigest():
+			if D: acenv.info("Password is correct")
+			if not acenv.session:
+				acenv.session=FileSession()
+			if D: acenv.info("Setting ID=%s, email=%s and role=%s to session",result['id'],email,result['role'])
+			acenv.session["ID"]=result['id']
+			acenv.session["email"]=email
+			acenv.session["role"]=result['role']
+			acenv.session["loggedIn"]=True
+			#acenv.session["fake"]=False
+			return Object()
+		else:
+			o=Object()
+			o.status="error"
+			o.error="WrongPassword"
+			return Object()
 
 	def logout(self,acenv,conf):
 		acenv.session.delete()

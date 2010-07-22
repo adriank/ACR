@@ -126,7 +126,7 @@ class Application(object):
 
 	#will be generator
 	def generate(self,acenv):
-		t=time.time()
+		if D: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
 			log.info("Session cookie found")
@@ -143,7 +143,7 @@ class Application(object):
 		acenv.generations["lang"]=o
 		#self.transform(acenv)
 		s=serializers.get("objectml")
-		if not True:
+		if D:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)
 			print("Generated in %s"%(all))
