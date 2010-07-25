@@ -27,8 +27,8 @@ class Environment(object):
 	"""
 	viewName=""
 	appName=""
+	agent=""
 	inputs=None
-	#debug=None
 	cookies=None
 	outputHeaders=None
 	session=None
