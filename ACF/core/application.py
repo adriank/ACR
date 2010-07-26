@@ -23,6 +23,7 @@ from ACF.core.view import View
 from ACF.errors import *
 from ACF import components,serializers
 from ACF.components import *
+from ACF.globals import MIMEmapper
 import time,os
 
 try:
@@ -136,13 +137,12 @@ class Application(object):
 			except:
 				sessID=None
 		view=self.getView(acenv.viewName)
-		#tree=
 		view.generate(acenv)
 		o=Object()
 		o.lang=acenv.lang
 		acenv.generations["lang"]=o
 		#self.transform(acenv)
-		s=serializers.get("objectml")
+		s=serializers.get(globals.MIMEmapper.get(acenv.mime))
 		if D:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)

@@ -18,20 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-#prefix="ACF_"
-#defaultView="default"
-#defaultLang="pl"
-#output=""
 dbschema="asyncode"
 SECRET_KEY="MySecret"
-#appDomain=""
-#appName=""
-#appURL=""
-#db={}
-#session=None
-#requestStorage=None
-#sessionStorage=None
-#XSLTCache=None
 appDir=""
 appsDir=""
 dirs=None
@@ -43,9 +31,10 @@ logLevels={
 	'error': logging.ERROR,
 	'critical': logging.CRITICAL
 }
-supportedMIME=[
-	"text/html",
-	"application/xml",
-	"application/json",
-	"application/xhtml+xml"
-]
+
+MIMEmapper={
+	"text/html":"xslt",
+	"application/xml":"objectml",
+	"application/json":"json",
+	"application/xhtml+xml":"objectml"
+}

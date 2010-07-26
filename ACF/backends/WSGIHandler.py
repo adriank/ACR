@@ -60,9 +60,9 @@ def application(env,start_response):
 	if "text/html" in acenv.mime or "*/*" in acenv.mime:
 		agent=acenv.agent
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("KHTML")==-1):
-			acenv.outputFormat="application/xml"
-		else:
-			acenv.outputFormat="text/html"
+			acenv.mime="application/xml"
+		#else:
+		#	acenv.outputFormat="text/html"
 	if app.debug["enabled"]:
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
@@ -98,77 +98,20 @@ def application(env,start_response):
 		acenv.viewName, acenv.inputs=HTTP.parseURL(env['PATH_INFO'])
 	else:
 		acenv.viewName="default"
-	xml=app.generate(acenv)
+	output=app.generate(acenv)
 	headers=acenv.outputHeaders
-	headers.append(("Content-Type","application/xml"))
+	headers.append(("Content-Type",acenv.mime))
 	status='200 OK'
 	if acenv.doRedirect:
 		status="301 Redirected"
 	start_response(status, headers)
 	#print round((time.time()-t)*1000,2)
 	if not acenv.doRedirect:
-		response.append(xml)
+		response.append(output)
 	#h = hpy()
 	#print h.heap()
 	return response
 
-
-	#if acenv.debug:
-	#	dbg=[]
-	#	timer=round((time.time()-t)*1000,2)
-	#	dbg.append("<div style=\"background:black;color:white;\">")
-	#	dbg.append("Time spent on page generation: "+str(timer)+"ms<br/>")
-		# this is not working because it should be added after transformation - do $$$XSLT$$$ here and str.replace after transformation?
-		#if XSLTtime:
-		#	dbg.append(str(XSLTtime)+"ms was spent on XSLT, which is "+str(round(100*XSLTtime/timer))+"%<br/>")
-		#dbg.append("database "+str(round(globals.request.dbtimer*1000,2))+", which is "+str(round(100*globals.request.dbtimer/timer))+"%<br/>")
-		#dbg.append("python "+str(timer-round(globals.request.dbtimer*1000,2))+"<br/>")
-		#dbg.append("there was "+str(globals.request.dbcounter)+" queries.<br/>")
-		#if globals.session is not None:
-			#dbg.append("Session data: "+str(globals.session.data)+"<br/>")
-		#dbg.append("POST data: <br/>")
-		#if post:
-		#	for i in post:
-		#		dbg.append(i+": "+str(post[i])+"<br/>")
-		#else:
-		#	dbg.append("no POST data<br/>")
-		#dbg.append("HTTP headers: <br/>"+str(env).replace("<","")+"<br/>")
-		#dbg.append("Lang: "+globals.lang+"<br/>")
-		#dbg.append("Other data: <br/>")
-		#dbg.append(globals.request.debugString.encode("utf-8")+"<br/>")
-		#dbg.append("</div>")
-		#view.tree[2].append(("debug",None,[("info",None,"".join(dbg)),("executionLog",None,logStream.getvalue())]))
-	#if not acenv.redirect:
-	#	if acenv.output=="json":
-	#		#provide application/json if HTTP accept has it
-	#		acenv.outputHeaders.append(("Content-Type","application/javascript"))
-	#		response.append(view.getJSON())
-	#	else:
-	#		xml=view.getXML()
-	#		if acenv.output.lower()!="html" and ((env["HTTP_USER_AGENT"].find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",env["HTTP_USER_AGENT"]) and env["HTTP_USER_AGENT"].find("KHTML")==-1):
-	#			acenv.headers.append(("Content-Type","application/xml"))
-	#			s=xml.encode("utf-8")
-	#			response.append(s)
-	#		else:
-	#			acenv.outputHeaders.append(("Content-Type","text/html"))
-	#			if acenv.debug:
-	#				XSLTtimestart=time.time()
-	#			response.append(transform(xml.encode("utf-8"), globals.appStaticDir+"xslt/"+globals.xsltFile))
-	#			if acenv.debug:
-	#				XSLTtime=round((time.time()-XSLTtimestart)*1000,2)
-	#
-	#status='200 OK'
-	#if acenv.redirect:
-	#	status="302 REDIRECT"
-	#length=0
-	#for i in response:
-	#	length+=lherpesen(i)
-	#globals.request.headers.append(("Content-Length",str(length)))
-	#start_response(status, globals.request.headers)
-	#if not acenv.redirect:
-	#	return response
-	#else:
-	#	return []
 try:
 	from paste.exceptions.errormiddleware import ErrorMiddleware
 	application = ErrorMiddleware(application, debug=True)
