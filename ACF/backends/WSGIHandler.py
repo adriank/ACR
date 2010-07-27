@@ -60,9 +60,11 @@ def application(env,start_response):
 	if "text/html" in acenv.mime or "*/*" in acenv.mime:
 		agent=acenv.agent
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("KHTML")==-1):
-			acenv.mime="application/xml"
-		#else:
-		#	acenv.outputFormat="text/html"
+			acenv.outputFormat="application/xml"
+		else:
+			acenv.outputFormat="text/html"
+	elif "application/json" in acenv.mime and len(acenv.mime)==1:
+		acenv.outputFormat="application/json"
 	if app.debug["enabled"]:
 		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
@@ -100,7 +102,7 @@ def application(env,start_response):
 		acenv.viewName="default"
 	output=app.generate(acenv)
 	headers=acenv.outputHeaders
-	headers.append(("Content-Type",acenv.mime))
+	headers.append(("Content-Type",acenv.outputFormat))
 	status='200 OK'
 	if acenv.doRedirect:
 		status="301 Redirected"

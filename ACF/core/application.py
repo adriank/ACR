@@ -142,7 +142,7 @@ class Application(object):
 		o.lang=acenv.lang
 		acenv.generations["lang"]=o
 		#self.transform(acenv)
-		s=serializers.get(globals.MIMEmapper.get(acenv.mime))
+		s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))
 		if D:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)
