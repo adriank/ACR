@@ -56,9 +56,9 @@ def application(env,start_response):
 		APP_CACHE[path]=app
 	acenv=Environment(app)
 	acenv.mime=env["HTTP_ACCEPT"].split(";")[0].split(",")
-	acenv.agent=env["HTTP_USER_AGENT"]
+	acenv.UA=env["HTTP_USER_AGENT"]
 	if "text/html" in acenv.mime or "*/*" in acenv.mime:
-		agent=acenv.agent
+		agent=acenv.UA
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("KHTML")==-1):
 			acenv.outputFormat="application/xml"
 		else:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from ACF.utils.xmlextras import tree2xml
 from ACF.errors import Error
+from ACF.globals import appDir
 #TODO change it to AC CRITICAL error.
 try:
 	import libxml2
@@ -15,7 +16,7 @@ def transform(xml,xslt):
 		return "XML parsing Error."
 	try:
 		#TODO implement checking for change of *ALL* xslt files
-		XSLTCache=libxslt.parseStylesheetDoc(libxml2.parseFile(xslt))
+		XSLTCache=libxslt.parseStylesheetFile(xslt)
 #		raise str(dir(globals.XSLTCache))
 	except Exception,e:
 		return "XSLT parsing Error."
@@ -33,4 +34,4 @@ def serialize(env):
 	if env.output["xsltfile"]:
 		xslt="""\n<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
 	#TODO allow one-object output
-	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),env.output["xsltfile"])
+	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),appDir+"/static/xslt/"+env.output["xsltfile"])

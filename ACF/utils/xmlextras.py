@@ -47,7 +47,7 @@ def str2obj(s):
 	elif r=="none":
 		return None
 	#TODO is that correct?
-	return r
+	return s
 
 def tree2xml(root):
 	def rec(node,tab):
