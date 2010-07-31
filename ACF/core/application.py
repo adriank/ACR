@@ -38,8 +38,6 @@ class Application(object):
 	debug=None
 	lang="en"
 	prefix="ACF_"
-#	langs=[]
-#	views={}
 	storage=None
 	immutable=False
 	appDir=""
@@ -141,8 +139,12 @@ class Application(object):
 		o=Object()
 		o.lang=acenv.lang
 		acenv.generations["lang"]=o
-		#self.transform(acenv)
-		s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))
+		#temporary error handling
+		try:
+			s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))
+		except Error, e:
+			acenv.outputFormat="text/html"
+			return "<html><body>"+str(e)+"</body</html>"
 		if D:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.debug["dbtimer"]*1000,5)

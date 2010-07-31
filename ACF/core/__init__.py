@@ -20,6 +20,7 @@
 from ACF.core.view import View
 from ACF.utils.xmlextras import tpath
 
+# move debugger into separate class and inherit from it
 class Environment(object):
 	"""
 	The Environment object is a structure of data which is passed through whole application. Each function manipulates its contents and passes it to next function. After application execution is done, Environment instance is deleted. This way framework is thread-safe, because there can be many Environment instances in the system at the particular moment.
@@ -33,6 +34,7 @@ class Environment(object):
 	outputHeaders=None
 	session=None
 	app=None
+	domain=None
 	sessionStorage=None
 	requestStorage=None
 	appStorage=None

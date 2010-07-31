@@ -20,6 +20,7 @@
 from xml.sax import make_parser, handler
 from ACF.errors import Error
 from xml.sax.saxutils import escape,unescape
+from ACF.components import Object,List
 import re
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
@@ -45,22 +46,30 @@ def str2obj(s):
 		return False
 	elif r=="none":
 		return None
+	#TODO is that correct?
 	return r
 
 def tree2xml(root):
-	#TODO check if it can be changed into regexp
-	if D: log.debug("Executing with root=%s",root)
 	def rec(node,tab):
-		tab.append("<"+node[0])
-		if node[1] and len(node[1])>0:
-			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(node[1])[1:-1]))
+		if type(node) in [Object,List]:
+			tag=node.__class__.__name__.lower()
+			attrs=node.__dict__.copy()
+			attrs.pop("_value")
+			content=node._value
+		elif type(node) is tuple:
+			tag=node[0]
+			attrs=node[1]
+			content=node[2]
+		tab.append("<"+tag)
+		if attrs and len(attrs)>0:
+			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(attrs)[1:-1]))
 		nodes=[]
-		if not node[2]:
+		if not content:
 			tab.append("/>")
 		else:
 			tab.append(">")
-			for i in node[2]:
-				if type(i) is tuple:
+			for i in content:
+				if type(i) in [tuple,Object,List]:
 					rec(i,tab)
 				elif type(i) is str:
 					tab.append(i)
@@ -68,19 +77,17 @@ def tree2xml(root):
 					tab.append(str(i))
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
-			tab.append("</"+node[0]+">")
-
+			tab.append("</"+tag+">")
+	#if D: log.info("Generating XML")
 	tab=[]
 	rec(root,tab)
-	#print round((time.time()-a)*1000,2)
-	if D: log.debug("Returning tab=%s",tab)
 	return "".join(tab)
 
 #gives last item of any iterable object
 def last(iterable):
 	return iterable[len(iterable)-1]
 
-#need to try whether xml.etree.cElementTree is faster here pure Python etree is slower
+#need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
 class Reader(handler.ContentHandler):
 	def __init__(self):
 		self.root=None
