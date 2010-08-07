@@ -78,7 +78,7 @@ def replaceVars(env,s):
 			raise Exception((storageName or "rs")+" storage does not have "+path+" property")
 		return str(ret)
 
-	#can be even faster ""%(vals) and ""%{vals} are 3x faster
+	#can be even faster "%(vals)" and "%{vals}" are 3x faster
 	if type(s) is not str:
 		raise Exception("Not string, but "+str(s))
 	return RE_PATH.sub(parse, s)

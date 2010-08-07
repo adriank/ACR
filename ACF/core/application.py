@@ -47,18 +47,18 @@ class Application(object):
 		self.DEFAULT_DB=None
 		self.views={}
 		self.langs=[]
-		if D: log.debug("Creating instance with appDir=%s",appDir)
+		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
 			config=xml2tree(appDir+"/config.xml")
 		except IOError:
-			if D: log.critical("Application config not found!")
+			#if D: log.critical("Application config not found!")
 			raise Exception("Application config not found at %s!"%(appDir+"/config.xml"))
 		self.appDir=appDir
 		self.config=config
 		try:
 			self.appName=config.get("/name/text()")[0]
 		except AttributeError,e:
-			if D: log.critical("Application name not set in configuration file!")
+			#if D: log.critical("Application name not set in configuration file!")
 			raise Exception("Application name not set in configuration file!")
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
@@ -165,6 +165,7 @@ class Application(object):
 			raise Exception("Misconfiguration of 'langs' setting in app configuration file.")
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
+		self.lang=self.langs[0]
 
 	def __str__(self):
 		return str(self.__dict__)

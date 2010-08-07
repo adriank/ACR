@@ -59,7 +59,7 @@ def application(env,start_response):
 	acenv.UA=env["HTTP_USER_AGENT"]
 	if "text/html" in acenv.mime or "*/*" in acenv.mime:
 		agent=acenv.UA
-		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("KHTML")==-1):
+		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
 			acenv.outputFormat="application/xml"
 		else:
 			acenv.outputFormat="text/html"
