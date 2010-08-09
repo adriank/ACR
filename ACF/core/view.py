@@ -94,6 +94,10 @@ class View(object):
 		self.actions=self.parseActions(actions)
 		self.inputs=parseParams(inputs)
 		self.posts=parseParams(posts)
+		try:
+			self.outputFormat=self.output[0][1]["format"]
+		except:
+			pass
 		if not self.actions:
 			self.immutable=True
 			return
@@ -214,5 +218,7 @@ class View(object):
 				#if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
+		if self.outputFormat:
+			acenv.outputFormat=self.outputFormat
 		#print "generations"
 		#print acenv.generations

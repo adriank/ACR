@@ -39,10 +39,12 @@ class Environment(object):
 	requestStorage=None
 	appStorage=None
 	lang=""
+	langs=None
 	URL=""
 	UA=""
 	IP=""
 	output=None
+	outputFormat=None
 	prefix="ACF_"
 	doRedirect=False
 	redirect=False
@@ -85,7 +87,7 @@ class Environment(object):
 		s=[]
 		d=dict(Environment.__dict__.items()+self.__dict__.items())
 		for i in d:
-			if i[0]!="_" and type(Environment.__dict__[i]) is not function:
+			if i[0]!="_" and not hasattr(d[i], '__call__'):
 				s.append(str(i)+": "+str(d[i]))
 		return "Environment("+", ".join(s)+")"
 

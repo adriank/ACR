@@ -137,7 +137,9 @@ class Application(object):
 		view=self.getView(acenv.viewName)
 		view.generate(acenv)
 		o=Object()
-		o.lang=acenv.lang
+		o.name="lang"
+		o.current=acenv.lang
+		o.supported=",".join(acenv.langs)
 		acenv.generations["lang"]=o
 		#temporary error handling
 		try:
