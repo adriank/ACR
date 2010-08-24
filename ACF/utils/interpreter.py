@@ -104,7 +104,7 @@ def method(s):
 		# decorator
 		assert issubclass(s, symbol_base)
 		def bind(fn):
-				setattr(s, fn.__name__, fn)
+				setattr(s, fn.__name__, fn) # 
 		return bind
 
 # python expression syntax
@@ -157,27 +157,58 @@ def led(self, left):
 		advance()
 		return self
 
-symbol(":",150)
-@method(symbol(":"))
-def led(self, left):
+# handling variables; e.g {$storage::a.b.c},
+# default storage is request storage
+symbol(":")
+symbol("$")
+symbol("}")
+@method(symbol("{"))
+def nud(self):
 	global token
-	#self.first = left
-	if left.value.lower() not in ["ss","rs","session","request"]:
-		raise SyntaxError("Wrong storage name '"+left.value+"'.")
-	if token.id!=":":
-		raise SyntaxError("Expected '::'.")
-	token=next()
+	advance("$")
+	t = token # storage name or variable name
+	token = next()
+	if token.id == ':': #there is a storage name
+		advance(':')
+		advance(':')
+		if t.value.lower() not in ["ss","rs","session","request"]:   # 
+			raise SyntaxError("Wrong storage name '"+t.value+"'.")
+		self.first = t.value
+		self.second = ""
+	else: #there is not a storage name
+		self.first = "rs"
+		self.second=t.value
 	self.id="(variable)"
-	self.first=left.value
-	self.second=""
-	#advance()
 	while token.id in [".","(name)"]:
 		if token.id=="(name)":
 			self.second+=token.value
 		else:
 			self.second+="."
 		advance()
+	advance("}")	
 	return self
+
+#symbol(":",150)
+#@method(symbol(":"))
+#def led(self, left):
+#	global token
+#	self.first = left
+#	if left.value.lower() not in ["ss","rs","session","request"]:   # 
+#		raise SyntaxError("Wrong storage name '"+left.value+"'.")
+#	if token.id!=":":
+#		raise SyntaxError("Expected '::'.")
+#	token=next()
+#	self.id="(variable)"
+#	self.first=left.value
+#	self.second=""
+#	advance()
+#	while token.id in [".","(name)"]:
+#		if token.id=="(name)":
+#			self.second+=token.value
+#		else:
+#			self.second+="."
+#		advance()
+#	return self
 
 symbol("]")
 
@@ -326,6 +357,7 @@ def tokenize_python(program):
 		tokenize.STRING: "(literal)",
 		tokenize.OP: "(operator)",
 		tokenize.NAME: "(name)",
+		tokenize.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
 	}
 	for t in tokenize.generate_tokens(StringIO(program).next):
 		try:
@@ -411,8 +443,8 @@ def execute(acenv,tree):
 				return node[1][1:-1]
 			elif fstLetter.isdigit:
 				return int(node[1])
-			#else:
-			#	evaluatePath()
+			else:
+				evaluatePath()
 		elif op=="(variable)":
 			storage=getStorage(acenv,node[1])
 			return objectPath(storage,node[2])
@@ -428,5 +460,5 @@ def execute(acenv,tree):
 					return first[second]
 	if type(tree) is not tuple:
 		return tree
-	#print tree
+	print tree
 	return exe(tree)

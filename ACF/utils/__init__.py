@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys,time,random,base64
 from datetime import datetime, timedelta
 from ACF.errors import *
@@ -12,7 +14,7 @@ else:
 	randrange=random.randrange
 
 PREFIX_DELIMITER="::"
-RE_PATH=re.compile("{\$([^}]+)}")
+RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar} 
 #log=logging.getLogger('ACF.util')
 #D=logging.doLog
 D=False
@@ -31,20 +33,20 @@ def getStorage(env,s):
 	return env.requestStorage
 
 #returns value from dict hierarchy based on "a.b.c" paths
+# changed by Marcin Radecki, 15.08
 def objectPath(obj,path):
 	t=path.split(".")
-	i=None
 	try:
-		i=t[0]
-		ret=obj[i]
-		for i in t:
-			_type=type(ret)
-			if _type is dict:
-					ret=ret[i]
+		ret=obj
+		for i in t:      
+			ret=ret[i]
 	except (AttributeError, KeyError, TypeError):
 		if D: log.warning("%s",e)
 		return False
-	return ret
+	if type(ret) == dict or type(ret) == str:
+		return ret
+	else:
+		return False
 
 def evaluate(v):
 	t=v.split(".")
@@ -78,7 +80,7 @@ def replaceVars(env,s):
 			raise Exception((storageName or "rs")+" storage does not have "+path+" property")
 		return str(ret)
 
-	#can be even faster "%(vals)" and "%{vals}" are 3x faster
+	#can be even faster ""%(vals) and ""%{vals} are 3x faster
 	if type(s) is not str:
 		raise Exception("Not string, but "+str(s))
 	return RE_PATH.sub(parse, s)
