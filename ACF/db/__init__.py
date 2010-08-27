@@ -17,10 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from ACF.errors import *
 import sys
-import logging
-import pg
-
-log=logging.getLogger('ACF.db')
+try:
+	import pg
+except:
+	pass
 
 DRIVER_CACHE={}
 CONFIG_CACHE={}
@@ -33,13 +33,13 @@ def get(conf,reload=False):
 		WARNING! connections can be broken by external events such as dbms
 		restart! CONFIG_CACHE is for reseting connections.
 	"""
-	log.debug("Executing with conf=%s and reload=%s",conf,reload)
+	#log.debug("Executing with conf=%s and reload=%s",conf,reload)
 	uid=str(conf)
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
 		if object:
 			#print "DB from cache"
-			log.debug("Returning from cache")
+			#log.debug("Returning from cache")
 			return object
 	else:
 		conf=CONFIG_CACHE[uid]
@@ -58,7 +58,7 @@ def get(conf,reload=False):
 	return driver
 
 def escapeString(s):
-	log.debug("start with string='%s'",s)
+	#log.debug("start with string='%s'",s)
 	if type(s) in [str,unicode]:
 		try:
 			return pg.escape_string(s)
