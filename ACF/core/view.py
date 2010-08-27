@@ -56,12 +56,14 @@ class View(object):
 		#All "static" computations should be here. Don't do it inside handle!
 		self.name=name
 		self.app=app
-		self.path=os.path.join(app.appDir,"views/"+name+".xml")
+		self.path=os.path.join(app.appDir,"views",name+".xml")
+		print self.path
 		try:
-			self.timestamp=os.stat(self.path).st_mtime
+		#	self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)
-		except:
+		except Exception,e:
 			self.immutable=True
+			raise e
 			raise ViewNotFound("view '%s' not found"%(name))
 			return
 		#the order of inputs is meaningful - needs to be list

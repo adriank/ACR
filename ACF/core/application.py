@@ -52,7 +52,7 @@ class Application(object):
 			config=xml2tree(os.path.join(appDir,"config.xml"))
 		except IOError:
 			#if D: log.critical("Application config not found!")
-			raise Exception("Application config not found at %s!"%(appDir+"/config.xml"))
+			raise Exception("Application config not found at %s!"%(appDir+"\config.xml"))
 		self.appDir=appDir
 		self.config=config
 		try:
@@ -119,7 +119,7 @@ class Application(object):
 			if name!="notFound":
 				return self.getView("notFound")
 			else:
-				raise e
+					raise e
 		self.views[name]=v
 		return v
 
