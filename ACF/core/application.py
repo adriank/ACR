@@ -49,7 +49,7 @@ class Application(object):
 		self.langs=[]
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
-			config=xml2tree(os.path.join(appDir,"config.xml"))
+			config=xml2tree(appDir+"/config.xml")
 		except IOError:
 			#if D: log.critical("Application config not found!")
 			raise Exception("Application config not found at %s!"%(appDir+"\config.xml"))
