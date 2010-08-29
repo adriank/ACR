@@ -157,58 +157,58 @@ def led(self, left):
 		advance()
 		return self
 
-# handling variables; e.g {$storage::a.b.c},
-# default storage is request storage
-symbol(":")
-symbol("$")
-symbol("}")
-@method(symbol("{"))
-def nud(self):
-	global token
-	advance("$")
-	t = token # storage name or variable name
-	token = next()
-	if token.id == ':': #there is a storage name
-		advance(':')
-		advance(':')
-		if t.value.lower() not in ["ss","rs","session","request"]:   # 
-			raise SyntaxError("Wrong storage name '"+t.value+"'.")
-		self.first = t.value
-		self.second = ""
-	else: #there is not a storage name
-		self.first = "rs"
-		self.second=t.value
-	self.id="(variable)"
-	while token.id in [".","(name)"]:
-		if token.id=="(name)":
-			self.second+=token.value
-		else:
-			self.second+="."
-		advance()
-	advance("}")	
-	return self
 
-#symbol(":",150)
-#@method(symbol(":"))
-#def led(self, left):
+#symbol(":")
+#symbol("$")
+#symbol("}")
+#@method(symbol("{"))
+#def nud(self):
 #	global token
-#	self.first = left
-#	if left.value.lower() not in ["ss","rs","session","request"]:   # 
-#		raise SyntaxError("Wrong storage name '"+left.value+"'.")
-#	if token.id!=":":
-#		raise SyntaxError("Expected '::'.")
-#	token=next()
+#	advance("$")
+#	t = token # storage name or variable name
+#	token = next()
+#	if token.id == ':': #there is a storage name
+#		advance(':')
+#		advance(':')
+#		if t.value.lower() not in ["ss","rs","session","request"]:   # 
+#			raise SyntaxError("Wrong storage name '"+t.value+"'.")
+#		self.first = t.value
+#		self.second = ""
+#	else: #there is not a storage name
+#		self.first = "rs"
+#		self.second=t.value
 #	self.id="(variable)"
-#	self.first=left.value
-#	self.second=""
-#	advance()
 #	while token.id in [".","(name)"]:
 #		if token.id=="(name)":
 #			self.second+=token.value
 #		else:
 #			self.second+="."
 #		advance()
+#	advance("}")	
 #	return self
+
+# handling variables; e.g storage::a.b.c
+# default storage is request storage
+symbol(":",150)
+@method(symbol(":"))
+def led(self, left):
+	global token
+	if type(left.value) is str:
+		if left.value.lower() not in ["ss","rs","session","request"]:   
+			raise SyntaxError("Wrong storage name '"+left.value+"'.")
+	else:
+		raise SyntaxError("Storage name is not a name.")
+	advance(':')
+	self.id="(variable)"
+	self.first=left.value
+	self.second=""
+	while token.id in [".","(name)"]:
+		if token.id=="(name)":
+			self.second+=token.value
+		else:
+			self.second+="."
+		advance()
+	return self
 
 symbol("]")
 
@@ -449,9 +449,9 @@ def execute(acenv,tree):
 			storage=getStorage(acenv,node[1])
 			return objectPath(storage,node[2])
 		elif op=="[":
-			if len(node) is 2:
+			if len(node) is 2:  # list
 				return map(exe,node[1])
-			if len(node) is 3:
+			if len(node) is 3:  # operator []
 				first=exe(node[1])
 				second=exe(node[2])
 				if type(first) in [list,tuple,str]:
@@ -460,5 +460,5 @@ def execute(acenv,tree):
 					return first[second]
 	if type(tree) is not tuple:
 		return tree
-	print tree
+	#print tree
 	return exe(tree)
