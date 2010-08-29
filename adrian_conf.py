@@ -1,3 +1,3 @@
 from ACF import globals
 
-globals.appDir="/home/adrian/otoszafa"
+globals.appDir="/home/adrian/projects/blog"

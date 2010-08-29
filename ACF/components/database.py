@@ -33,6 +33,8 @@ class DataBase(Component):
 	def __init__(self,config):
 		#if D: log.debug("Instance created with config=%s",config)
 		#should implement lazy db connections
+		if not config:
+			raise Exception("database config not found.")
 		self.config=config
 		for i in config:
 			attrs=i[1]
