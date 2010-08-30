@@ -48,12 +48,12 @@ def parseParams(nodes):
 	return ret
 
 class View(object):
-	immutable=False
 #	timestamp=0 #file modification timestamp
 	path="" #file path
 	def __init__(self,name,app):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
+		self.immutable=False
 		self.name=name
 		self.app=app
 		self.path=os.path.join(app.appDir,"views",name+".xml")
@@ -138,7 +138,7 @@ class View(object):
 		return ret
 
 	def __setattr__(self, name, val):
-		if self.immutable:
+		if name!="immutable" and self.immutable:
 			#if D: log.error("%s is read only",name)
 			raise Exception("PropertyImmutable")
 		self.__dict__[name]=val

@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-import logging,re
-
-RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
 
 class Generation(object):
 	status="ok"
