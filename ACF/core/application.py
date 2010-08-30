@@ -19,7 +19,6 @@
 
 from ACF.utils.xmlextras import *
 from ACF.core.view import View
-#from ACF.components import
 from ACF.errors import *
 from ACF import components,serializers
 from ACF.components import *

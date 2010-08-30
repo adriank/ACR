@@ -35,11 +35,12 @@ class ObjectTree(tuple):
 	def get(self,path):
 		return tpath(self,path)
 
+#TO-C
 def escapeQuotes(s):
 	return escape(unescape(s,unescapeDict),escapeDict)
 
 def str2obj(s):
-	r=s.lower().strip()
+	r=s.strip().lower()
 	if r=="true" or r=="t":
 		return True
 	elif r=="false" or r=="f":
@@ -49,6 +50,7 @@ def str2obj(s):
 	#TODO is that correct?
 	return s
 
+#TO-C
 def tree2xml(root):
 	def rec(node,tab):
 		if type(node) in [Object,List]:

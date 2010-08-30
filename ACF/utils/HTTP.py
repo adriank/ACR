@@ -81,7 +81,8 @@ def parseMultipart(f,tag):
 				elif h[0]=="Content-Type":
 					d[h[0]]=h[1].strip()
 			ret.append(d)
-	raise str(ret)
+	#WTF
+	#raise str(ret)
 
 def printHeaders(headers):
 	if D: log.debug("Printing headers")
