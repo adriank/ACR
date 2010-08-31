@@ -35,6 +35,7 @@ logLevels={
 MIMEmapper={
 	"text/html":"xslt",
 	"application/xml":"objectml",
+	"text/xml":"objectml",
 	"application/json":"json",
 	"application/xhtml+xml":"objectml"
 }

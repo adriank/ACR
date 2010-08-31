@@ -55,18 +55,18 @@ def application(env,start_response):
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
-	acenv.mime=env["HTTP_ACCEPT"].split(";")[0].split(",")
+	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
 	acenv.UA=env["HTTP_USER_AGENT"]
 	if "text/html" in acenv.mime or "*/*" in acenv.mime:
 		agent=acenv.UA
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
-			acenv.outputFormat="application/xml"
+			acenv.outputFormat="text/xml"
 		else:
 			acenv.outputFormat="text/html"
 	elif "application/json" in acenv.mime and len(acenv.mime)==1:
 		acenv.outputFormat="application/json"
-	if app.debug["enabled"]:
-		log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
+	#if app.debug["enabled"]:
+	#	log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
