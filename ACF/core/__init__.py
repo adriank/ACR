@@ -38,7 +38,7 @@ class Environment(object):
 	sessionStorage=None
 	requestStorage=None
 	appStorage=None
-	lang=""
+	lang=None
 	langs=None
 	URL=""
 	UA=""

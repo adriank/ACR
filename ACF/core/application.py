@@ -35,16 +35,18 @@ D=False
 class Application(object):
 	appName=""
 	debug=None
-	lang="en"
 	prefix="ACF_"
 	storage=None
-	immutable=False
 	appDir=""
+	lang="en"
+	immutable=False
 	def __init__(self,appDir):
 		#cache for component objects
+		self.immutable=False
 		self.COMPONENTS_CACHE={}
 		self.DEFAULT_DB=None
 		self.views={}
+		self.lang="en"
 		self.langs=[]
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
@@ -79,7 +81,7 @@ class Application(object):
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACF")+"_"
 		for component in config.get("/component"):
-			if D: log.debug("setting default configuration to %s component",component[1]["name"])
+			#if D: log.debug("setting default configuration to %s component",component[1]["name"])
 			self.getComponent(component[1]["name"],component[2])
 		#do it or not?
 		#self.config=None
@@ -158,12 +160,12 @@ class Application(object):
 	def computeLangs(self):
 		attrs=self.config.get("/lang")[0][1]
 		try:
-			self.defaultLang=attrs["default"].strip()
+			defaultLang=attrs["default"].strip()
 		except KeyError:
 			#make it log.warning and fall back to en
 			raise Exception("Misconfiguration of 'langs' setting in app configuration file.")
 		#["","aaa"," dd   "]->["aaa","ddd"]
-		self.langs=filter(len, map(str.strip, [self.defaultLang]+attrs.get("supported", "").split(",")))
+		self.langs=filter(len, map(str.strip, [defaultLang]+attrs.get("supported", "").split(",")))
 		self.lang=self.langs[0]
 
 	def __str__(self):
