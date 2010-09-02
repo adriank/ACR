@@ -54,9 +54,9 @@ class View(object):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.immutable=False
-		self.name=name
+		self.name=os.path.join(*name)
 		self.app=app
-		self.path=os.path.join(app.appDir,"views",name+".xml")
+		self.path=os.path.join(app.appDir,"views",self.name+".xml")
 		try:
 			self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)
@@ -95,6 +95,7 @@ class View(object):
 		try:
 			self.outputFormat=self.output[0][1]["format"]
 		except:
+			print "cant set outputFormat"
 			self.outputFormat=None
 		if not self.actions:
 			self.immutable=True

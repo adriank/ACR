@@ -2,7 +2,7 @@
 <config>
 <!-- Core congiguration -->
 	<name>doc.asyncode.com</name>
-	<domain>http://doc.asyncode.com:9999/</domain>
+	<domain>http://localhost:9999/</domain>
 	<staticDir>/var/ACF/doc/static</staticDir>
 	<sessionDir>/var/ACF/doc/session</sessionDir>
 	<debug enable="False" level="error"/>
@@ -12,7 +12,7 @@
 	</plugin>
 	<component name="database">
 		<server dbms="pgsql" name="main" default="true">
-			<host><!--keep empty for socket connections--></host>
+			<host><!--keep empty for socket connections-->asyncode.com</host>
 			<port><!--default 5432--></port>
 			<defaultdb>asyncode_com</defaultdb>
 			<user>adrian</user>

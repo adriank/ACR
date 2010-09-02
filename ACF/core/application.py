@@ -108,26 +108,63 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,acenv):
+		
+		# TODO: cache
+		#print "view not in cache"
 		path=acenv.URLpath
 		lenpath=len(path)
 		if lenpath==0:
 			path=["default"]
-		if lenpath>1:
-			acenv.inputs=path[1:]
-		if self.views.has_key(path[0]):
-			view=self.views[path[0]]
-			timestamp=os.stat(view.path).st_mtime
-			if timestamp<=view.timestamp:
-				return view
-		#print "view not in cache"
+		
+		else:
+			testPath = os.path.join(self.appDir, "views")
+			for i in range(0, len(path)):
+				s = path[i]
+				list = os.listdir(testPath)
+				# first, check if it exists view name s
+				if (s + '.xml') in list:
+					# there is a view of that name
+					acenv.viewName, acenv.inputs = path[:i+1], path[i+1:]
+					break
+				# if not, check if whether it is a directory
+				elif os.path.isdir(os.path.join(testPath, s)):
+					testPath = os.path.join(testPath, s)
+					if i == len(path) - 1:
+						# the last loop
+						# at that moment, we passed through directory tree and
+						# havn't found view file. So we assume, its default view in
+						# that tree
+						list = os.listdir(testPath)
+						if 'default.xml' in list:
+							path.append('default')
+							acenv.viewName, acenv.inputs = path, None
+						else:
+							acenv.viewName, acenv.inputs = ['notFound'], None	
+					continue
+				else:
+					# there is no directory neither view of that name, search for default view
+					if 'default.xml' in list:
+						v = t[:i]
+						v.append('default')
+						acenv.viewName, acenv.inputs =  v, path[i:]
+					else:
+						acenv.viewName, acenv.inputs =  ['notFound'], None
+					break
+		#if lenpath>1:
+		#	acenv.inputs=path[1:]
+		#if self.views.has_key(path[0]):
+		#	view=self.views[path[0]]
+		#	timestamp=os.stat(view.path).st_mtime
+		#	if timestamp<=view.timestamp:
+		#		return view
 		try:
-			v=View(path[0],self)
+			v=View(path,self)
 		except ViewNotFound, e:
-			if name!="notFound":
-				return self.getView(["notFound"])
+			if path!=["notFound"]:
+				v = View(["notFound"], self)
 			else:
 					raise e
-		self.views[path[0]]=v
+		#self.views[path[0]]=v
 		return v
 
 	#will be generator
