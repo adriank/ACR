@@ -3,7 +3,7 @@
 
 # AsynCode Framework - XML framework allowing developing internet
 # applications without using programming languages.
-# Copyright (C) 2008-2010  Adrian Kalbarczyk
+# Copyright (C) 2008-2010  Adrian Kalbarczyk, Marcin Radecki
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the version 3 of GNU General Public License as published by
@@ -16,6 +16,9 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#@marcin: getView, checkRefresh
+
 
 from ACF.utils.xmlextras import *
 from ACF.core.view import View
@@ -50,7 +53,9 @@ class Application(object):
 		self.langs=[]
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
-			config=xml2tree(os.path.join(appDir,"config.xml"))
+			self.configPath = os.path.join(appDir, "config.xml")
+			self.timestamp=os.stat(self.configPath).st_mtime
+			config=xml2tree(self.configPath)
 		except IOError:
 			#if D: log.critical("Application config not found!")
 			raise Exception("Application config not found at %s!"%(appDir+"\config.xml"))
@@ -87,6 +92,12 @@ class Application(object):
 		#self.config=None
 		self.immutable=True
 
+	# checks if an application instance chould be reloaded
+	def checkRefresh(self):
+		if self.timestamp < os.stat(self.configPath).st_mtime:
+			return True
+		return False
+
 	def getDBConn(self):
 		if not self.DEFAULT_DB:
 			self.DEFAULT_DB=self.getComponent("database").CONNECTIONS["default"]
@@ -114,51 +125,42 @@ class Application(object):
 		path=acenv.URLpath
 		lenpath=len(path)
 		if lenpath==0:
-			path=["default"]
-		
+			acenv.viewPath = ["default"]
 		else:
-			testPath = os.path.join(self.appDir, "views")
+			viewsPath = os.path.join(self.appDir, "views")
+			tempPath = viewsPath
 			for i in range(0, len(path)):
 				s = path[i]
-				list = os.listdir(testPath)
-				# first, check if it exists view name s
-				if (s + '.xml') in list:
+				tempPath = os.path.join(tempPath, s)
+				# first, check if exists view name s
+				if os.path.exists(tempPath + '.xml'):
 					# there is a view of that name
-					acenv.viewName, acenv.inputs = path[:i+1], path[i+1:]
+					acenv.viewPath, acenv.inputs = path[:i+1], path[i+1:]
 					break
-				# if not, check if whether it is a directory
-				elif os.path.isdir(os.path.join(testPath, s)):
-					testPath = os.path.join(testPath, s)
-					if i == len(path) - 1:
+				# if not, check if it is a directory
+				elif os.path.isdir(tempPath):
+					viewsPath = tempPath
+					if i == lenpath - 1:
 						# the last loop
 						# at that moment, we passed through directory tree and
 						# havn't found view file. So we assume, its default view in
 						# that tree
-						list = os.listdir(testPath)
-						if 'default.xml' in list:
+						if os.path.exists(os.path.join(viewsPath, 'default.xml')):
 							path.append('default')
-							acenv.viewName, acenv.inputs = path, None
+							acenv.viewPath, acenv.inputs = path, []
 						else:
-							acenv.viewName, acenv.inputs = ['notFound'], None	
-					continue
+							acenv.viewPath, acenv.inputs = ['notFound'], []
 				else:
 					# there is no directory neither view of that name, search for default view
-					if 'default.xml' in list:
-						v = t[:i]
+					if os.path.exists(os.path.join(viewsPath, 'default.xml')):
+						v = path[:i]
 						v.append('default')
-						acenv.viewName, acenv.inputs =  v, path[i:]
+						acenv.viewPath, acenv.inputs =  v, path[i:]
 					else:
-						acenv.viewName, acenv.inputs =  ['notFound'], None
+						acenv.viewPath, acenv.inputs =  ['notFound'], []
 					break
-		#if lenpath>1:
-		#	acenv.inputs=path[1:]
-		#if self.views.has_key(path[0]):
-		#	view=self.views[path[0]]
-		#	timestamp=os.stat(view.path).st_mtime
-		#	if timestamp<=view.timestamp:
-		#		return view
 		try:
-			v=View(path,self)
+			v=View(acenv.viewPath,self)
 		except ViewNotFound, e:
 			if path!=["notFound"]:
 				v = View(["notFound"], self)

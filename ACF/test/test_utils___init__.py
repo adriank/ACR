@@ -5,7 +5,7 @@
 # prepare test without creating an instance of classes like appliaction or environment in order not to start server
 
 from ACF.utils.tester import Tester
-from ACF.core import Environment
+from ACF.core.environment import Environment
 from ACF.core.application import Application
 from ACF.utils import *
 from ACF.session import *

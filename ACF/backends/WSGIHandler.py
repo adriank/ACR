@@ -24,7 +24,7 @@ import sys,os,re,time,logging
 logging.doLog=False
 from ACF import globals,errors
 from ACF.utils import HTTP
-from ACF.core import Environment
+from ACF.core.environment import Environment
 from ACF.core.application import Application
 from cStringIO import StringIO
 import cgi
@@ -86,6 +86,9 @@ def application(env,start_response):
 		path=globals.appDir
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
+		# if application config file changes, reload whole app
+		if app.checkRefresh():
+			app = Application(path)
 	else:
 		app=Application(path)
 		APP_CACHE[path]=app
