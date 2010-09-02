@@ -62,6 +62,7 @@ class Environment(object):
 	def __init__(self,app):
 		self.generations={}
 		self.mime=[]
+		self.URLpath=[]
 		#populate with app defaults; the class attributes are not in __dict__!
 		self.__dict__.update(filter(lambda t: t[0] in Environment.__dict__, list(app.__dict__.iteritems())))
 		self.requestStorage={}

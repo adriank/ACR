@@ -107,21 +107,27 @@ class Application(object):
 		return o
 
 	#lazy view objects creation
-	def getView(self,name):
-		if self.views.has_key(name):
-			view=self.views[name]
+	def getView(self,acenv):
+		path=acenv.URLpath
+		lenpath=len(path)
+		if lenpath==0:
+			path=["default"]
+		if lenpath>1:
+			acenv.inputs=path[1:]
+		if self.views.has_key(path[0]):
+			view=self.views[path[0]]
 			timestamp=os.stat(view.path).st_mtime
 			if timestamp<=view.timestamp:
 				return view
 		#print "view not in cache"
 		try:
-			v=View(name,self)
+			v=View(path[0],self)
 		except ViewNotFound, e:
 			if name!="notFound":
-				return self.getView("notFound")
+				return self.getView(["notFound"])
 			else:
 					raise e
-		self.views[name]=v
+		self.views[path[0]]=v
 		return v
 
 	#will be generator
@@ -135,7 +141,7 @@ class Application(object):
 				acenv.sessionStorage=FileSession(sessID)
 			except:
 				sessID=None
-		view=self.getView(acenv.viewName)
+		view=self.getView(acenv)
 		view.generate(acenv)
 		#this is little faster than Object
 		acenv.generations["lang"]=("object",{"name":"acf:lang","current":acenv.lang,"supported":",".join(acenv.langs)},None)

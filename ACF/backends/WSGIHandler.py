@@ -42,6 +42,41 @@ import cgi
 #log.setLevel(logging.ERROR)
 APP_CACHE={}
 
+def computeMIME(mime,agent):
+	if "text/html" in mime or "*/*" in mime:
+		#agent=acenv.UA
+		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
+			return "text/xml"
+		else:
+			return "text/html"
+	elif "application/json" in mime and len(mime)==1:
+		return "application/json"
+
+#SLOW!!!
+def computePOST(env):
+	post=None
+	contentType=env['CONTENT_TYPE']
+	if contentType.startswith("application/x-www-form-urlencoded"):
+		POST=env['wsgi.input'].read()
+		post=HTTP.parsePOST(POST)
+	elif contentType.startswith("multipart/form-data"):
+		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
+		post={}
+		for i in form.keys():
+			if type(form[i]) is list:
+				l=[]
+				for item in form[i]:
+					l.append(item.value)
+				post[i]=l
+			elif form[i].filename is not None:
+				post[i]={
+					"filename":form[i].filename,
+					"content":form[i].value
+				}
+			else:
+				post[i]=form[i].value
+	return post
+
 def application(env,start_response):
 	t=time.time()
 	response=[]
@@ -57,49 +92,17 @@ def application(env,start_response):
 	acenv=Environment(app)
 	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
 	acenv.UA=env["HTTP_USER_AGENT"]
-	if "text/html" in acenv.mime or "*/*" in acenv.mime:
-		agent=acenv.UA
-		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
-			acenv.outputFormat="text/xml"
-		else:
-			acenv.outputFormat="text/html"
-	elif "application/json" in acenv.mime and len(acenv.mime)==1:
-		acenv.outputFormat="application/json"
+	acenv.outputFormat=computeMIME(acenv.mime,acenv.UA)
 	#if app.debug["enabled"]:
 	#	log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
 	post=None
-	##if acenv.debug:
-	##	POST=""
-	##	XSLTtime=None
 	if env.get('REQUEST_METHOD',"").lower()=="post":
-		contentType=env['CONTENT_TYPE']
-		if contentType.startswith("application/x-www-form-urlencoded"):
-			POST=env['wsgi.input'].read()
-			post=HTTP.parsePOST(POST)
-		elif contentType.startswith("multipart/form-data"):
-			form=cgi.FieldStorage(env['wsgi.input'],environ=env)
-			post={}
-			for i in form.keys():
-				if type(form[i]) is list:
-					l=[]
-					for item in form[i]:
-						l.append(item.value)
-					post[i]=l
-				elif form[i].filename is not None:
-					post[i]={
-						"filename":form[i].filename,
-						"content":form[i].value
-					}
-				else:
-					post[i]=form[i].value
+		post=computePOST(env)
 	acenv.posts=post
-	if env.has_key('PATH_INFO'):
-		acenv.viewName, acenv.inputs=HTTP.parseURL(env['PATH_INFO'])
-	else:
-		acenv.viewName="default"
+	acenv.URLpath=filter(lambda x: not str.isspace(x) and len(x)!=0,env['PATH_INFO'].split("/"))
 	output=app.generate(acenv)
 	headers=acenv.outputHeaders
 	headers.append(("Content-Type",acenv.outputFormat))
