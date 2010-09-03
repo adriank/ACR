@@ -14,7 +14,7 @@ else:
 	randrange=random.randrange
 
 PREFIX_DELIMITER="::"
-RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar} 
+RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
 #log=logging.getLogger('ACF.util')
 #D=logging.doLog
 D=False
@@ -33,34 +33,19 @@ def getStorage(env,s):
 	return env.requestStorage
 
 #returns value from dict hierarchy based on "a.b.c" paths
-# changed by Marcin Radecki, 15.08
-def objectPath(obj,path):
-	t=path.split(".")
+def objectPath(obj,path,exception=True):
 	try:
 		ret=obj
-		for i in t:      
-			ret=ret[i]
+		i=0
+		for o in path:
+			ret=ret[o]
+			i+=1
 	except (AttributeError, KeyError, TypeError):
-		if D: log.warning("%s",e)
-		return False
-	if type(ret) == dict or type(ret) == str:
-		return ret
-	else:
-		return False
-
-def evaluate(v):
-	t=v.split(".")
-	if D: log.debug("Storage name is %s",t[0])
-	ret=getStorage(t[0])
-	if D: log.debug("Storage content is %s",ret)
-	t.pop(0)
-	try:
-		for i in t:
-			if ret.has_key(i):
-				ret=ret[i]
-	except (AttributeError,KeyError),e:
-		if D: log.warning("%s",e)
-		return False
+		#if D: log.warning("%s",e)
+		if exception:
+			return False
+		else:
+			return (ret,i)
 	return ret
 
 def replaceVars(env,s):

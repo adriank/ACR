@@ -124,14 +124,14 @@ class Application(object):
 			if not d.has_key(s):
 				d[s] = {}
 			d = d[s]
-		d[path[-1]] = view # path[-1] means last element of the list	
+		d[path[-1]] = view # path[-1] means last element of the list
 
 	# finds view in cache by url; return View or None, if not found
 	def findCachedView(self, URLpath):
 		tempPath = []
 		d = self.views
-		v = None	
-		for s in URLpath[:]: 
+		v = None
+		for s in URLpath[:]:
 			tempPath.append(URLpath.pop(0))
 			if d.has_key(s):
 				if type(d[s]) != dict:
@@ -149,7 +149,7 @@ class Application(object):
 			if timestamp <= v.timestamp:
 				return (v, tempPath, URLpath)
 		return None
-		
+
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
 	def findViewFile(self, URLpath):
@@ -173,9 +173,7 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,acenv):
-		path = acenv.URLpath
-		if not path:
-			path = ['default']
+		path = acenv.URLpath or ['default']
 		t = self.findCachedView(path[:]) # we have to work on a copy, because of next call with path in arguments
 		if t:
 			(v, acenv.viewPath, acenv.inputs) = t
