@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#@marcin: getView, checkRefresh
+#@marcin: getView, checkRefresh, cacheView, findCachedView, findViewFile
 
 
 from ACF.utils.xmlextras import *
@@ -92,7 +92,7 @@ class Application(object):
 		#self.config=None
 		self.immutable=True
 
-	# checks if an application instance chould be reloaded
+	# checks if an application instance should be reloaded
 	def checkRefresh(self):
 		if self.timestamp < os.stat(self.configPath).st_mtime:
 			return True
@@ -117,56 +117,77 @@ class Application(object):
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
+	#caches a view
+	def cacheView(self, path, view):
+		d = self.views
+		for s in path[:-1]:  # without last element
+			if not d.has_key(s):
+				d[s] = {}
+			d = d[s]
+		d[path[-1]] = view # path[-1] means last element of the list	
+
+	# finds view in cache by url; return View or None, if not found
+	def findCachedView(self, URLpath):
+		tempPath = []
+		d = self.views
+		v = None	
+		for s in URLpath[:]: 
+			tempPath.append(URLpath.pop(0))
+			if d.has_key(s):
+				if type(d[s]) != dict:
+					v = d[s]
+					break
+				d = d[s]
+				if not URLpath: # last loop
+					if d.has_key('default'):
+						tempPath.append('default')
+						v = d['default']
+			else:
+				break
+		if v:
+			timestamp = os.stat(v.path).st_mtime
+			if timestamp <= v.timestamp:
+				return (v, tempPath, URLpath)
+		return None
+		
+	# finds view file stored on hdd. Seperate view path from inputs.
+	# Algorithm is greedy, so it finds first view which suits url.
+	def findViewFile(self, URLpath):
+		viewsPath = os.path.join(self.appDir, "views")
+		tempPath = []
+		for s in URLpath[:]:
+			viewsPath = os.path.join(viewsPath, s)
+			tempPath.append(URLpath.pop(0))
+			if os.path.exists(viewsPath + '.xml'):
+				break
+			elif os.path.isdir(viewsPath):
+				if not URLpath: # last loop
+					if os.path.exists(os.path.join(viewsPath, 'default.xml')):
+						tempPath.append('default')
+					else:
+						tempPath = ['notFound']
+			else:
+				tempPath, URLpath = ['notFound'], []
+				break
+		return (tempPath, URLpath)
+
 	#lazy view objects creation
 	def getView(self,acenv):
-		
-		# TODO: cache
-		#print "view not in cache"
-		path=acenv.URLpath
-		lenpath=len(path)
-		if lenpath==0:
-			acenv.viewPath = ["default"]
+		path = acenv.URLpath
+		if not path:
+			path = ['default']
+		t = self.findCachedView(path[:]) # we have to work on a copy, because of next call with path in arguments
+		if t:
+			(v, acenv.viewPath, acenv.inputs) = t
 		else:
-			viewsPath = os.path.join(self.appDir, "views")
-			tempPath = viewsPath
-			for i in range(0, len(path)):
-				s = path[i]
-				tempPath = os.path.join(tempPath, s)
-				# first, check if exists view name s
-				if os.path.exists(tempPath + '.xml'):
-					# there is a view of that name
-					acenv.viewPath, acenv.inputs = path[:i+1], path[i+1:]
-					break
-				# if not, check if it is a directory
-				elif os.path.isdir(tempPath):
-					viewsPath = tempPath
-					if i == lenpath - 1:
-						# the last loop
-						# at that moment, we passed through directory tree and
-						# havn't found view file. So we assume, its default view in
-						# that tree
-						if os.path.exists(os.path.join(viewsPath, 'default.xml')):
-							path.append('default')
-							acenv.viewPath, acenv.inputs = path, []
-						else:
-							acenv.viewPath, acenv.inputs = ['notFound'], []
-				else:
-					# there is no directory neither view of that name, search for default view
-					if os.path.exists(os.path.join(viewsPath, 'default.xml')):
-						v = path[:i]
-						v.append('default')
-						acenv.viewPath, acenv.inputs =  v, path[i:]
-					else:
-						acenv.viewPath, acenv.inputs =  ['notFound'], []
-					break
-		try:
-			v=View(acenv.viewPath,self)
-		except ViewNotFound, e:
-			if path!=["notFound"]:
-				v = View(["notFound"], self)
-			else:
-					raise e
-		#self.views[path[0]]=v
+			(acenv.viewPath, acenv.inputs) = self.findViewFile(path)
+			if acenv.viewPath == ['notFound']:
+				t = self.findCachedView(['notFound'])
+				if t:
+					return t[0]
+			#print 'View not in cache'
+			v = View(acenv.viewPath, self)
+			self.cacheView(acenv.viewPath, v)
 		return v
 
 	#will be generator
