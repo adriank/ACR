@@ -57,7 +57,7 @@ def replaceVars(env,s):
 			storage=getStorage(env,storageName)
 		except ValueError:
 			storage=getStorage(env,"rs")
-			path=p
+			path=p.split(".")
 		ret=objectPath(storage,path)
 		if type(ret) is list:
 			return m.group(0)

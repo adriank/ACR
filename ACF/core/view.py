@@ -194,6 +194,7 @@ class View(object):
 		#if D: log.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
+		acenv.requestStorage["__lang__"]=acenv.lang
 		for action in self.actions:
 			acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):

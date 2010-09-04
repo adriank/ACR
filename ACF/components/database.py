@@ -94,7 +94,6 @@ class DataBase(Component):
 				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
-		print multiRequest
 		query=replaceVars(env,actionConf['query'])
 		if D: env.dbg("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
