@@ -143,15 +143,11 @@ class Application(object):
 	#lazy view objects creation
 	def getView(self,acenv):
 		path = acenv.URLpath or ['default']
-		if path[-1] is not 'default':
-			path.append('default')
 		(o, i) = getObject(self.views, path, False)
-		if type(o) is not dict : 
+		if type(o) is View:
 			timestamp = os.stat(o.path).st_mtime
 			if timestamp <= o.timestamp:
 				acenv.viewPath, acenv.inputs = path[:i], path[i:]
-				if 'default' in acenv.inputs:
-					acenv.inputs.pop(-1)
 				return o
 		# view not in cache
 		(acenv.viewPath, acenv.inputs) = self.findViewFile(path, i)
