@@ -27,4 +27,3 @@ def setObject(obj, path, o):
 			d[key]={}
 		d=d[key]
 	d[path[-1]] = o
-	return o

@@ -121,37 +121,36 @@ class Application(object):
 
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
-	def findViewFile(self, URLpath, i):
+	def findViewFile(self, URLpath , cachedPath):
 		path = URLpath
-		viewsPath = self.viewsPath
-		tempPath = []
-		for s in path[:i]:
+		viewsPath = os.path.join(self.viewsPath, *cachedPath)
+		tempPath = cachedPath
+		for s in path[:]:
 			viewsPath = os.path.join(viewsPath, s)
 			tempPath.append(path.pop(0))
-		for s in path:
-			i += 1
-			viewsPath = os.path.join(viewsPath, s)
-			tempPath.append(s)
 			if os.path.exists(viewsPath + '.xml'):
-				path = path[i:]
 				break
 			elif not os.path.isdir(viewsPath):
-				tempPath, path = ['notFound'], []
+				tempPath, URLpath = ['notFound'], []
 				break
-		return (tempPath, path)
+		return (tempPath, URLpath)
 
 	#lazy view objects creation
 	def getView(self,acenv):
 		path = acenv.URLpath or ['default']
+		if path[-1] is not 'default':
+			path.append('default') 
 		(o, i) = getObject(self.views, path, False)
 		if type(o) is View:
 			timestamp = os.stat(o.path).st_mtime
 			if timestamp <= o.timestamp:
 				acenv.viewPath, acenv.inputs = path[:i], path[i:]
+				if 'default' in acenv.inputs:
+					acenv.inputs.pop(-1)
 				return o
 		# view not in cache
-		(acenv.viewPath, acenv.inputs) = self.findViewFile(path, i)
-		if acenv.viewPath == ['notFound']:
+		(acenv.viewPath, acenv.inputs) = self.findViewFile(path[i:], path[:i])
+		if acenv.viewPath[0] == 'notFound':
 			v = getObject(self.views, acenv.viewPath)
 			if v: return v
 		v = View(acenv.viewPath, self)
