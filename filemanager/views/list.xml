@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
-	<!--<define name="filesList" command="fs:list" fs:path="/">-->
-	<define name="list" command="fs:list" fs:path="/" fs:showDirs="false"/>
-	<!--<define name="filesList">-->
-	<!--</define>-->
-</view>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<view xmlns="http://asyncode.com/View" xmlns:db="http://asyncode.com/DataBase" xmlns:fs="http://asyncode.com/filesystem">
-	<post>
-		<param name="note"/>
-	</post>
-	<define name="add_usernote" command="db:query" condition="rs::note is not ''">
-		INSERT INTO market.product(note) VALUES ('{$note}')
-	</define>
-</view>
