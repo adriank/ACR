@@ -179,7 +179,7 @@ class Application(object):
 		view.generate(acenv)
 		#this is little faster than Object
 		acenv.generations["lang"]=("object",{"name":"acf:lang","current":acenv.lang,"supported":",".join(acenv.langs)},None)
-		acenv.generations["domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain},None)
+		acenv.generations["domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain,"config":acenv.outputConfig},None)
 		#temporary error handling
 		try:
 			s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from ACF.errors import *
 from ACF.utils.hashcompat import md5_constructor
 from ACF import globals
-from objecttree import *
+from ACF.utils.objecttree import *
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -15,8 +15,6 @@ else:
 
 PREFIX_DELIMITER="::"
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
-#log=logging.getLogger('ACF.util')
-#D=logging.doLog
 D=False
 
 def getStorage(env,s):
@@ -42,7 +40,7 @@ def replaceVars(env,s):
 		except ValueError:
 			storage=getStorage(env,"rs")
 			path=p.split(".")
-		ret=objectPath(storage,path)
+		ret=getObject(storage,path)
 		if type(ret) is list:
 			return m.group(0)
 		if not ret:

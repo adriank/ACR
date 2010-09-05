@@ -95,8 +95,11 @@ class View(object):
 		try:
 			self.outputFormat=self.output[0][1]["format"]
 		except:
-			#print "cant set outputFormat"
 			self.outputFormat=None
+		try:
+			self.outputConfig=self.output[0][1]["config"]
+		except:
+			self.outputConfig="config"
 		if not self.actions:
 			self.immutable=True
 			return

@@ -45,6 +45,7 @@ class Environment(object):
 	IP=""
 	output=None
 	outputFormat=None
+	outputConfig="config"
 	prefix="ACF_"
 	doRedirect=False
 	redirect=False
