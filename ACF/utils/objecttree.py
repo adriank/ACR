@@ -21,13 +21,10 @@ def getObject(obj,path,exception=True):
 
 # inserts object o into obj, path is a list , like above
 def setObject(obj, path, o):
-	try:
-		d = obj
-		for s in path[:-1]:
-			if not d.has_key(s):
-				d[s] = {}
-			d = d[s]
-		d[path[-1]] = o
-	except:
-		return False
+	d=obj
+	for key in path[:-1]:
+		if not d.has_key(key):
+			d[key]={}
+		d=d[key]
+	d[path[-1]] = o
 	return o
