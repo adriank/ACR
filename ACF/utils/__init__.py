@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys,time,random,base64
+import sys,time,random,base64,re
 from datetime import datetime, timedelta
 from ACF.errors import *
 from ACF.utils.hashcompat import md5_constructor
-import re
 from ACF import globals
+from objecttree import *
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -31,22 +31,6 @@ def getStorage(env,s):
 	elif s=="global" or s=="gs":
 		return []
 	return env.requestStorage
-
-#returns value from dict hierarchy based on "a.b.c" paths
-def objectPath(obj,path,exception=True):
-	try:
-		ret=obj
-		i=0
-		for o in path:
-			ret=ret[o]
-			i+=1
-	except (AttributeError, KeyError, TypeError):
-		#if D: log.warning("%s",e)
-		if exception:
-			return False
-		else:
-			return (ret,i)
-	return ret
 
 def replaceVars(env,s):
 	def parse(m):

@@ -21,6 +21,7 @@
 
 
 from ACF.utils.xmlextras import *
+from ACF.utils import getObject, setObject
 from ACF.core.view import View
 from ACF.errors import *
 from ACF import components,serializers
@@ -51,6 +52,7 @@ class Application(object):
 		self.views={}
 		self.lang="en"
 		self.langs=[]
+		self.viewsPath = os.path.join(appDir, "views")
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
 			self.configPath = os.path.join(appDir, "config.xml")
@@ -117,75 +119,49 @@ class Application(object):
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
-	#caches a view
-	def cacheView(self, path, view):
-		d = self.views
-		for s in path[:-1]:  # without last element
-			if not d.has_key(s):
-				d[s] = {}
-			d = d[s]
-		d[path[-1]] = view # path[-1] means last element of the list
-
-	# finds view in cache by url; return View or None, if not found
-	def findCachedView(self, URLpath):
-		tempPath = []
-		d = self.views
-		v = None
-		for s in URLpath[:]:
-			tempPath.append(URLpath.pop(0))
-			if d.has_key(s):
-				if type(d[s]) != dict:
-					v = d[s]
-					break
-				d = d[s]
-				if not URLpath: # last loop
-					if d.has_key('default'):
-						tempPath.append('default')
-						v = d['default']
-			else:
-				break
-		if v:
-			timestamp = os.stat(v.path).st_mtime
-			if timestamp <= v.timestamp:
-				return (v, tempPath, URLpath)
-		return None
-
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
-	def findViewFile(self, URLpath):
-		viewsPath = os.path.join(self.appDir, "views")
+	def findViewFile(self, URLpath, i):
+		path = URLpath
+		viewsPath = self.viewsPath
 		tempPath = []
-		for s in URLpath[:]:
+		for s in path[:i]:
 			viewsPath = os.path.join(viewsPath, s)
-			tempPath.append(URLpath.pop(0))
+			tempPath.append(path.pop(0))
+		for s in path:
+			i += 1
+			viewsPath = os.path.join(viewsPath, s)
+			tempPath.append(s)
 			if os.path.exists(viewsPath + '.xml'):
+				path = path[i:]
 				break
-			elif os.path.isdir(viewsPath):
-				if not URLpath: # last loop
-					if os.path.exists(os.path.join(viewsPath, 'default.xml')):
-						tempPath.append('default')
-					else:
-						tempPath = ['notFound']
-			else:
-				tempPath, URLpath = ['notFound'], []
+			elif not os.path.isdir(viewsPath):
+				tempPath, path = ['notFound'], []
 				break
-		return (tempPath, URLpath)
+		return (tempPath, path)
 
 	#lazy view objects creation
 	def getView(self,acenv):
 		path = acenv.URLpath or ['default']
-		t = self.findCachedView(path[:]) # we have to work on a copy, because of next call with path in arguments
-		if t:
-			(v, acenv.viewPath, acenv.inputs) = t
-		else:
-			(acenv.viewPath, acenv.inputs) = self.findViewFile(path)
-			if acenv.viewPath == ['notFound']:
-				t = self.findCachedView(['notFound'])
-				if t:
-					return t[0]
-			#print 'View not in cache'
-			v = View(acenv.viewPath, self)
-			self.cacheView(acenv.viewPath, v)
+		if path[-1] is not 'default':
+			path.append('default')
+		(o, i) = getObject(self.views, path, False)
+		if type(o) is not dict : 
+			timestamp = os.stat(o.path).st_mtime
+			if timestamp <= o.timestamp:
+				acenv.viewPath, acenv.inputs = path[:i], path[i:]
+				if 'default' in acenv.inputs:
+					acenv.inputs.pop(-1)
+				return o
+		# view not in cache
+		(acenv.viewPath, acenv.inputs) = self.findViewFile(path, i)
+		if acenv.viewPath == ['notFound']:
+			v = getObject(self.views, acenv.viewPath)
+			if v: return v
+		v = View(acenv.viewPath, self)
+		setObject(self.views, acenv.viewPath, v)
+		if 'default' in acenv.inputs:
+			acenv.inputs.pop(-1)
 		return v
 
 	#will be generator

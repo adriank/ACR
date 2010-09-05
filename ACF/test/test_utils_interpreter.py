@@ -5,10 +5,6 @@ from ACF.utils.interpreter import *
 from random import randint, choice
 import sys
 
-# TODO: 
-#				newline characters
-#       how much time app spends on tokenize expressions
-
 # change a global settings - depth of recursion
 sys.setrecursionlimit(20000)
 

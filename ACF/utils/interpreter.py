@@ -6,7 +6,7 @@
 
 import sys
 from cStringIO import StringIO
-from ACF.utils import getStorage,objectPath
+from ACF.utils import getStorage,getObject
 
 symbol_table = {}
 
@@ -447,7 +447,7 @@ def execute(acenv,tree):
 				evaluatePath()
 		elif op=="(variable)":
 			storage=getStorage(acenv,node[1])
-			return objectPath(storage,node[2])
+			return get(storage,node[2].split('.'))
 		elif op=="[":
 			if len(node) is 2:  # list
 				return map(exe,node[1])
