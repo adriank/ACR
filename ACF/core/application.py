@@ -122,18 +122,17 @@ class Application(object):
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
 	def findViewFile(self, URLpath , cachedPath):
-		path = URLpath
 		viewsPath = os.path.join(self.viewsPath, *cachedPath)
-		tempPath = cachedPath
-		for s in path[:]:
+		while True:
+			s = URLpath.pop(0)
 			viewsPath = os.path.join(viewsPath, s)
-			tempPath.append(path.pop(0))
+			cachedPath.append(s)
 			if os.path.exists(viewsPath + '.xml'):
 				break
 			elif not os.path.isdir(viewsPath):
-				tempPath, URLpath = ['notFound'], []
+				cachedPath, URLpath = ['notFound'], []
 				break
-		return (tempPath, URLpath)
+		return (cachedPath, URLpath)
 
 	#lazy view objects creation
 	def getView(self,acenv):
