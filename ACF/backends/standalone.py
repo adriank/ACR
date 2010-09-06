@@ -44,11 +44,11 @@ def serve_static(env,start_response):
 		raise Exception("Application config not found!")
 	staticDir=os.path.join(path,"static")
 	try:
-		f=open(staticDir+env["PATH_INFO"])
+		f=open(os.path.join(staticDir,*env["PATH_INFO"].split("/")))
 	except:
 		status="404 Not Found"
 		extension="html"
-		f=open(staticDir+"/errorpages/404.html")
+		f=open(os.path.join(staticDir,"errorpages","404.html"))
 	try:
 		for line in f:
 			response.append(line)
