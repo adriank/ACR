@@ -153,7 +153,7 @@ class Application(object):
 		if acenv.viewPath[0] == 'notFound':
 			v = getObject(self.views, acenv.viewPath)
 			if v: return v
-		print 'view not in cache'
+		#print 'view not in cache'
 		v = View(acenv.viewPath, self)
 		setObject(self.views, acenv.viewPath, v)
 		if 'default' in acenv.inputs:
