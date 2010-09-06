@@ -121,17 +121,19 @@ class Application(object):
 
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
+	# TODO check if isdir and exists can be replaced with stat
 	def findViewFile(self, URLpath , cachedPath):
-		viewsPath = os.path.join(self.viewsPath, *cachedPath)
-		while True:
-			s = URLpath.pop(0)
-			viewsPath = os.path.join(viewsPath, s)
-			cachedPath.append(s)
-			if os.path.exists(viewsPath + '.xml'):
-				break
-			elif not os.path.isdir(viewsPath):
-				cachedPath, URLpath = ['notFound'], []
-				break
+		if URLpath:
+			viewsPath = os.path.join(self.viewsPath, *cachedPath)
+			while True:
+				s = URLpath.pop(0)
+				viewsPath = os.path.join(viewsPath, s)
+				cachedPath.append(s)
+				if os.path.exists(viewsPath + '.xml'):
+					break
+				if not os.path.isdir(viewsPath):
+					cachedPath, URLpath = ['notFound'], []
+					break
 		return (cachedPath, URLpath)
 
 	#lazy view objects creation
@@ -147,11 +149,11 @@ class Application(object):
 				if 'default' in acenv.inputs:
 					acenv.inputs.pop(-1)
 				return o
-		# view not in cache
 		(acenv.viewPath, acenv.inputs) = self.findViewFile(path[i:], path[:i])
 		if acenv.viewPath[0] == 'notFound':
 			v = getObject(self.views, acenv.viewPath)
 			if v: return v
+		print 'view not in cache'
 		v = View(acenv.viewPath, self)
 		setObject(self.views, acenv.viewPath, v)
 		if 'default' in acenv.inputs:
