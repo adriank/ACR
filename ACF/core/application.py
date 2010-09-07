@@ -121,7 +121,7 @@ class Application(object):
 		URLpath=acenv.URLpath# or ["default"]
 		if D: acenv.debug("checking if View at '%s' is cached"%("/".join(URLpath)))
 		(o, i)=dicttree.get(self.views, URLpath, False)
-		if o.has_key("default"):
+		if i==len(URLpath) and o is dict and o.has_key("default"):
 			o=o["default"]
 		#TODO handle an event when file was deleted; probably raises exception
 		if type(o) is View and o.isUpToDate():
@@ -139,6 +139,9 @@ class Application(object):
 				break
 			viewPath=temp
 			viewName.append(inputs.pop(0))
+		if D: acenv.debug("viewName: %s"%(viewName))
+		if D: acenv.debug("inputs: %s"%(inputs))
+		print pjoin(viewPath,inputs[0])+".xml"
 		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
 			viewName.append(inputs.pop(0))
 		elif os.path.exists(pjoin(viewPath,"default.xml")):

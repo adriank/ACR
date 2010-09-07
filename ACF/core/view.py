@@ -152,7 +152,7 @@ class View(object):
 
 	def fillPosts(self,acenv):
 		#TODO add default values support by doing ticket #13
-		if D: acenv.info("Create '%s' view",(self.name))
+		#if D: acenv.info("Create '%s' view",(self.name))
 		list=acenv.posts
 		if not self.posts or not len(self.posts):
 			#if D: log.debug("list of posts is empty. Returning 'True'.")
