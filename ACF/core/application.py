@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#@marcin: getView, checkRefresh, cacheView, findCachedView, findViewFile
-
+#@marcin: views subdirs implementation
 
 from ACF.utils.xmlextras import *
-from ACF.utils import getObject, setObject
+from ACF.utils import dicttree
+from ACF.utils import json
 from ACF.core.view import View
 from ACF.errors import *
 from ACF import components,serializers
@@ -29,16 +29,11 @@ from ACF.components import *
 from ACF.globals import MIMEmapper
 import time,os
 
-try:
-	import simplejson
-except:
-	pass
-
 D=False
 
 class Application(object):
 	appName=""
-	debug=None
+	dbg=None
 	prefix="ACF_"
 	storage=None
 	appDir=""
@@ -52,10 +47,10 @@ class Application(object):
 		self.views={}
 		self.lang="en"
 		self.langs=[]
-		self.viewsPath = os.path.join(appDir, "views")
+		self.viewsPath=os.path.join(appDir, "views")
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
-			self.configPath = os.path.join(appDir, "config.xml")
+			self.configPath=os.path.join(appDir, "config.xml")
 			self.timestamp=os.stat(self.configPath).st_mtime
 			config=xml2tree(self.configPath)
 		except IOError:
@@ -73,7 +68,7 @@ class Application(object):
 		self.domain="".join(config.get("/domain/text()") or ["localhost"])
 		debug=config.get("/debug")
 		if debug:
-			self.debug={
+			self.dbg={
 				"enabled":tpath(debug,"/enable/*[0]") or False,
 				"level":tpath(debug,"/level/*[0]") or "error",
 				"dbtimer":0,
@@ -96,9 +91,7 @@ class Application(object):
 
 	# checks if an application instance should be reloaded
 	def checkRefresh(self):
-		if self.timestamp < os.stat(self.configPath).st_mtime:
-			return True
-		return False
+		return self.timestamp < os.stat(self.configPath).st_mtime
 
 	def getDBConn(self):
 		if not self.DEFAULT_DB:
@@ -122,40 +115,45 @@ class Application(object):
 	# finds view file stored on hdd. Seperate view path from inputs.
 	# Algorithm is greedy, so it finds first view which suits url.
 	# TODO check if isdir and exists can be replaced with stat
-	def findViewFile(self, URLpath , cachedPath):
-		if URLpath:
-			viewsPath = os.path.join(self.viewsPath, *cachedPath)
-			while True:
-				s = URLpath.pop(0)
-				viewsPath = os.path.join(viewsPath, s)
-				cachedPath.append(s)
-				if os.path.exists(viewsPath + '.xml'):
-					break
-				if not os.path.isdir(viewsPath):
-					cachedPath, URLpath = ['notFound'], []
-					break
+	def findViewFile(self, cachedPath, URLpath):
+		viewsPath=os.path.join(self.viewsPath, *cachedPath)
+		while True:
+			try:
+				s=URLpath.pop(0)
+			except:
+				if os.path.exists(os.path.join(viewsPath,'default.xml')):
+					return (cachedPath+["default"],[])
+				else:
+					return (["notFound"],[])
+			viewsPath=os.path.join(viewsPath, s)
+			cachedPath.append(s)
+			if os.path.exists(viewsPath+'.xml'):
+				break
+			if not os.path.isdir(viewsPath):
+				cachedPath, URLpath=['notFound'], []
+				break
 		return (cachedPath, URLpath)
 
 	#lazy view objects creation
 	def getView(self,acenv):
-		path = acenv.URLpath or ['default']
-		if path[-1] is not 'default':
-			path.append('default') 
-		(o, i) = getObject(self.views, path, False)
-		if type(o) is View:
-			timestamp = os.stat(o.path).st_mtime
-			if timestamp <= o.timestamp:
-				acenv.viewPath, acenv.inputs = path[:i], path[i:]
-				if 'default' in acenv.inputs:
-					acenv.inputs.pop(-1)
-				return o
-		(acenv.viewPath, acenv.inputs) = self.findViewFile(path[i:], path[:i])
+		path=acenv.URLpath or ['default']
+		acenv.debug("checking if View %s is cached"%("/".join(path)))
+		(o, i)=dicttree.get(self.views, path, False)
+		#TODO handle an event when file was deleted; probably raises exception
+		if type(o) is View and o.isUpToDate():
+			acenv.inputs=path[i:]
+			print "from cache"
+			return o
+		acenv.info("View %s is not cached"%("/".join(path)))
+		print path[i:]
+		print path[:i]
+		(acenv.viewPath, acenv.inputs)=self.findViewFile(path[:i],path[i:])
 		if acenv.viewPath[0] == 'notFound':
-			v = getObject(self.views, acenv.viewPath)
+			v=dicttree.get(self.views, acenv.viewPath)
 			if v: return v
 		#print 'view not in cache'
-		v = View(acenv.viewPath, self)
-		setObject(self.views, acenv.viewPath, v)
+		v=View(acenv.viewPath, self)
+		dicttree.set(self.views, acenv.viewPath, v)
 		if 'default' in acenv.inputs:
 			acenv.inputs.pop(-1)
 		return v

@@ -5,8 +5,8 @@ import sys,time,random,base64,re
 from datetime import datetime, timedelta
 from ACF.errors import *
 from ACF.utils.hashcompat import md5_constructor
+from ACF.utils import dicttree
 from ACF import globals
-from ACF.utils.objecttree import *
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -40,7 +40,7 @@ def replaceVars(env,s):
 		except ValueError:
 			storage=getStorage(env,"rs")
 			path=p.split(".")
-		ret=getObject(storage,path)
+		ret=dicttree.get(storage,path)
 		if type(ret) is list:
 			return m.group(0)
 		if not ret:

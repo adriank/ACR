@@ -6,14 +6,14 @@
 
 import sys
 from cStringIO import StringIO
-from ACF.utils import getStorage,getObject
+from ACF.utils import getStorage,dicttree
 
-symbol_table = {}
+symbol_table={}
 
 class symbol_base(object):
-		id = None
-		value = None
-		first = second = third = None
+		id=None
+		value=None
+		first=second=third=None
 
 		def nud(self):
 				raise SyntaxError("Syntax error (%r)." % self.id)
@@ -37,7 +37,7 @@ class symbol_base(object):
 						return False
 					elif self.value=="None":
 						return None
-			out = [self.id, self.first, self.second, self.third]
+			out=[self.id, self.first, self.second, self.third]
 			ret=[]
 			for i in filter(None, out):
 				if type(i) is str:
@@ -53,58 +53,58 @@ class symbol_base(object):
 		#def __repr__(self):
 		#		if self.id == "(name)" or self.id == "(literal)":
 		#				return "(%s %s)" % (self.id[1:-1], self.value)
-		#		out = [self.id, self.first, self.second, self.third]
-		#		out = map(str, filter(None, out))
+		#		out=[self.id, self.first, self.second, self.third]
+		#		out=map(str, filter(None, out))
 		#		return "(" + " ".join(out) + ")"
 
 def symbol(id, bp=0):
 		try:
-				s = symbol_table[id]
+				s=symbol_table[id]
 		except KeyError:
 				class s(symbol_base):
 						pass
-				s.__name__ = "symbol-" + id # for debugging
-				s.id = id
-				s.value = None
-				s.lbp = bp
-				symbol_table[id] = s
+				s.__name__="symbol-" + id # for debugging
+				s.id=id
+				s.value=None
+				s.lbp=bp
+				symbol_table[id]=s
 		else:
-				s.lbp = max(bp, s.lbp)
+				s.lbp=max(bp, s.lbp)
 		return s
 
 # helpers
 
 def infix(id, bp):
 		def led(self, left):
-				self.first = left
-				self.second = expression(bp)
+				self.first=left
+				self.second=expression(bp)
 				return self
-		symbol(id, bp).led = led
+		symbol(id, bp).led=led
 
 def infix_r(id, bp):
 		def led(self, left):
-				self.first = left
-				self.second = expression(bp-1)
+				self.first=left
+				self.second=expression(bp-1)
 				return self
-		symbol(id, bp).led = led
+		symbol(id, bp).led=led
 
 def prefix(id, bp):
 		def nud(self):
-				self.first = expression(bp)
+				self.first=expression(bp)
 				return self
-		symbol(id).nud = nud
+		symbol(id).nud=nud
 
 def advance(id=None):
 		global token
 		if id and token.id != id:
 				raise SyntaxError("Expected %r" % id)
-		token = next()
+		token=next()
 
 def method(s):
 		# decorator
 		assert issubclass(s, symbol_base)
 		def bind(fn):
-				setattr(s, fn.__name__, fn) # 
+				setattr(s, fn.__name__, fn) #
 		return bind
 
 # python expression syntax
@@ -126,15 +126,15 @@ prefix("-", 130); prefix("+", 130); prefix("~", 130)
 #infix_r("**", 140)
 symbol(".", 150); symbol("[", 150); symbol("(", 150)
 # additional behaviour
-symbol("(name)").nud = lambda self: self
-symbol("(literal)").nud = lambda self: self
+symbol("(name)").nud=lambda self: self
+symbol("(literal)").nud=lambda self: self
 symbol("(end)")
 symbol(")")
 
 @method(symbol("("))
 def nud(self):
 		# parenthesized form; replaced by tuple former below
-		expr = expression()
+		expr=expression()
 		advance(")")
 		return expr
 
@@ -142,18 +142,18 @@ def nud(self):
 
 #@method(symbol("if"))
 #def led(self, left):
-#		self.first = left
-#		self.second = expression()
+#		self.first=left
+#		self.second=expression()
 #		advance("else")
-#		self.third = expression()
+#		self.third=expression()
 #		return self
 
 @method(symbol("."))
 def led(self, left):
 		if token.id != "(name)":
 			raise SyntaxError("Expected an attribute name.")
-		self.first = left
-		self.second = token
+		self.first=left
+		self.second=token
 		advance()
 		return self
 
@@ -165,17 +165,17 @@ def led(self, left):
 #def nud(self):
 #	global token
 #	advance("$")
-#	t = token # storage name or variable name
-#	token = next()
+#	t=token # storage name or variable name
+#	token=next()
 #	if token.id == ':': #there is a storage name
 #		advance(':')
 #		advance(':')
-#		if t.value.lower() not in ["ss","rs","session","request"]:   # 
+#		if t.value.lower() not in ["ss","rs","session","request"]:   #
 #			raise SyntaxError("Wrong storage name '"+t.value+"'.")
-#		self.first = t.value
-#		self.second = ""
+#		self.first=t.value
+#		self.second=""
 #	else: #there is not a storage name
-#		self.first = "rs"
+#		self.first="rs"
 #		self.second=t.value
 #	self.id="(variable)"
 #	while token.id in [".","(name)"]:
@@ -184,7 +184,7 @@ def led(self, left):
 #		else:
 #			self.second+="."
 #		advance()
-#	advance("}")	
+#	advance("}")
 #	return self
 
 # handling variables; e.g storage::a.b.c
@@ -194,7 +194,7 @@ symbol(":",150)
 def led(self, left):
 	global token
 	if type(left.value) is str:
-		if left.value.lower() not in ["ss","rs","session","request"]:   
+		if left.value.lower() not in ["ss","rs","session","request"]:
 			raise SyntaxError("Wrong storage name '"+left.value+"'.")
 	else:
 		raise SyntaxError("Storage name is not a name.")
@@ -214,8 +214,8 @@ symbol("]")
 
 @method(symbol("["))
 def led(self, left):
-		self.first = left
-		self.second = expression()
+		self.first=left
+		self.second=expression()
 		advance("]")
 		return self
 
@@ -223,8 +223,8 @@ symbol(")"); symbol(",")
 
 @method(symbol("("))
 def led(self, left):
-		self.first = left
-		self.second = []
+		self.first=left
+		self.second=[]
 		if token.id != ")":
 				while 1:
 						self.second.append(expression())
@@ -238,11 +238,11 @@ def led(self, left):
 
 #@method(symbol("lambda"))
 #def nud(self):
-#		self.first = []
+#		self.first=[]
 #		if token.id != ":":
 #				argument_list(self.first)
 #		advance(":")
-#		self.second = expression()
+#		self.second=expression()
 #		return self
 
 #def argument_list(list):
@@ -265,8 +265,8 @@ def led(self, left):
 def constant(id):
 	@method(symbol(id))
 	def nud(self):
-		self.id = "(literal)"
-		self.value = id
+		self.id="(literal)"
+		self.value=id
 		return self
 
 constant("None")
@@ -280,26 +280,26 @@ def led(self, left):
 		if token.id != "in":
 				raise SyntaxError("Invalid syntax")
 		advance()
-		self.id = "not in"
-		self.first = left
-		self.second = expression(60)
+		self.id="not in"
+		self.first=left
+		self.second=expression(60)
 		return self
 
 @method(symbol("is"))
 def led(self, left):
 		if token.id == "not":
 				advance()
-				self.id = "is not"
-		self.first = left
-		self.second = expression(60)
+				self.id="is not"
+		self.first=left
+		self.second=expression(60)
 		return self
 
 # displays
 
 @method(symbol("("))
 def nud(self):
-		self.first = []
-		comma = False
+		self.first=[]
+		comma=False
 		if token.id != ")":
 				while 1:
 						if token.id == ")":
@@ -307,7 +307,7 @@ def nud(self):
 						self.first.append(expression())
 						if token.id != ",":
 								break
-						comma = True
+						comma=True
 						advance(",")
 		advance(")")
 		if not self.first or comma:
@@ -319,7 +319,7 @@ symbol("]")
 
 @method(symbol("["))
 def nud(self):
-		self.first = []
+		self.first=[]
 		if token.id != "]":
 				while 1:
 						if token.id == "]":
@@ -335,7 +335,7 @@ def nud(self):
 #
 #@method(symbol("{"))
 #def nud(self):
-#		self.first = []
+#		self.first=[]
 #		if token.id != "}":
 #				while 1:
 #						if token.id == "}":
@@ -352,7 +352,7 @@ def nud(self):
 # python tokenizer
 def tokenize_python(program):
 	import tokenize
-	type_map = {
+	type_map={
 		tokenize.NUMBER: "(literal)",
 		tokenize.STRING: "(literal)",
 		tokenize.OP: "(operator)",
@@ -374,23 +374,23 @@ def tokenize_python(program):
 
 def tokenize(program):
 		if isinstance(program, list):
-				source = program
+				source=program
 		else:
-				source = tokenize_python(program)
+				source=tokenize_python(program)
 		for id, value in source:
 				if id == "(literal)":
-						symbol = symbol_table[id]
-						s = symbol()
-						s.value = value
+						symbol=symbol_table[id]
+						s=symbol()
+						s.value=value
 				else:
 						# name or operator
-						symbol = symbol_table.get(value)
+						symbol=symbol_table.get(value)
 						if symbol:
-								s = symbol()
+								s=symbol()
 						elif id == "(name)":
-								symbol = symbol_table[id]
-								s = symbol()
-								s.value = value
+								symbol=symbol_table[id]
+								s=symbol()
+								s.value=value
 						else:
 								raise SyntaxError("Unknown operator (%r)" % id)
 				yield s
@@ -398,21 +398,21 @@ def tokenize(program):
 # parser engine
 def expression(rbp=0):
 	global token
-	t = token
-	token = next()
-	left = t.nud()
+	t=token
+	token=next()
+	left=t.nud()
 	while rbp < token.lbp:
-			t = token
-			token = next()
-			left = t.led(left)
+			t=token
+			token=next()
+			left=t.led(left)
 	return left
 
 def make_tree(program):
 	if type(program) is not str:
 		return program
 	global token, next
-	next = tokenize(program).next
-	token = next()
+	next=tokenize(program).next
+	token=next()
 	return expression().getTree()
 
 def execute(acenv,tree):

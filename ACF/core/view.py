@@ -60,7 +60,6 @@ class View(object):
 			tree=xml2tree(self.path)
 		except Exception,e:
 			self.immutable=True
-			raise e
 			raise ViewNotFound("view '%s' not found"%(name))
 		#the order of inputs is meaningful - needs to be list
 		ns={}
@@ -105,6 +104,11 @@ class View(object):
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
+
+	def isUpToDate(self):
+		#print self.timestamp
+		#print os.stat(self.path).st_mtime
+		return self.timestamp >= os.stat(self.path).st_mtime
 
 	def parseActions(self,a):
 		ret=[]

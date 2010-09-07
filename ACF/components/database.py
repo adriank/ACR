@@ -83,10 +83,10 @@ class DataBase(Component):
 
 	def generate(self,env,actionConf):
 		env.info("Component: 'DB'")
-		D=env.debug
-		if D: env.dbg("start with actionConf=%s",actionConf)
+		D=env.dbg
+		if D: env.debug("start with actionConf=%s",actionConf)
 		multiRequest=[]
-		if D: env.dbg("Doing escapeString on data")
+		if D: env.debug("Doing escapeString on data")
 		data=env.requestStorage.copy()
 		for i in data:
 			if D: env.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
@@ -95,23 +95,23 @@ class DataBase(Component):
 			else:
 				data[i]=db.escapeString(str(data[i]))
 		query=replaceVars(env,actionConf['query'])
-		if D: env.dbg("replaceVars returned '%s'",query)
+		if D: env.debug("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
 		if len(multiRequest)>0:
 			if D: env.info("multirequest detected")
 			query=self.evaluateMR(env,query,multiRequest)
-			if D: env.dbg("evaluateMR returned %s",query)
+			if D: env.debug("evaluateMR returned %s",query)
 		else:
-			if D: env.dbg("multiRequest not needed")
+			if D: env.debug("multiRequest not needed")
 		if D: env.info("Querying database with '%s'",query)
 		if True: #env.debug:
 			t=time.time()
 		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
 		#if True: #env.debug:
 		#	env.debug["dbtimer"]+=time.time()-t
-		if D: env.dbg("'query' returned %s",result)
+		if D: env.debug("'query' returned %s",result)
 		if result:
-			if D: env.dbg("Creating list of ordered dicts.")
+			if D: env.debug("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
 			first=True #for debugging purposes
 			ret=[]

@@ -50,7 +50,7 @@ class Environment(object):
 	doRedirect=False
 	redirect=False
 	tree=None
-	debug=False
+	dbg=False
 	_debugStr=None
 	dbgfn=None
 	level=10
@@ -93,7 +93,7 @@ class Environment(object):
 				s.append(str(i)+": "+str(d[i]))
 		return "Environment("+", ".join(s)+")"
 
-	def dbg(self, *s):
+	def debug(self, *s):
 		if self.dbgfn and self.level <= self.DEBUG:
 			self.dbgfn("DEBUG", s)
 
