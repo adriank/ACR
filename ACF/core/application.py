@@ -29,6 +29,9 @@ from ACF.components import *
 from ACF.globals import MIMEmapper
 import time,os
 
+pjoin=os.path.join
+pexists=os.path.exists
+pisdir=os.path.isdir
 D=False
 
 class Application(object):
@@ -112,64 +115,40 @@ class Application(object):
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
-	# finds view file stored on hdd. Seperate view path from inputs.
-	# Algorithm is greedy, so it finds first view which suits url.
-	# TODO check if isdir and exists can be replaced with stat
-	def findViewFile(self, cachedPath, URLpath):
-		viewsPath=os.path.join(self.viewsPath, *cachedPath)
-		while True:
-			try:
-				s=URLpath.pop(0)
-			except:
-				if os.path.exists(os.path.join(viewsPath,'default.xml')):
-					return (cachedPath+["default"],[])
-				else:
-					return (["notFound"],[])
-			viewsPath=os.path.join(viewsPath, s)
-			cachedPath.append(s)
-			if os.path.exists(viewsPath+'.xml'):
-				break
-			if not os.path.isdir(viewsPath):
-				cachedPath, URLpath=['notFound'], []
-				break
-		return (cachedPath, URLpath)
-
 	#lazy view objects creation
 	def getView(self,acenv):
-		URLpath=acenv.URLpath
-		pjoin=os.path.join
-		pexists=os.path.exists
+		D=acenv.dbg
+		URLpath=acenv.URLpath# or ["default"]
 		if D: acenv.debug("checking if View at '%s' is cached"%("/".join(URLpath)))
 		(o, i)=dicttree.get(self.views, URLpath, False)
+		if o.has_key("default"):
+			o=o["default"]
 		#TODO handle an event when file was deleted; probably raises exception
 		if type(o) is View and o.isUpToDate():
 			acenv.inputs=URLpath[i:]
 			if D: acenv.info("View %s taken from cache"%("/".join(URLpath)))
-			#return o
+			return o
 
 		if D: acenv.info("View %s is not cached"%("/".join(URLpath)))
-		print ""
-		print URLpath[:i]
-		print URLpath[i:]
 		viewPath=pjoin(self.viewsPath, *URLpath[:i])
-		print viewPath
-
-		if pexists(viewPath+".xml"):
-			acenv.viewPath, acenv.inputs=path[:i],path[i:]
+		viewName,inputs=URLpath[:i],URLpath[i:]
+		temp=viewPath
+		while len(inputs):
+			temp=pjoin(temp, inputs[0])
+			if not pisdir(temp):
+				break
+			viewPath=temp
+			viewName.append(inputs.pop(0))
+		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
+			viewName.append(inputs.pop(0))
+		elif os.path.exists(pjoin(viewPath,"default.xml")):
+			viewName.append("default")
 		else:
-			while True:
-				key=URLpath.pop(0)
-
-		(acenv.viewPath, acenv.inputs)=self.findViewFile(path[:i],path[i:])
-		print acenv.viewPath
-		print acenv.inputs
-		if acenv.viewPath[0]=='notFound':
-			v=dicttree.get(self.views, acenv.viewPath)
-			if v:
-				return v
-		#print 'view not in cache'
-		v=View(acenv.viewPath, self)
-		dicttree.set(self.views, acenv.viewPath, v)
+			inputs=["/".join(viewName)]
+			viewName=["notFound"]
+		acenv.viewPath=viewName
+		v=View(viewName, self)
+		dicttree.set(self.views, viewName, v)
 		return v
 
 	#will be generator

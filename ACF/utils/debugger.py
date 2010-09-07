@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 class Debugger(object):
-	dbg=False
+	dbg=True
 	_debugStr=None
 	dbgfn=None
 	level=60
@@ -11,7 +11,7 @@ class Debugger(object):
 	WARNING=30
 	INFO=20
 	DEBUG=10
-	
+
 	def __init__(self, app):
 		self._debugStr=[]
 		self.dbgfn = self.consolelog
@@ -21,7 +21,7 @@ class Debugger(object):
 				self.level = self.dbgMap[app.dbg["level"].lower()]
 		except (KeyError, TypeError):
 			print 'Cannot read debug settings from app config.'
-	
+
 	def debug(self, *s):
 		if self.dbgfn and self.level <= self.DEBUG:
 			self.dbgfn("DEBUG", s)
