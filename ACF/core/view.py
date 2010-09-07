@@ -48,13 +48,13 @@ def parseParams(nodes):
 class View(object):
 	#timestamp=0 #file modification timestamp
 	#path="" file path
-	def __init__(self,name,app):
+	def __init__(self, name, app):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.immutable=False
 		self.name="/".join(name)
 		self.app=app
-		self.path=os.path.join(app.appDir,"views",self.name+".xml")
+		self.path=os.path.join(app.viewsPath,*name)+".xml"
 		try:
 			self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)

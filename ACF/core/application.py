@@ -136,16 +136,33 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,acenv):
-		path=acenv.URLpath or ['default']
-		acenv.debug("checking if View %s is cached"%("/".join(path)))
-		(o, i)=dicttree.get(self.views, path, False)
+		URLpath=acenv.URLpath
+		pjoin=os.path.join
+		pexists=os.path.exists
+		if D: acenv.debug("checking if View at '%s' is cached"%("/".join(URLpath)))
+		(o, i)=dicttree.get(self.views, URLpath, False)
 		#TODO handle an event when file was deleted; probably raises exception
 		if type(o) is View and o.isUpToDate():
-			acenv.inputs=path[i:]
-			env.info("View %s taken from cache"%("/".join(path)))
-			return o
-		acenv.info("View %s is not cached"%("/".join(path)))
+			acenv.inputs=URLpath[i:]
+			if D: acenv.info("View %s taken from cache"%("/".join(URLpath)))
+			#return o
+
+		if D: acenv.info("View %s is not cached"%("/".join(URLpath)))
+		print ""
+		print URLpath[:i]
+		print URLpath[i:]
+		viewPath=pjoin(self.viewsPath, *URLpath[:i])
+		print viewPath
+
+		if pexists(viewPath+".xml"):
+			acenv.viewPath, acenv.inputs=path[:i],path[i:]
+		else:
+			while True:
+				key=URLpath.pop(0)
+
 		(acenv.viewPath, acenv.inputs)=self.findViewFile(path[:i],path[i:])
+		print acenv.viewPath
+		print acenv.inputs
 		if acenv.viewPath[0]=='notFound':
 			v=dicttree.get(self.views, acenv.viewPath)
 			if v:
@@ -153,8 +170,6 @@ class Application(object):
 		#print 'view not in cache'
 		v=View(acenv.viewPath, self)
 		dicttree.set(self.views, acenv.viewPath, v)
-		if 'default' in acenv.inputs:
-			acenv.inputs.pop(-1)
 		return v
 
 	#will be generator
