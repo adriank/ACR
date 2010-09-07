@@ -19,9 +19,9 @@
 
 from ACF.core.view import View
 from ACF.utils.xmlextras import tpath
+from ACF.utils.debugger import Debugger
 
-# move debugger into separate class and inherit from it
-class Environment(object):
+class Environment(Debugger):
 	"""
 	The Environment object is a structure of data which is passed through whole application. Each function manipulates its contents and passes it to next function. After application execution is done, Environment instance is deleted. This way framework is thread-safe, because there can be many Environment instances in the system at the particular moment.
 	The prototype for Environment instances properties is the Application instance.
@@ -50,17 +50,9 @@ class Environment(object):
 	doRedirect=False
 	redirect=False
 	tree=None
-	dbg=False
-	_debugStr=None
-	dbgfn=None
-	level=10
-	CRITICAL=50
-	ERROR=40
-	WARNING=30
-	INFO=20
-	DEBUG=10
 
 	def __init__(self,app):
+		super(Environment, self).__init__()
 		self.generations={}
 		self.mime=[]
 		self.URLpath=[]
@@ -71,9 +63,7 @@ class Environment(object):
 		self.cookies={}
 		self.inputs=[]
 		self.posts={}
-		#self.debug=app.debug.copy()
 		self.app=app
-		self._debugStr=[]
 
 	def setLang(self,lang):
 		if not lang:
@@ -92,31 +82,3 @@ class Environment(object):
 			if i[0]!="_" and not hasattr(d[i], '__call__'):
 				s.append(str(i)+": "+str(d[i]))
 		return "Environment("+", ".join(s)+")"
-
-	def debug(self, *s):
-		if self.dbgfn and self.level <= self.DEBUG:
-			self.dbgfn("DEBUG", s)
-
-	def info(self, *s):
-		if self.dbgfn and self.level <= self.INFO:
-			self.dbgfn("INFO", s)
-
-	def warning(self, *s):
-		if self.dbgfn and self.level <= self.WARNING:
-			self.dbgfn("WARNING", s)
-
-	def error(self, *s):
-		if self.dbgfn and self.level <= self.ERROR:
-			self.dbgfn("ERROR", s)
-
-	def	critical(self, *s):
-		if self.dbgfn and self.level<= self.CRITICAL:
-			self.dbgfn("CRITICAL", s)
-
-	def consolelog(self, lvl, s):
-		if len(s)>1:
-			self._debugStr.append((lvl, s[0] % s[1:]))
-			#print msg+": ", s[0] % s[1:]
-		#else:
-			#self._debugStr.append((lvl, s[0]))
-			#print msg+": ",s[0]
