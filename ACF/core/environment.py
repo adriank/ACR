@@ -52,7 +52,7 @@ class Environment(Debugger):
 	tree=None
 
 	def __init__(self,app):
-		super(Environment, self).__init__()
+		super(Environment, self).__init__(app)
 		self.generations={}
 		self.mime=[]
 		self.URLpath=[]
