@@ -141,15 +141,14 @@ class Application(object):
 			viewName.append(inputs.pop(0))
 		if D: acenv.debug("viewName: %s"%(viewName))
 		if D: acenv.debug("inputs: %s"%(inputs))
-		print pjoin(viewPath,inputs[0])+".xml"
 		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
 			viewName.append(inputs.pop(0))
-		elif os.path.exists(pjoin(viewPath,"default.xml")):
+		elif not inputs and os.path.exists(pjoin(viewPath,"default.xml")):
 			viewName.append("default")
 		else:
-			inputs=["/".join(viewName)]
 			viewName=["notFound"]
 		acenv.viewPath=viewName
+		acenv.inputs=inputs
 		v=View(viewName, self)
 		dicttree.set(self.views, viewName, v)
 		return v

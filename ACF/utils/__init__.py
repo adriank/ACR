@@ -44,7 +44,7 @@ def replaceVars(env,s):
 		if type(ret) is list:
 			return m.group(0)
 		if not ret:
-			raise Exception((storageName or "rs")+" storage does not have "+path+" property")
+			raise Exception((storageName or "rs")+" storage does not have "+".".join(path)+" property")
 		return str(ret)
 
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster
