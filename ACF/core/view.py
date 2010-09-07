@@ -52,7 +52,7 @@ class View(object):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.immutable=False
-		self.name=os.path.join(*name)
+		self.name="/".join(name)
 		self.app=app
 		self.path=os.path.join(app.appDir,"views",self.name+".xml")
 		try:

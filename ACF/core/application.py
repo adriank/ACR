@@ -142,15 +142,14 @@ class Application(object):
 		#TODO handle an event when file was deleted; probably raises exception
 		if type(o) is View and o.isUpToDate():
 			acenv.inputs=path[i:]
-			print "from cache"
+			env.info("View %s taken from cache"%("/".join(path)))
 			return o
 		acenv.info("View %s is not cached"%("/".join(path)))
-		print path[i:]
-		print path[:i]
 		(acenv.viewPath, acenv.inputs)=self.findViewFile(path[:i],path[i:])
-		if acenv.viewPath[0] == 'notFound':
+		if acenv.viewPath[0]=='notFound':
 			v=dicttree.get(self.views, acenv.viewPath)
-			if v: return v
+			if v:
+				return v
 		#print 'view not in cache'
 		v=View(acenv.viewPath, self)
 		dicttree.set(self.views, acenv.viewPath, v)
