@@ -25,10 +25,8 @@ from ACF.utils import getStorage
 from ACF.utils.interpreter import execute,make_tree
 from ACF.utils.checktype import checkType
 from ACF.components import Object, List
-import logging
 import os
 
-log=logging.getLogger('ACF.core.View')
 D=True#logging.doLog
 DEFINE="define"
 SET="set"
@@ -48,8 +46,8 @@ def parseParams(nodes):
 	return ret
 
 class View(object):
-#	timestamp=0 #file modification timestamp
-	path="" #file path
+	#timestamp=0 #file modification timestamp
+	#path="" file path
 	def __init__(self,name,app):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
@@ -62,6 +60,7 @@ class View(object):
 			tree=xml2tree(self.path)
 		except Exception,e:
 			self.immutable=True
+			raise e
 			raise ViewNotFound("view '%s' not found"%(name))
 		#the order of inputs is meaningful - needs to be list
 		ns={}
