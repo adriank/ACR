@@ -106,8 +106,6 @@ class View(object):
 		self.immutable=True
 
 	def isUpToDate(self):
-		#print self.timestamp
-		#print os.stat(self.path).st_mtime
 		return self.timestamp >= os.stat(self.path).st_mtime
 
 	def parseActions(self,a):
