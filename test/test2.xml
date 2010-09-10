@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root name="simple" dir="foo/bar">
+	<node kind="int">
+		<value>2222</value>
+		<out where="std"/>
+	</node>
+</root>

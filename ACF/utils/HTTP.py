@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#@marcin: docstrings
+
 import urllib,time
 from ACF.utils.xmlextras import escapeQuotes
 from ACF import globals
@@ -24,30 +26,11 @@ from email.Utils import formatdate
 
 D=False
 
-def parseURL(path):
-	"""
-	path is: /val/val/
-	returns tuple:
-	(viewName,viewData[])
-	"""
-	path=path.strip()
-	if D: log.info("Parsing URL path section %s",path)
-	if not len(path):
-		if D: log.info("Path empty. Changing to default View")
-		return ("default",None)
-	t=path.split("/")
-	if t[0].isspace() or len(t[0]) is 0:
-		t=t[1:]
-	if t[len(t)-1].isspace() or len(t[len(t)-1]) is 0:
-		t=t[:len(t)-1]
-	if len(t) is 0:
-		return ("default",None)
-	return (t[0],t[1:])
-
 def parsePOST(s):
 	"""
-	returns:
-	d={name:val}
+	Parse url posts, from url string.
+	input: url containing post inputs distanced by '&' character, each one is name=val
+	returns: dict {name1:val1, name2:val2, ..., name_n:val_n}
 	"""
 	if D: log.info("Parsing POST data: %s",escapeQuotes(s))
 	t=str(s).split("&")
@@ -85,6 +68,11 @@ def parseMultipart(f,tag):
 	#raise str(ret)
 
 def printHeaders(headers):
+	"""
+	Convert htttp headers from list to string.
+	input: list containing http headers, each header is also list which length is 2.
+	output: multi-line string, each line is a pair of words distanced by ':' delimeter
+	"""
 	if D: log.debug("Printing headers")
 	t=[]
 	h=headers
@@ -94,8 +82,8 @@ def printHeaders(headers):
 
 def getCookieDate(epoch_seconds=None):
 	"""
-	input time.time()
-	returns 'Wdy, DD-Mon-YYYY HH:MM:SS GMT'.
+	input: time.time()
+	returns: 'Wdy, DD-Mon-YYYY HH:MM:SS GMT'.
 	"""
 	if D: log.debug("getCookieDate")
 	rfcdate = formatdate(epoch_seconds)
@@ -116,7 +104,13 @@ def parseCookies(acenv,s):
 			d[t2[0]]=escapeQuotes(urllib.unquote(t2[1].replace("+"," ")))
 	return d
 
-def setCookie(acenv,cookie):
+def setCookie(acenv,cookie, test=False):
+	"""
+	Inserts a cookie to globals.request.headers.
+	input: an Environment object's instance and dict.
+	returns: if optional parameter test is set, returns headers.
+					 otherwise, returns None
+	"""
 	if D: log.debug("Adding %s to globals.request.headers",cookie)
 	s=acenv.prefix+cookie['name']+"="+cookie['value']
 	if cookie.has_key("date"):
@@ -127,5 +121,7 @@ def setCookie(acenv,cookie):
 		s+="; expires="+getCookieDate(date)
 	if cookie.has_key("path"):
 		s+="; path="+cookie["path"]
-	log.info("Added Set-Cookie:%s",s)
+	if D: log.info("Added Set-Cookie:%s",s)
 	globals.request.headers.append(("Set-Cookie",s))
+	if test:
+		return globals.request.headers

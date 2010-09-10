@@ -39,3 +39,9 @@ MIMEmapper={
 	"application/json":"json",
 	"application/xhtml+xml":"objectml"
 }
+
+class Request:
+	def __init__(self):
+		self.headers = []
+		
+request = Request()

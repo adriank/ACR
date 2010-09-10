@@ -17,12 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#@marcin: functions docstrings
+
 import re
 
 EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
 #COLOR_RE=re.compile("^?([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?$")
 
 def checkType(datatype, s):
+	"""
+	Checks data.
+	input: type of data ['number' | 'text' | 'email' | 'password' | 'hexcolor' | 'csv'] and data which should be checked
+	returns: True if checking was succesfull, otherwise False
+	"""
 	#log.debug("Type checking with type '%s' and value='%s'",datatype,s)
 	if datatype == "number":
 		return s.strip().isdigit()
@@ -32,7 +39,7 @@ def checkType(datatype, s):
 		if len(s)>5: # shortest is a@a.pl == 6 letters
 			return EMAIL_RE.match(s)
 		else:
-			log.info("E-mail has to few characters")
+			#log.info("E-mail has to few characters")
 			return False
 	elif datatype=="password":
 		return len(s)>0

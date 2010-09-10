@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import ACF.test.test
+from test import doTests
 
 # starts all test suites
-ACF.test.test.doTests()
+doTests()

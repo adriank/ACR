@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#TODO move dbgMap outside
+
 class Debugger(object):
 	dbg=True
 	_debugStr=None

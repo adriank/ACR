@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #TODO; remove tpath
+#@marcin: functions docstrings
 
 from xml.sax import make_parser, handler
 from ACF.errors import Error
@@ -39,9 +40,19 @@ class ObjectTree(tuple):
 
 #TO-C
 def escapeQuotes(s):
+	"""
+	Escape characters '<', '>', '\'', '"', '&' in s
+	input: string
+	returns: string with escaped characters
+	"""
 	return escape(unescape(s,unescapeDict),escapeDict)
 
 def str2obj(s):
+	"""
+	Converts string to an object.
+	input: string
+	returns: object which was converted or the same string's object representation as in input
+	"""
 	r=s.strip().lower()
 	if r=="true" or r=="t":
 		return True
@@ -54,6 +65,11 @@ def str2obj(s):
 
 #TO-C
 def tree2xml(root):
+	"""
+	Converts xml tree to a xml.
+	input: xml tree
+	returns: xml tree parsed to a xml
+	"""
 	def rec(node,tab):
 		if type(node) in [Object,List]:
 			tag=node.__class__.__name__.lower()
@@ -87,8 +103,11 @@ def tree2xml(root):
 	rec(root,tab)
 	return "".join(tab)
 
-#gives last item of any iterable object
+
 def last(iterable):
+	"""
+	Gives last item of any iterable object.
+	"""
 	return iterable[len(iterable)-1]
 
 #need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
@@ -133,6 +152,11 @@ class Reader(handler.ContentHandler):
 		self.path.pop()
 
 def xml2tree(xmlfile):
+	"""
+	Parses xml resource to xml tree.
+	input: xml file or url resource
+	returns: xml tree
+	"""
 	parser=make_parser()
 	r=Reader()
 	parser.setContentHandler(r)
@@ -181,6 +205,11 @@ def tpath(root,path):
 	return ret
 
 def NS2Tuple(s,delimiter=":"):
+	"""
+	Distance namespace from its other part.
+	input: xml-like namespace in a string
+	returns: tuple (namespace: rest)
+	"""
 	try:
 		ns,action=s.split(delimiter)
 	except:
