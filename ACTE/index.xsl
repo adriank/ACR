@@ -52,73 +52,85 @@
 			<!--<x:if test="$role='admin'">-->
 			<!--	<link href="http://e.acimg.eu/css/admin.css" rel="stylesheet" type="text/css"/>-->
 			<!--</x:if>-->
-			<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.1.2/build/yui/yui-min.js&amp;3.1.2/build/loader/loader-min.js"></script>
-			<!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.1.2/build/yui/yui-min.js&amp;3.1.2/build/loader/loader-rollup-min.js&amp;3.1.2/build/loader/loader-yui3-min.js"></script>-->
+			<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js&amp;3.2.0/build/loader/loader-min.js"></script>
 			<script type="text/javascript" src="/js/init.js"/>
 			<script type="text/javascript"><x:value-of select="$doc//*[@name='acf:layout']/script"/></script>
 		</head>
 		<body>
-			<x:call-template name="layout">
-				<x:with-param name="layout" select="$configdoc/layout"/>
-			</x:call-template>
+			<x:apply-templates select="$configdoc/layout"/>
+			<!--<x:call-template name="layout">-->
+			<!--	<x:with-param name="layout" select="$configdoc/layout"/>-->
+			<!--</x:call-template>-->
 			<x:if test="count(//error)">
 				<x:copy-of select="//error"/>
+			</x:if>
+			<x:if test="$doc/object[@name='acf:user']/@role='admin'">
+				<div id="accms_admin"/>
 			</x:if>
 		</body>
 		</html>
 	</x:template>
 
-	<x:template name="layout">
-		<x:param name="layout"/>
-		<x:for-each select="$layout/*">
-			<x:if test="local-name()='container'">
-				<x:variable name="width">
-					<x:choose>
-						<x:when test="count(@width)"><x:value-of select="@width"/></x:when>
-						<x:otherwise><x:value-of select="$configdoc/defaultwidth/node()"/></x:otherwise>
-					</x:choose>
-				</x:variable>
-				<div class="container w{$width} {@name}">
-					<x:call-template name="layout">
-						<x:with-param name="layout" select="."/>
-					</x:call-template>
-				</div>
-			</x:if>
-			<x:if test="local-name()='column'">
-				<div class="column {@type} {@name}">
-					<x:call-template name="layout">
-						<x:with-param name="layout" select="."/>
-					</x:call-template>
-				</div>
-			</x:if>
-			<x:if test="local-name()='widget'">
-				<x:variable name="tag">
-					<x:if test="count(@tag)"><x:value-of select="@tag"/></x:if>
-					<x:if test="count(@tag)=0">div</x:if>
-				</x:variable>
-				<x:element name="{$tag}">
-					<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
-					<x:attribute name="id"><x:value-of select="@name"/></x:attribute>
-					<!-- context changing for-each -->
-					<x:for-each select="before/node()">
-						<x:call-template name="template">
-							<x:with-param name="datasource" select="."/>
-						</x:call-template>
-					</x:for-each>
-					<x:apply-templates mode="widget" select="."/>
-					<x:for-each select="after/node()">
-						<x:call-template name="template">
-							<x:with-param name="datasource" select="."/>
-						</x:call-template>
-					</x:for-each>
-				</x:element>
-			</x:if>
-			<x:if test="local-name()='body'">
-				<x:call-template name="layout">
-					<x:with-param name="layout" select="$layoutdoc"/>
+	<x:template match="container">
+		<x:variable name="width">
+			<x:choose>
+				<x:when test="count(@width)"><x:value-of select="@width"/></x:when>
+				<x:otherwise><x:value-of select="$configdoc/defaultwidth/node()"/></x:otherwise>
+			</x:choose>
+		</x:variable>
+		<div class="container w{$width} {@name}">
+			<x:apply-templates select="./*"/>
+		</div>
+	</x:template>
+
+	<x:template match="column">
+		<div class="column {@type} {@name}">
+			<x:apply-templates select="./*"/>
+		</div>
+	</x:template>
+
+	<!-- This is temporary -->
+	<x:template match="body">
+		<x:apply-templates select="$layoutdoc"/>
+	</x:template>
+
+	<x:template match="widget">
+		<x:variable name="datasource" select="$doc/*[@name=current()/@datasource]"/>
+		<x:variable name="tag">
+			<x:choose>
+				<x:when test="count(@tag)"><x:value-of select="@tag"/></x:when>
+				<x:otherwise>div</x:otherwise>
+			</x:choose>
+		</x:variable>
+		<x:element name="{$tag}">
+			<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
+			<x:attribute name="id"><x:value-of select="@name"/></x:attribute>
+			<!-- context changing for-each -->
+			<x:for-each select="before/node()">
+				<x:call-template name="template">
+					<x:with-param name="datasource" select="."/>
 				</x:call-template>
-			</x:if>
-		</x:for-each>
+			</x:for-each>
+			<x:choose>
+				<x:when test="local-name($datasource)='list'">
+					<x:variable name="this" select="."/>
+					<x:for-each select="$datasource/object">
+						<x:apply-templates mode="widget" select="$this">
+							<x:with-param name="datasource" select="."/>
+						</x:apply-templates>
+					</x:for-each>
+				</x:when>
+				<x:otherwise>
+					<x:apply-templates mode="widget" select="."/>
+				</x:otherwise>
+			</x:choose>
+
+			<x:for-each select="after/node()">
+				<x:call-template name="template">
+					<x:with-param name="datasource" select="."/>
+				</x:call-template>
+			</x:for-each>
+		</x:element>
 	</x:template>
 
 <!-- TODO add required fields support -->

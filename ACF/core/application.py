@@ -174,7 +174,10 @@ class Application(object):
 		view=self.getView(acenv)
 		view.generate(acenv)
 		#this is little faster than Object
-		acenv.generations["acf:lang"]=("object",{"name":"acf:lang","current":acenv.lang,"supported":",".join(acenv.langs)},None)
+		langs=[]
+		for i in acenv.langs:
+			langs.append((i,None,None))
+		acenv.generations["acf:lang"]=("object",{"name":"acf:lang","current":acenv.lang},langs)
 		acenv.generations["acf:domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain,"config":acenv.outputConfig},None)
 		#temporary error handling
 		if acenv.sessionStorage:

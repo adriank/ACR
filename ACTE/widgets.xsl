@@ -52,11 +52,6 @@
 	</x:template>
 
 
-	<x:template match="@lang" mode="schema">
-			<div class="lang"><x:value-of select="$langdoc/words/language"/>: <img src="http://e.fstatic.eu/flags/{.}.png" alt="{.}"/>
-			</div>
-	</x:template>
-
 	<x:template match="@create_date|@modification_date" mode="schema">
 			<x:value-of select="concat(substring(.,0,11),' ',substring(.,11,6))"/>
 	</x:template>
@@ -86,99 +81,21 @@
 			</x:if>
 		</x:if>
 	</x:template>
-<!-- TODO delete logo widget -->
-	<x:template match="widget[@type='logo']" mode="widget">
-		<a href="{$domain}">
-			<x:copy-of select="./node()"/>
-		</a>
-	</x:template>
-
 	<x:template match="widget[@type='selectLang']" mode="widget">
 		<ul>
-			<x:for-each select="$doc/langs/*">
+			<x:for-each select="$doc/object[@name='acf:lang']/*">
 				<li>
 					<x:choose>
-						<x:when test="local-name()=$doc/langs/@current">
-							<img alt="{local-name()}" src="http://e.fstatic.eu/flags/{local-name()}.png"/>
+						<x:when test="local-name()=$doc/object[@name='acf:lang']/@current">
+							<img alt="{local-name()}" src="http://e.acimg.eu/flags/{local-name()}.png"/>
 						</x:when>
 						<x:otherwise>
-							<a href="/changeLanguage/{local-name()}"><img alt="{local-name()}" src="http://e.fstatic.eu/flags/{local-name()}.png"/></a>
+							<a href="/changeLanguage/{local-name()}"><img alt="{local-name()}" src="http://e.acimg.eu/flags/{local-name()}.png"/></a>
 						</x:otherwise>
 					</x:choose>
 				</li>
 			</x:for-each>
 		</ul>
-		<x:value-of select="$langdoc/words/language/node()"/>:
-	</x:template>
-
-	<x:template match="chapter" mode="article">
-		<div class="chapter"><x:apply-templates mode="article"/></div>
-	</x:template>
-
-	<x:template match="source" mode="article">
-		<div class="source">
-			<pre>
-				<x:if test="count(@lang)">
-					<x:attribute name="class">sh_<x:value-of select="@lang"/></x:attribute>
-				</x:if>
-				<x:copy-of select="./node()"/></pre>
-		</div>
-	</x:template>
-
-	<x:template match="ol|ul|img|table|code|p|span|a" mode="article">
-		<x:copy-of select="."/>
-	</x:template>
-
-	<x:template match="title" mode="article">
-		<a name="{.}"/>
-		<x:element name="h{count(ancestor::chapter)+1}"><x:apply-templates mode="article" select="./node()"/></x:element>
-	</x:template>
-
-	<x:template name="toc">
-		<ol class="toc">
-			<x:for-each select="chapter">
-				<li>
-					<a class="toc" href="#{title}"><x:apply-templates mode="article" select="title/node()"/></a>
-					<x:if test="count(.//chapter)&gt;0">
-						<x:call-template name="toc"/>
-					</x:if>
-				</li>
-			</x:for-each>
-		</ol>
-	</x:template>
-
-	<x:template match="widget[@type='article']" mode="widget">
-		<x:if test="$role='admin'">
-			<div class="edit">
-				<a href="/admin-edit_article/{$doc//article/item/@id}">edit</a>
-			</div>
-		</x:if>
-		<x:apply-templates select="$doc//object[@name='article']//text" mode="article"/>
-	</x:template>
-
-	<x:template match="text" mode="article">
-		<x:if test="$role='admin'">
-			<x:variable name="text"><x:value-of select="//document/text"/></x:variable>
-			<x:variable name="wos" select="translate(normalize-space($text),' ','')"/>
-			<!-- TODO internationalization -->
-			<h4>Stats:</h4>
-			Words: <x:value-of select="string-length(normalize-space($text)) - string-length($wos) +1"/><br/>
-			Chars (with spaces): <x:value-of select="string-length(normalize-space($text))"/><br/>
-			Chars (w/o spaces): <x:value-of select="string-length($wos)"/><br/>
-		</x:if>
-		<h1><x:value-of select="//document/metainfo/booktitle"/></h1>
-		<div class="Subtitle"><x:value-of select="//document/metainfo/booksubtitle"/></div>
-		<x:if test="count(//document/metainfo/abstract)">
-			<h2><x:value-of select="$langdoc/abstract"/></h2>
-			<p class="abstract"><x:value-of select="//document/metainfo/abstract"/></p>
-		</x:if>
-		<x:if test="count(//title) and not(contains(//toc/node(),'false'))">
-			<div id="toc">
-				<h3><x:value-of select="$langdoc/toc/node()" />:</h3><br/>
-				<x:call-template name="toc"/>
-			</div>
-		</x:if>
-		<x:apply-templates mode="article"/>
 	</x:template>
 
 <!-- TODO tagCloud widget -->
@@ -226,34 +143,25 @@
 			<div class="info"><x:copy-of select="$doc/debug/info"/></div>
 		</x:if>
 	</x:template>
-	<!-- interface:
-		datasource - source element name in XML file; name MUST be unique; element content MUST be list of elements with name 'item'; 'item' elements can have both, subelements and attributes, any of them is supported
-		showOnEmpty - default 'yes', if set to 'no' it not shows when no data is in list
-	-->
-	<x:template match="widget[@type='list']" mode="widget">
-		<x:variable name="template" select="./template/node()"/>
-		<x:if test="count($doc/*[local-name()=current()/@datasource]//object)&gt;0 or not(@showOnEmpty='no')">
-			<x:if test="count($doc//*[local-name()=current()/@datasource]//object)=0">
-				<x:copy-of select="$langdoc/noData/node()"/>
-			</x:if>
-			<x:for-each select="$doc//list[@name=current()/@datasource]/object">
-				<x:variable name="item" select="."/>
-				<x:for-each select="$template">
-					<x:call-template name="template">
-						<x:with-param name="datasource" select="$item"/>
-					</x:call-template>
-				</x:for-each>
-			</x:for-each>
-		</x:if>
-	</x:template>
 
 <!-- template execution order is not deterministic -->
 	<x:template match="widget[@type='template']" mode="widget">
-		<x:variable name="datasource" select="$doc//*[@name=current()/@datasource]"/>
-		<x:for-each select="*|text()|$doc//*[local-name()=current()/@docElement]|$langdoc//*[local-name()=current()/@langElement]">
-			<x:call-template name="template">
-				<x:with-param name="datasource" select="$datasource"/>
-			</x:call-template>
-		</x:for-each>
+		<x:param name="datasource" select="@datasource"/>
+		<x:choose>
+			<x:when test="count(template)">
+				<x:for-each select="template/node()">
+					<x:call-template name="template">
+						<x:with-param name="datasource" select="$datasource"/>
+					</x:call-template>
+				</x:for-each>
+			</x:when>
+			<x:otherwise>
+				<x:for-each select="node()">
+					<x:call-template name="template">
+						<x:with-param name="datasource" select="$datasource"/>
+					</x:call-template>
+				</x:for-each>
+			</x:otherwise>
+		</x:choose>
 	</x:template>
 </x:stylesheet>

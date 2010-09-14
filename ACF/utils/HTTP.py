@@ -29,7 +29,7 @@ D=False
 def parsePOST(s):
 	"""
 	Parse url posts, from url string.
-	input: url containing post inputs distanced by '&' character, each one is name=val
+	input: url containing post inputs separated by '&' character, each one is name=val
 	returns: dict {name1:val1, name2:val2, ..., name_n:val_n}
 	"""
 	if D: log.info("Parsing POST data: %s",escapeQuotes(s))
