@@ -46,8 +46,8 @@ class handler(object):
 		except:
 			pass
 
-	def query(self,sql,dictionary=True):
-		if D: log.debug("Executing with sql='%s' and dictionary=%s",sql,dictionary)
+	def query(self,sql):
+		#if D: log.debug("Executing with sql='%s' and dictionary=%s",sql,dictionary)
 		#if globals.config.has_key("debug") and globals.config["debug"]:
 		#	import time
 		#	t=time.time()
@@ -56,9 +56,9 @@ class handler(object):
 			cursor.execute(sql)
 			#self.conn.commit()
 		except Exception ,e:
-			if D: log.error("SQLError %s",str(e))
+			#if D: log.error("SQLError %s",str(e))
 			raise Error("SQLError",escapeQuotes(str(e))+": "+sql)
-		if D: log.info("Query returned rows (there was SELECT)")
+		#if D: log.info("Query returned rows (there was SELECT)")
 		#this is most most memory efficient structure but needs to be replaced with yield by merging it with pygresql
 		try:
 			d={

@@ -32,7 +32,7 @@ class Headers(Component):
 			d={"name":replaceVars(env,a["name"]), "value":replaceVars(env,config["value"])}
 			if a[1].has_key("path"):
 				d["path"]=str(replaceVars(env,a[1]["path"]))
-			HTTP.setCookie(d)
+			HTTP.setCookie(env,d)
 
 	def redirect(self,env,config):
 		log.info("Requested redirect to <a href=\"%s\">%s</a>",replaceVars(env,config["location"]))

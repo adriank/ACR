@@ -23,7 +23,6 @@ from ACF import globals
 from ACF.errors import Error
 from ACF.utils.hashcompat import md5_constructor
 from ACF.session.file import FileSession
-
 #import logging
 #
 #log=logging.getLogger('ACF.components.User')
@@ -39,15 +38,17 @@ class User(Component):
 			result=acenv.app.getDBConn().query(sql)
 		except IndexError:
 			if D: acenv.error("Account not found")
+		result=dict(zip(result["fields"], result["rows"][0]))
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
-			if not acenv.session:
-				acenv.session=FileSession()
+			if not acenv.sessionStorage:
+				acenv.sessionStorage=FileSession(acenv)
 			if D: acenv.info("Setting ID=%s, email=%s and role=%s to session",result['id'],email,result['role'])
-			acenv.session["ID"]=result['id']
-			acenv.session["email"]=email
-			acenv.session["role"]=result['role']
-			acenv.session["loggedIn"]=True
+			acenv.sessionStorage["ID"]=result['id']
+			acenv.sessionStorage["email"]=email
+			acenv.sessionStorage["role"]=result['role']
+			#is it necessary?
+			acenv.sessionStorage["loggedIn"]=True
 			#acenv.session["fake"]=False
 			return Object()
 		else:
@@ -93,6 +94,7 @@ class User(Component):
 			raise Error("Email or password is not set in %s action."%(config["command"]))
 		ret=config["params"].copy()
 		ret["command"]=config["command"]
+		print ret
 		return ret
 
 def getObject(config):

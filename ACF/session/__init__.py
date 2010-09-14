@@ -39,13 +39,12 @@ MAX_SESSION_KEY = 18446744073709551616L
 
 #try changing object to dict
 class Session(object):
-	id=None
-	modified=False
-	delCookie=False
-	def __init__(self, id=None):
-		log.debug("Created session object with id=%s",id)
-		self.data={"lang":globals.lang}
-		self.id=id or self.id
+	def __init__(self,acenv, id=None):
+		#log.debug("Created session object with id=%s",id)
+		self.modified=False
+		self.delCookie=False
+		self.data={}
+		self.id=id or False
 		if self.id:
 			try:
 				self.load()
@@ -53,7 +52,7 @@ class Session(object):
 				self.deleteCookie()
 				raise e
 		else:
-			self.create()
+			self.create(acenv)
 
 	def __contains__(self, key):
 		return key in self.data
@@ -111,17 +110,17 @@ class Session(object):
 		"""
 		raise NotImplementedError
 
-	def create(self):
+	def create(self,acenv):
 		log.debug("executed, function with no parameters")
 		self.id=self.generateID()
-		HTTP.setCookie({"name":"SESS", "value":self.id, "path":"/"})
+		HTTP.setCookie(acenv,{"name":"SESS", "value":self.id, "path":"/"})
 
-	def deleteCookie(self):
+	def deleteCookie(self,acenv):
 		log.info("Deleting session cookie")
 		import time
 		t=time.time()-10000
 		log.debug("Session cookie deleted by setting date to %s",t)
-		HTTP.setCookie({"name":"SESS", "value":"", "date":t})
+		HTTP.setCookie(acenv,{"name":"SESS", "value":"", "date":t})
 		return
 
 	def save(self, must_create=False):

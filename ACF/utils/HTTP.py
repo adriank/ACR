@@ -111,7 +111,8 @@ def setCookie(acenv,cookie, test=False):
 	returns: if optional parameter test is set, returns headers.
 					 otherwise, returns None
 	"""
-	if D: log.debug("Adding %s to globals.request.headers",cookie)
+	D=acenv.dbg
+	if D: acenv.debug("Adding %s to output headers",cookie)
 	s=acenv.prefix+cookie['name']+"="+cookie['value']
 	if cookie.has_key("date"):
 		date=cookie['date']
@@ -121,7 +122,5 @@ def setCookie(acenv,cookie, test=False):
 		s+="; expires="+getCookieDate(date)
 	if cookie.has_key("path"):
 		s+="; path="+cookie["path"]
-	if D: log.info("Added Set-Cookie:%s",s)
-	globals.request.headers.append(("Set-Cookie",s))
-	if test:
-		return globals.request.headers
+	acenv.outputHeaders.append(("Set-Cookie",s))
+	if D: acenv.info("Added Set-Cookie:%s",s)

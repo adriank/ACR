@@ -82,9 +82,10 @@ class DataBase(Component):
 		return ";".join(q)
 
 	def generate(self,env,actionConf):
-		env.info("Component: 'DB'")
 		D=env.dbg
-		if D: env.debug("start with actionConf=%s",actionConf)
+		if D:
+			env.info("Component: 'DB'")
+			env.debug("start with actionConf=%s",actionConf)
 		multiRequest=[]
 		if D: env.debug("Doing escapeString on data")
 		data=env.requestStorage.copy()

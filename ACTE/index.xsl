@@ -24,21 +24,20 @@
 	<x:template match="/">
 		<html>
 		<head>
-			<!-- TODO make it template -->
-			<x:variable name="title">
-				<x:if test="$layoutdoc//pagetitle/@langelement">
-					<x:value-of select="$langdoc//*[local-name()=$layoutdoc/pagetitle/@langelement]"/>
-				</x:if>
-				<x:if test="$layoutdoc//pagetitle/@datasource">
-					<x:value-of select="(//@*|//*)[local-name()=$layoutdoc/pagetitle/@datasource]"/>
-				</x:if>
+			<!-- TODO add datasource support -->
+			<title>
 				<x:for-each select="$layoutdoc/pagetitle/node()">
 					<x:call-template name="template">
 						<x:with-param name="datasource"><none/></x:with-param>
 					</x:call-template>
 				</x:for-each>
-			</x:variable>
-			<title><x:value-of select="$title"/> - <x:value-of select="$configdoc/name/node()"/></title>
+				-
+				<x:for-each select="$configdoc/name/node()">
+					<x:call-template name="template">
+						<x:with-param name="datasource"><none/></x:with-param>
+					</x:call-template>
+				</x:for-each>
+			</title>
 			<meta name="description" content="{$configdoc/description/node()}"/>
 			<meta name="keywords" content="{$configdoc/keywords/node()}"/>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -150,8 +149,8 @@
 							<x:if test="count(@label)=0 or @label='enabled'">
 								<label for="{@name}">
 									<x:choose>
-										<x:when test="count(@langElement)">
-											<x:value-of select="$langdoc//*[local-name()=current()/@langElement]"/>
+										<x:when test="count(@ml)">
+											<x:value-of select="$langdoc//*[local-name()=current()/@ml]"/>
 										</x:when>
 										<x:otherwise>
 											<x:value-of select="@name"/>

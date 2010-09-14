@@ -19,20 +19,20 @@
 
 # highly modified Django code, relicensed under GPL
 
-import errno,os,tempfile,logging
+import errno,os,tempfile
 from ACF import globals
 from ACF.session import Session
-from ACF.utils import HTTP
-from ACF.errors import FileNotFound
+from ACF.errors import Error
 
-log = logging.getLogger('ACF.session.file')
+#log = logging.getLogger('ACF.session.file')
 
 class FileSession(Session):
-	def __init__(self,id=None):
-		log.info("Created FileSession object with id=%s",id)
-		self.sessDir=globals.config["installation"]["sessionDir"]
-		log.info("Session directory is set to %s",self.sessDir)
-		super(FileSession, self).__init__(id)
+	def __init__(self, acenv, id=None):
+		#log.info("Created FileSession object with id=%s",id)
+		#TODO check if dir exists and raise error when not
+		self.sessDir=acenv.app.sessionDir
+		#log.info("Session directory is set to %s",self.sessDir)
+		super(FileSession, self).__init__(acenv,id)
 
 	def exists(self,id):
 		return False
@@ -41,11 +41,11 @@ class FileSession(Session):
 		return os.path.join(self.sessDir, self.id)
 
 	def save(self):
-		log.info("Saving session")
+		#log.info("Saving session")
 		if not self.modified:
-			log.info("Session is not modified")
+			#log.info("Session is not modified")
 			return
-		log.info("Session is modified")
+		#log.info("Session is modified")
 		if self.delCookie:
 			self.deleteCookie()
 		session_data = self.data
@@ -58,7 +58,7 @@ class FileSession(Session):
 			fd = os.open(session_file_name, flags)
 			os.close(fd)
 		except OSError, e:
-			log.error("CreateError: session file couldn't be created")
+			#log.error("CreateError: session file couldn't be created")
 			raise CreateError
 		dir, prefix = os.path.split(session_file_name)
 		try:
@@ -76,12 +76,12 @@ class FileSession(Session):
 				if not renamed:
 					os.unlink(output_file_name)
 		except (OSError, IOError, EOFError),e:
-			log.error("%s, %s",e["name"],e["message"])
+			#log.error("%s, %s",e["name"],e["message"])
 			pass
 
 	def load(self):
-		log.info("Loading session from file.")
-		log.debug("Executing - function w/o parameters")
+		#log.info("Loading session from file.")
+		#log.debug("Executing - function w/o parameters")
 		session_data = {}
 		try:
 			session_file = open(self._key_to_file(), "rb")
@@ -93,18 +93,18 @@ class FileSession(Session):
 					try:
 						session_data = self.decode(file_data)
 					except (EOFError, SuspiciousOperation):
-						log.error("File corrupted. Creating empty session.")
+						#log.error("File corrupted. Creating empty session.")
 						raise e
 			finally:
 				session_file.close()
 		except IOError,e:
-			log.warning("Session file not found.")
+			#log.warning("Session file not found.")
 			raise e
-		log.info("Session data set to %s",session_data)
+		#log.info("Session data set to %s",session_data)
 		self.data=session_data
 
 	def delete(self):
-		log.info("Deleting session")
+		#log.info("Deleting session")
 		try:
 			os.unlink(self._key_to_file())
 		except OSError:

@@ -22,6 +22,7 @@
 from ACF.utils.xmlextras import *
 from ACF.utils import dicttree
 from ACF.utils import json
+from ACF.session.file import FileSession
 from ACF.core.view import View
 from ACF.errors import *
 from ACF import components,serializers
@@ -85,6 +86,7 @@ class Application(object):
 		#engineConf=config.get("/engine")[0]
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACF")+"_"
+		self.sessionDir="".join(config.get("/sessiondir/text()"))
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])
 			self.getComponent(component[1]["name"],component[2])
@@ -142,7 +144,7 @@ class Application(object):
 				break
 			viewPath=temp
 			viewName.append(inputs.pop(0))
-		if D: acenv.debug("viewName: %s"%(viewName))
+		if D: acenv.debug("viewPath: %s"%(viewName))
 		if D: acenv.debug("inputs: %s"%(inputs))
 		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
 			viewName.append(inputs.pop(0))
@@ -163,18 +165,23 @@ class Application(object):
 		if D: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
-			log.info("Session cookie found")
+			if D:acenv.info("Session cookie found")
 			sessID=acenv.cookies[prefix]
 			try:
-				acenv.sessionStorage=FileSession(sessID)
+				acenv.sessionStorage=FileSession(acenv,sessID)
 			except:
 				sessID=None
 		view=self.getView(acenv)
 		view.generate(acenv)
 		#this is little faster than Object
-		acenv.generations["lang"]=("object",{"name":"acf:lang","current":acenv.lang,"supported":",".join(acenv.langs)},None)
-		acenv.generations["domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain,"config":acenv.outputConfig},None)
+		acenv.generations["acf:lang"]=("object",{"name":"acf:lang","current":acenv.lang,"supported":",".join(acenv.langs)},None)
+		acenv.generations["acf:domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain,"config":acenv.outputConfig},None)
 		#temporary error handling
+		if acenv.sessionStorage:
+			acenv.info("Session exists")
+			sess=acenv.sessionStorage.data
+			acenv.generations["acf:user"]=("object",{"ID":str(sess["ID"]),"name":"acf:user","email":sess["email"],"role":sess["role"]},None)
+			acenv.sessionStorage.save()
 		try:
 			s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))
 		except Error, e:

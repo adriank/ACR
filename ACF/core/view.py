@@ -27,22 +27,31 @@ from ACF.utils.checktype import checkType
 from ACF.components import Object, List
 import os
 
-D=True#logging.doLog
+D=True
 DEFINE="define"
 SET="set"
 COMMAND="command"
 
-def parseParams(nodes):
+def parseParams(nodes,dictionary=False):
 	if not nodes:
 		return None
-	ret=[]
+	if not dictionary:
+		ret=[]
+	else:
+		ret={}
 	for i in nodes:
 		attrs=i[1]
-		ret.append({
-			"name":attrs["name"],
-			"type":attrs.get("type",None),
-			"default":attrs.get("default",None)
-		})
+		if not dict:
+			ret.append({
+				"name":attrs["name"],
+				"type":attrs.get("type",None),
+				"default":attrs.get("default",None)
+			})
+		else:
+			ret[attrs["name"]]={
+				"type":attrs.get("type",None),
+				"default":attrs.get("default",None)
+			}
 	return ret
 
 class View(object):
@@ -58,13 +67,16 @@ class View(object):
 		try:
 			self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)
+		#TODO support more exception classes
 		except Exception,e:
 			self.immutable=True
+			raise e
 			raise ViewNotFound("view '%s' not found"%(name))
 		#the order of inputs is meaningful - needs to be list
 		ns={}
 		if not tree[1]:
 			return
+		#parses xmlns: attributes and extracts namespaces
 		for i in tree[1]:
 			if i.startswith("xmlns:"):
 				key=i.split(":")[1]
@@ -89,7 +101,7 @@ class View(object):
 				actions.append(i)
 		self.actions=self.parseActions(actions)
 		self.inputs=parseParams(inputs)
-		self.posts=parseParams(posts)
+		self.posts=parseParams(posts,True)
 		try:
 			self.outputFormat=self.output[0][1]["format"]
 		except:
@@ -104,9 +116,6 @@ class View(object):
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
-
-	def isUpToDate(self):
-		return self.timestamp >= os.stat(self.path).st_mtime
 
 	def parseActions(self,a):
 		ret=[]
@@ -155,9 +164,10 @@ class View(object):
 		if not self.posts or not len(self.posts):
 			#if D: log.debug("list of posts is empty. Returning 'True'.")
 			return True
+		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		for i in list:
 			value=list[i]
-			type=self.inputs[i]["type"]
+			type=self.posts[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
 					value=value.split(",")
@@ -226,3 +236,6 @@ class View(object):
 			acenv.outputFormat=self.outputFormat
 		#print "generations"
 		#print acenv.generations
+
+	def isUpToDate(self):
+		return self.timestamp >= os.stat(self.path).st_mtime
