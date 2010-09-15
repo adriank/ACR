@@ -15,7 +15,7 @@
 	<x:variable name="configdoc" select="document(concat('','../xml/',$config,'.xml'))/config"/>
 	<x:variable name="langdoc" select="document(concat('../texts/',$lang,'.xml'))/t"/>
 	<x:variable name="static" select="$configdoc/staticdomain/node()"/>
-	<x:variable name="role" select="/document/user/@role"/>
+	<x:variable name="role" select="$doc/object[@name='acf:user']/@role"/>
 	<!--<x:variable name="f"><x:value-of select="$domain"/>layouts/<x:value-of select="/document/view/@name"/>.xml</x:variable>-->
 	<x:variable name="layoutdoc" select="//object[@name='layout']"/>
 	<!--<x:variable name="layoutdoc" select="document($layoutfile)/layout"/>-->
@@ -45,7 +45,7 @@
 			<!-- export css and js to config.xml -->
 			<link rel="stylesheet" type="text/css" href="http://e.acimg.eu/css/yui-rf.css"/>
 			<link href="http://e.acimg.eu/css/grids.css" rel="stylesheet" type="text/css"/>
-			<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.1.2/build/node-menunav/assets/skins/sam/node-menunav.css"/>
+			<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.2.0/build/node-menunav/assets/skins/sam/node-menunav.css"/>
 			<link href="http://e.acimg.eu/css/style.css" id="customstyles" rel="stylesheet" type="text/css"/>
 			<link href="{$static}css/style.css" rel="stylesheet" type="text/css"/>
 			<!--<style>html,body{background:<x:value-of select="$configdoc/backgroundcolor"/>;}</style>-->
@@ -103,24 +103,38 @@
 			</x:choose>
 		</x:variable>
 		<x:element name="{$tag}">
-			<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
 			<x:attribute name="id"><x:value-of select="@name"/></x:attribute>
-			<!-- context changing for-each -->
-			<x:for-each select="before/node()">
-				<x:call-template name="template">
-					<x:with-param name="datasource" select="."/>
-				</x:call-template>
-			</x:for-each>
+
+			<x:variable name="before">
+				<x:for-each select="before/node()">
+					<x:call-template name="template">
+						<x:with-param name="datasource" select="."/>
+					</x:call-template>
+				</x:for-each>
+			</x:variable>
+
 			<x:choose>
 				<x:when test="local-name($datasource)='list'">
+					<x:attribute name="class">widget list <x:value-of select="@type"/></x:attribute>
+					<x:copy-of select="$before"/>
 					<x:variable name="this" select="."/>
+					<x:variable name="subtag">
+						<x:choose>
+							<x:when test="count(@subtag)"><x:value-of select="@subtag"/></x:when>
+							<x:otherwise>div</x:otherwise>
+						</x:choose>
+					</x:variable>
 					<x:for-each select="$datasource/object">
-						<x:apply-templates mode="widget" select="$this">
-							<x:with-param name="datasource" select="."/>
-						</x:apply-templates>
+						<x:element name="{$subtag}">
+							<x:attribute name="class">widget item <x:value-of select="@type"/></x:attribute>
+							<x:apply-templates mode="widget" select="$this">
+								<x:with-param name="datasource" select="."/>
+							</x:apply-templates>
+						</x:element>
 					</x:for-each>
 				</x:when>
 				<x:otherwise>
+					<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
 					<x:apply-templates mode="widget" select="."/>
 				</x:otherwise>
 			</x:choose>

@@ -30,7 +30,6 @@
 							</a>
 							<div id="{@name}" class="yui3-menu">
 								<div class="yui3-menu-content">
-
 									<ul>
 										<x:for-each select="item">
 											<x:call-template name="menu"/>
@@ -145,7 +144,7 @@
 	</x:template>
 
 <!-- template execution order is not deterministic -->
-	<x:template match="widget[@type='template']" mode="widget">
+	<x:template match="widget[@type='template']" name="templateWidget" mode="widget">
 		<x:param name="datasource" select="@datasource"/>
 		<x:choose>
 			<x:when test="count(template)">
@@ -164,4 +163,15 @@
 			</x:otherwise>
 		</x:choose>
 	</x:template>
+
+	<x:template match="widget[@type='wiki']" mode="widget">
+		<x:param name="datasource" select="@datasource"/>
+		<x:if test="$role='admin'">
+			<a href="#langid-{$datasource/langid}" class="accms-admin"/>
+		</x:if>
+		<x:call-template name="templateWidget">
+			<x:with-param name="datasource" select="$datasource"/>
+		</x:call-template>
+	</x:template>
+
 </x:stylesheet>
