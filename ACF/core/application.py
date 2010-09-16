@@ -156,7 +156,7 @@ class Application(object):
 			viewName=["notFound"]
 		acenv.viewPath=viewName
 		acenv.inputs=inputs
-		v=View(viewName, self)
+		v=View(viewName, self, acenv)
 		dicttree.set(self.views, viewName, v)
 		return v
 

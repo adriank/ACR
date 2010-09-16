@@ -31,6 +31,7 @@ D=True
 DEFINE="define"
 SET="set"
 COMMAND="command"
+INHERITS="inherits"
 
 def parseParams(nodes,dictionary=False):
 	if not nodes:
@@ -57,7 +58,7 @@ def parseParams(nodes,dictionary=False):
 class View(object):
 	#timestamp=0 #file modification timestamp
 	#path="" file path
-	def __init__(self, name, app):
+	def __init__(self, name, app, acenv):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.immutable=False
@@ -67,7 +68,7 @@ class View(object):
 		try:
 			self.timestamp=os.stat(self.path).st_mtime
 			tree=xml2tree(self.path)
-		#TODO support more exception classes
+		#TODO support more exception classes;
 		except Exception,e:
 			self.immutable=True
 			raise e
@@ -88,6 +89,13 @@ class View(object):
 		actions=[]
 		posts=[]
 		self.output=[]
+		try:
+			acenv.URLpath = filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/"))
+			self.parent = app.getView(acenv)
+			if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
+		except:
+			self.parent = None
+			if D: acenv.debug("Loading a root view.")
 		for i in tree[2]:
 			if i[0]=="param":
 				inputs.append(i)
@@ -99,7 +107,11 @@ class View(object):
 				posts=i[2]
 			elif i[0] in ["set","define"]:
 				actions.append(i)
-		self.actions=self.parseActions(actions)
+		if self.parent:
+			self.rawActions = self.parent.rawActions + actions
+		else:
+			self.rawActions = actions
+		self.actions = self.parseActions(self.rawActions)
 		self.inputs=parseParams(inputs)
 		self.posts=parseParams(posts,True)
 		try:
@@ -116,7 +128,7 @@ class View(object):
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
-
+		
 	def parseActions(self,a):
 		ret=[]
 		try:
@@ -139,14 +151,39 @@ class View(object):
 					"params":params,
 					"content":i[2]
 				}
-				ret.append({
+				before = attrs.get("before", None)
+				after = attrs.get("after", None)
+				o = {
 					"type":action,#DEFINE or SET
 					"command":cmd,#command name
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
-					"config":self.app.getComponent(componentName).parseAction(actionConfig)
-				})
+					"config":self.app.getComponent(componentName).parseAction(actionConfig),
+				}
+				if before:
+					n,name=0,before
+					if before=='*':
+						ret.insert(0, o)
+						continue
+				elif after:
+					n,name=1,after
+					if after=='*':
+						ret.append(o)
+						continue
+				i=0
+				try:
+					while not ret[i]["name"] == name:
+						i+=1
+				except:
+					ret.append(o)
+				else:
+					ret.insert(i+n, o)
+				
+				#try:
+				#	ret.insert(self.searchAction(ret, before, after), o)
+				#except:
+				#	ret.append(act)
 		except Error,e:
 			pass
 		return ret
@@ -239,3 +276,28 @@ class View(object):
 
 	def isUpToDate(self):
 		return self.timestamp >= os.stat(self.path).st_mtime
+
+
+	#def searchAction(self, actions, before, after):
+	#	i, j = 0, len(actions)-1
+	#	if after:
+	#		if after == '*':
+	#			return j+1
+	#		for a in actions:
+	#			i+=1
+	#			if a["name"] == after:
+	#				break
+	#	if before:
+	#		if before == '*':
+	#			return 0
+	#		while(True):
+	#			if actions[j]["name"] == before:
+	#				break
+	#			j-=1
+	#	if i <= j:
+	#		if before:
+	#			return j
+	#		if after:
+	#			return i
+	#	return None
+	#	pass
