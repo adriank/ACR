@@ -124,9 +124,10 @@
 							<x:otherwise>div</x:otherwise>
 						</x:choose>
 					</x:variable>
+					<x:variable name="type" select="@type"/>
 					<x:for-each select="$datasource/object">
 						<x:element name="{$subtag}">
-							<x:attribute name="class">widget item <x:value-of select="@type"/></x:attribute>
+							<x:attribute name="class">widget item <x:value-of select="$type"/></x:attribute>
 							<x:apply-templates mode="widget" select="$this">
 								<x:with-param name="datasource" select="."/>
 							</x:apply-templates>
@@ -149,7 +150,7 @@
 
 <!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
-		<x:variable name="values" select="$doc//*[local-name()=current()/@values]/object"/>
+		<x:variable name="values" select="$doc//*[@name=current()/@values]"/>
 		<form action="{@action}" method="post" enctype="multipart/form-data">
 			<x:for-each select="item">
 				<x:variable name="value">
@@ -190,6 +191,9 @@
 								</x:when>
 								<x:when test="@type='textarea'">
 									<textarea id="{@name}" name="{@name}" accesskey="{@accesskey}"><x:copy-of select="$value"/></textarea>
+								</x:when>
+								<x:when test="@type='RTE'">
+									<textarea id="{@name}" name="{@name}" accesskey="{@accesskey}" class="accms-RTE"><x:copy-of select="$value"/></textarea>
 								</x:when>
 								<x:when test="@type='checkbox'">
 									<input id="{@name}" type="checkbox" name="{@name}" value="true" accesskey="{@accesskey}">

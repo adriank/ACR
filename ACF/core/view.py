@@ -35,23 +35,23 @@ COMMAND="command"
 def parseParams(nodes,dictionary=False):
 	if not nodes:
 		return None
-	if not dictionary:
-		ret=[]
-	else:
+	if dictionary:
 		ret={}
+	else:
+		ret=[]
 	for i in nodes:
 		attrs=i[1]
-		if not dict:
+		if dictionary:
+			ret[attrs["name"]]={
+				"type":attrs.get("type",None),
+				"default":attrs.get("default",None)
+			}
+		else:
 			ret.append({
 				"name":attrs["name"],
 				"type":attrs.get("type",None),
 				"default":attrs.get("default",None)
 			})
-		else:
-			ret[attrs["name"]]={
-				"type":attrs.get("type",None),
-				"default":attrs.get("default",None)
-			}
 	return ret
 
 class View(object):
