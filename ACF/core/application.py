@@ -121,19 +121,19 @@ class Application(object):
 	def getView(self,acenv):
 		D=acenv.dbg
 		URLpath=acenv.URLpath
-		if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
-		(o, i)=dicttree.get(self.views, URLpath, False)
-		if i==len(URLpath) and o is dict and o.has_key("default"):
-			o=o["default"]
-			if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
-		#TODO handle an event when file was deleted; probably raises exception
-		if type(o) is View and o.isUpToDate():
-			acenv.inputs=URLpath[i:]
-			if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
-			return o
-		if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
-		elif D: acenv.info("View is not cached")
-
+		#if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
+		#(o, i)=dicttree.get(self.views, URLpath, False)
+		#if i==len(URLpath) and o is dict and o.has_key("default"):
+		#	o=o["default"]
+		#	if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
+		##TODO handle an event when file was deleted; probably raises exception
+		#if type(o) is View and o.isUpToDate():
+		#	acenv.inputs=URLpath[i:]
+		#	if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
+		#	return o
+		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
+		#elif D: acenv.info("View is not cached")
+		i=0
 		viewPath=pjoin(self.viewsPath, *URLpath[:i])
 		if D: acenv.debug("Searching from '%s'"%(viewPath))
 		viewName,inputs=URLpath[:i],URLpath[i:]

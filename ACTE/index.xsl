@@ -136,7 +136,9 @@
 				</x:when>
 				<x:otherwise>
 					<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
-					<x:apply-templates mode="widget" select="."/>
+					<x:apply-templates mode="widget" select=".">
+						<x:with-param name="datasource" select="$datasource"/>
+					</x:apply-templates>
 				</x:otherwise>
 			</x:choose>
 
@@ -148,7 +150,7 @@
 		</x:element>
 	</x:template>
 
-<!-- TODO add required fields support -->
+	<!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
 		<x:variable name="values" select="$doc//*[@name=current()/@values]"/>
 		<form action="{@action}" method="post" enctype="multipart/form-data">
