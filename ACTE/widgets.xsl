@@ -51,10 +51,6 @@
 	</x:template>
 
 
-	<x:template match="@create_date|@modification_date" mode="schema">
-			<x:value-of select="concat(substring(.,0,11),' ',substring(.,11,6))"/>
-	</x:template>
-
 	<x:template match="widget[@type='paginate']" mode="widget">
 		<x:variable name="pars" select="$doc//*[local-name()=current()/@parsSource]"/>
 		<x:variable name="offset" select="$pars/offset/node()"/>

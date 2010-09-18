@@ -54,18 +54,16 @@
 			<!--</x:if>-->
 			<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js&amp;3.2.0/build/loader/loader-min.js"></script>
 			<script type="text/javascript" src="/js/init.js"/>
-			<script type="text/javascript"><x:value-of select="$doc//*[@name='acf:layout']/script"/></script>
+<script id="yui_3_2_0_1_128482118762120" type="text/javascript" charset="utf-8" src="http://e.acimg.eu/tiny_mce/tiny_mce.js"></script>
+			<script type="text/javascript"><x:value-of select="$doc//*[@name='layout']/script"/></script>
 		</head>
 		<body>
 			<x:apply-templates select="$configdoc/layout"/>
-			<!--<x:call-template name="layout">-->
-			<!--	<x:with-param name="layout" select="$configdoc/layout"/>-->
-			<!--</x:call-template>-->
 			<x:if test="count(//error)">
 				<x:copy-of select="//error"/>
 			</x:if>
-			<x:if test="$doc/object[@name='acf:user']/@role='admin'">
-				<div id="accms_admin"/>
+			<x:if test="$role='admin'">
+				<div id="accms-admin"/>
 			</x:if>
 		</body>
 		</html>
@@ -89,6 +87,7 @@
 		</div>
 	</x:template>
 
+	<x:template match="script"/>
 	<!-- This is temporary -->
 	<x:template match="body">
 		<x:apply-templates select="$layoutdoc"/>
