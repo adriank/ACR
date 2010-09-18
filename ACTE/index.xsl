@@ -54,7 +54,6 @@
 			<!--</x:if>-->
 			<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js&amp;3.2.0/build/loader/loader-min.js"></script>
 			<script type="text/javascript" src="/js/init.js"/>
-<script id="yui_3_2_0_1_128482118762120" type="text/javascript" charset="utf-8" src="http://e.acimg.eu/tiny_mce/tiny_mce.js"></script>
 			<script type="text/javascript"><x:value-of select="$doc//*[@name='layout']/script"/></script>
 		</head>
 		<body>
@@ -87,7 +86,7 @@
 		</div>
 	</x:template>
 
-	<x:template match="script"/>
+	<x:template match="script|pagetitle"/>
 	<!-- This is temporary -->
 	<x:template match="body">
 		<x:apply-templates select="$layoutdoc"/>
@@ -238,7 +237,6 @@
 			</x:for-each>
 			<input value="{$langdoc/submit/node()}" type="submit" accesskey="s"/>
 		</form>
-		<x:copy-of select="after/*"/>
 	</x:template>
 
 <!--

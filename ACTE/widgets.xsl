@@ -144,14 +144,14 @@
 		<x:param name="datasource" select="@datasource"/>
 		<x:choose>
 			<x:when test="count(template)">
-				<x:for-each select="template/node()">
+				<x:for-each select="template/*">
 					<x:call-template name="template">
 						<x:with-param name="datasource" select="$datasource"/>
 					</x:call-template>
 				</x:for-each>
 			</x:when>
 			<x:otherwise>
-				<x:for-each select="node()">
+				<x:for-each select="*">
 					<x:call-template name="template">
 						<x:with-param name="datasource" select="$datasource"/>
 					</x:call-template>
