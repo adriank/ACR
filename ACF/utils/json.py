@@ -6,9 +6,26 @@ try:
 	#TODO unify cjson API with simplejson/json
 except:
 	try:
-		from simplejson import *
+		import simplejson as json
 	except:
 		try:
-			from json import *
+			import json
 		except:
 			raise Error("JSONNotFound")
+
+def loads(s):
+	def tostr(dct):
+		d={}
+		for key in dct.keys():
+			if type(dct[key]) is unicode:
+				v=str(dct[key])
+			else:
+				v=dct[key]
+			d[str(key)]=v
+		return d
+
+	return json.loads(s, object_hook=tostr)
+
+load=json.load
+dumps=json.dumps
+dump=json.dump

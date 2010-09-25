@@ -151,7 +151,7 @@
 				</x:for-each>
 			</x:when>
 			<x:otherwise>
-				<x:for-each select="*">
+				<x:for-each select="*|text()">
 					<x:call-template name="template">
 						<x:with-param name="datasource" select="$datasource"/>
 					</x:call-template>

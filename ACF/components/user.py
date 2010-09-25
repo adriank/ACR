@@ -94,7 +94,6 @@ class User(Component):
 			raise Error("Email or password is not set in %s action."%(config["command"]))
 		ret=config["params"].copy()
 		ret["command"]=config["command"]
-		print ret
 		return ret
 
 def getObject(config):

@@ -447,7 +447,7 @@ def execute(acenv,tree):
 				evaluatePath()
 		elif op=="(variable)":
 			storage=getStorage(acenv,node[1])
-			return get(storage,node[2].split('.'))
+			return dicttree.get(storage,node[2].split('.'))
 		elif op=="[":
 			if len(node) is 2:  # list
 				return map(exe,node[1])

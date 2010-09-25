@@ -113,8 +113,11 @@
 
 			<x:choose>
 				<x:when test="local-name($datasource)='list'">
-					<x:attribute name="class">widget list <x:value-of select="@type"/></x:attribute>
+					<x:attribute name="class">widget <x:value-of select="@type"/>-list</x:attribute>
 					<x:copy-of select="$before"/>
+					<x:if test="$role='admin'">
+						<div class="accms-optionsPanel"/>
+					</x:if>
 					<x:variable name="this" select="."/>
 					<x:variable name="subtag">
 						<x:choose>
@@ -125,7 +128,7 @@
 					<x:variable name="type" select="@type"/>
 					<x:for-each select="$datasource/object">
 						<x:element name="{$subtag}">
-							<x:attribute name="class">widget item <x:value-of select="$type"/></x:attribute>
+							<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
 							<x:apply-templates mode="widget" select="$this">
 								<x:with-param name="datasource" select="."/>
 							</x:apply-templates>
@@ -133,7 +136,8 @@
 					</x:for-each>
 				</x:when>
 				<x:otherwise>
-					<x:attribute name="class">widget <x:value-of select="@type"/></x:attribute>
+					<x:attribute name="class">widget <x:value-of select="@type"/>-item</x:attribute>
+					<x:copy-of select="$before"/>
 					<x:apply-templates mode="widget" select=".">
 						<x:with-param name="datasource" select="$datasource"/>
 					</x:apply-templates>

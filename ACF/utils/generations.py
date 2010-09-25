@@ -7,6 +7,9 @@ class Generation(object):
 	def __init__(self,value=None):
 		self._value=value
 
+	def addAttrs(self,attrs):
+		self.__dict__.update(attrs)
+
 	def __repr__(self):
 		return "'"+self.__str__()+"'"
 
