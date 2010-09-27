@@ -162,6 +162,7 @@ class Application(object):
 
 	#will be generator
 	def generate(self,acenv):
+		D=acenv.doDebug
 		if True: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):

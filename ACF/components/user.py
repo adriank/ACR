@@ -23,14 +23,10 @@ from ACF import globals
 from ACF.errors import Error
 from ACF.utils.hashcompat import md5_constructor
 from ACF.session.file import FileSession
-#import logging
-#
-#log=logging.getLogger('ACF.components.User')
-#D=logging.doLog
 
 class User(Component):
 	def login(self,acenv,conf):
-		D=acenv.debug
+		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
 		password=replaceVars(acenv,conf["password"])
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)

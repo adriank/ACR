@@ -21,26 +21,26 @@ import psycopg2 as dbapi
 from ACF import globals
 from ACF.errors import Error
 from ACF.utils.xmlextras import escapeQuotes
-import logging
+#import logging
 
-log=logging.getLogger('ACF.dbHandler.pg')
-D=logging.doLog
+#log=logging.getLogger('ACF.dbHandler.pg')
+#D=logging.doLog
 
 class handler(object):
 	def __init__(self,conf):
-		if D: log.debug("Initialized with conf=%s",conf)
+		#if D: log.debug("Initialized with conf=%s",conf)
 		host=""
 		if conf.get("host"):
 			host=conf["host"]#+":"+(conf.get("port","") or "5432")
-		if D: log.debug("Host is %s (None means socket)",host)
+		#if D: log.debug("Host is %s (None means socket)",host)
 		self.conn=dbapi.connect("dbname='"+conf["defaultdb"]+"' host='"+host+"' user='"+conf["user"]+"' password='"+conf["password"]+"'")
 		self.conn.set_isolation_level(0)
-		if D: log.info("Successfuly connected to PostgreSQL.")
+		#if D: log.info("Successfuly connected to PostgreSQL.")
 		q="SET search_path TO "+globals.dbschema+", public"
 		if conf.has_key("schema"):
 			q+=", "+conf["schema"]
 		#TODO lazy query - should be executed with first query
-		if D: log.warning("Internal database query. Change debug level to 'debug' to see details.")
+		#if D: log.warning("Internal database query. Change debug level to 'debug' to see details.")
 		try:
 			self.query(q)
 		except:

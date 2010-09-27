@@ -19,9 +19,9 @@
 
 #TODO this file is mess. Need for full rewrite.
 
-import sys,os,re,time,logging
+import sys,os,re,time#,logging
 #logging.doLog=True
-logging.doLog=False
+#logging.doLog=False
 from ACF import globals,errors
 from ACF.utils import HTTP
 from ACF.core.environment import Environment
@@ -115,9 +115,9 @@ def application(env,start_response):
 	if acenv.doRedirect:
 		status="301 Redirected"
 	start_response(status, headers)
-	print round((time.time()-t)*1000,2)
 	if not acenv.doRedirect:
 		response.append(output)
+	print round((time.time()-t)*1000,2)
 	#h = hpy()
 	#print h.heap()
 	return response

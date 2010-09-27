@@ -105,7 +105,7 @@ class View(object):
 				output.append(i)
 			elif i[0]=="post":
 				posts=i[2]
-			elif i[0] in ["set","define"]:
+			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
 		if self.parent:
 			self.rawActions = self.parent.rawActions + actions
