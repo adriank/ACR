@@ -78,7 +78,7 @@ def computePOST(env):
 	return post
 
 def application(env,start_response):
-	t=time.time()
+	#t=time.time()
 	response=[]
 	if globals.appsDir:
 		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
@@ -92,9 +92,7 @@ def application(env,start_response):
 	else:
 		app=Application(path)
 		APP_CACHE[path]=app
-	x=time.time()
 	acenv=Environment(app)
-	print round((time.time()-t)*1000,2)
 	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
 	acenv.UA=env["HTTP_USER_AGENT"]
 	acenv.outputFormat=computeMIME(acenv.mime,acenv.UA)
@@ -117,7 +115,7 @@ def application(env,start_response):
 	start_response(status, headers)
 	if not acenv.doRedirect:
 		response.append(output)
-	print round((time.time()-t)*1000,2)
+	#print round((time.time()-t)*1000,2)
 	#h = hpy()
 	#print h.heap()
 	return response

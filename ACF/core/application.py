@@ -192,12 +192,12 @@ class Application(object):
 		except Error, e:
 			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"
-		if True:
-			all=round((time.time()-t)*1000,5)
-			dbms=round(acenv.dbg["dbtimer"]*1000,5)
-			print("Generated in %s"%(all))
-			print("DBMS took %s"%(dbms))
-			print("Python took %s"%(all-dbms))
+		#if True:
+		#	all=round((time.time()-t)*1000,5)
+		#	dbms=round(acenv.dbg["dbtimer"]*1000,5)
+		#	print("Generated in %s"%(all))
+		#	print("DBMS took %s"%(dbms))
+		#	print("Python took %s"%(all-dbms))
 		return s.serialize(acenv)
 
 	def transform(self,acenv):

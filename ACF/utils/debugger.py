@@ -47,8 +47,8 @@ class Debugger(object):
 
 	def consolelog(self, lvl, s):
 		if len(s)>1:
-			self._debugStr.append((lvl, s[0] % s[1:]))
+			#self._debugStr.append((lvl, s[0] % s[1:]))
 			print lvl, s[0] % s[1:]
 		else:
-			self._debugStr.append((lvl, s[0]))
+			#self._debugStr.append((lvl, s[0]))
 			print lvl, s[0]
