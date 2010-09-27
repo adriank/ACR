@@ -81,7 +81,7 @@ class Application(object):
 		self.output={
 			"engine":config.get("/output[@engine]") or None,
 			"xsltfile":config.get("/output[@xsltfile]") or None,
-			"format":config.get("/output[@format]") or "objectml"
+			"format":config.get("/output[@format]") or "application/xml"
 		}
 		#engineConf=config.get("/engine")[0]
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
@@ -119,20 +119,20 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,acenv):
-		D=acenv.dbg
+		D=acenv.doDebug
 		URLpath=acenv.URLpath
-		#if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
-		#(o, i)=dicttree.get(self.views, URLpath, False)
-		#if i==len(URLpath) and o is dict and o.has_key("default"):
-		#	o=o["default"]
-		#	if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
-		##TODO handle an event when file was deleted; probably raises exception
-		#if type(o) is View and o.isUpToDate():
-		#	acenv.inputs=URLpath[i:]
-		#	if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
-		#	return o
-		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
-		#elif D: acenv.info("View is not cached")
+		if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
+		(o, i)=dicttree.get(self.views, URLpath, False)
+		if i==len(URLpath) and o is dict and o.has_key("default"):
+			o=o["default"]
+			if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
+		#TODO handle an event when file was deleted; probably raises exception
+		if type(o) is View and o.isUpToDate():
+			acenv.inputs=URLpath[i:]
+			if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
+			return o
+		if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
+		elif D: acenv.info("View is not cached")
 		i=0
 		viewPath=pjoin(self.viewsPath, *URLpath[:i])
 		if D: acenv.debug("Searching from '%s'"%(viewPath))
@@ -162,7 +162,7 @@ class Application(object):
 
 	#will be generator
 	def generate(self,acenv):
-		if D: t=time.time()
+		if True: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
 			if D:acenv.info("Session cookie found")
@@ -186,13 +186,13 @@ class Application(object):
 			acenv.generations["acf:user"]=("object",{"ID":str(sess["ID"]),"name":"acf:user","email":sess["email"],"role":sess["role"]},None)
 			acenv.sessionStorage.save()
 		try:
-			s=serializers.get(globals.MIMEmapper.get(acenv.outputFormat))
+			s=serializers.get(globals.MIMEmapper.get(acenv.output["format"]))
 		except Error, e:
-			acenv.outputFormat="text/html"
+			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"
-		if D:
+		if True:
 			all=round((time.time()-t)*1000,5)
-			dbms=round(acenv.debug["dbtimer"]*1000,5)
+			dbms=round(acenv.dbg["dbtimer"]*1000,5)
 			print("Generated in %s"%(all))
 			print("DBMS took %s"%(dbms))
 			print("Python took %s"%(all-dbms))

@@ -48,7 +48,6 @@
 			<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.2.0/build/node-menunav/assets/skins/sam/node-menunav.css"/>
 			<link href="http://e.acimg.eu/css/style.css" id="customstyles" rel="stylesheet" type="text/css"/>
 			<link href="{$static}css/style.css" rel="stylesheet" type="text/css"/>
-			<!--<style>html,body{background:<x:value-of select="$configdoc/backgroundcolor"/>;}</style>-->
 			<!--<x:if test="$role='admin'">-->
 			<!--	<link href="http://e.acimg.eu/css/admin.css" rel="stylesheet" type="text/css"/>-->
 			<!--</x:if>-->
@@ -57,7 +56,7 @@
 			<script type="text/javascript"><x:value-of select="$doc//*[@name='layout']/script"/></script>
 		</head>
 		<body>
-			<x:apply-templates select="$configdoc/layout"/>
+			<x:apply-templates select="$layoutdoc"/>
 			<x:if test="count(//error)">
 				<x:copy-of select="//error"/>
 			</x:if>

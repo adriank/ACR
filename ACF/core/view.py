@@ -88,7 +88,7 @@ class View(object):
 		self.conditions=[]
 		actions=[]
 		posts=[]
-		self.output=[]
+		output=[]
 		try:
 			acenv.URLpath = filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/"))
 			self.parent = app.getView(acenv)
@@ -102,7 +102,7 @@ class View(object):
 			elif i[0]=="condition":
 				self.conditions.append(i)
 			elif i[0]=="output":
-				self.output.append(i)
+				output.append(i)
 			elif i[0]=="post":
 				posts=i[2]
 			elif i[0] in ["set","define"]:
@@ -114,21 +114,26 @@ class View(object):
 		self.actions = self.parseActions(self.rawActions)
 		self.inputs=parseParams(inputs)
 		self.posts=parseParams(posts,True)
+		self.output={}
 		try:
-			self.outputFormat=self.output[0][1]["format"]
+			self.output["format"]=output[0][1]["format"]
 		except:
-			self.outputFormat=None
+			pass
 		try:
-			self.outputConfig=self.output[0][1]["config"]
+			self.output["xsltfile"]=output[0][1]["xsltfile"]
 		except:
-			self.outputConfig="config"
+			pass
+		try:
+			self.outputConfig=output[0][1]["config"]
+		except:
+			outputConfig="config"
 		if not self.actions:
 			self.immutable=True
 			return
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
-		
+
 	def parseActions(self,a):
 		ret=[]
 		try:
@@ -179,7 +184,7 @@ class View(object):
 					ret.append(o)
 				else:
 					ret.insert(i+n, o)
-				
+
 				#try:
 				#	ret.insert(self.searchAction(ret, before, after), o)
 				#except:
@@ -269,35 +274,16 @@ class View(object):
 				#if D: log.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-		if self.outputFormat:
-			acenv.outputFormat=self.outputFormat
+		try:
+			acenv.output["format"]=self.output["format"]
+		except:
+			pass
+		try:
+			acenv.output["xsltfile"]=self.output["xsltfile"]
+		except:
+			pass
 		#print "generations"
 		#print acenv.generations
 
 	def isUpToDate(self):
 		return self.timestamp >= os.stat(self.path).st_mtime
-
-
-	#def searchAction(self, actions, before, after):
-	#	i, j = 0, len(actions)-1
-	#	if after:
-	#		if after == '*':
-	#			return j+1
-	#		for a in actions:
-	#			i+=1
-	#			if a["name"] == after:
-	#				break
-	#	if before:
-	#		if before == '*':
-	#			return 0
-	#		while(True):
-	#			if actions[j]["name"] == before:
-	#				break
-	#			j-=1
-	#	if i <= j:
-	#		if before:
-	#			return j
-	#		if after:
-	#			return i
-	#	return None
-	#	pass

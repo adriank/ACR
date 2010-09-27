@@ -26,7 +26,6 @@ class Default(Component):
 
 	def parseAction(self,config):
 		s=[]
-		print config
 		for elem in config["content"]:
 			if type(elem) is tuple:
 				s.append(tree2xml(elem))

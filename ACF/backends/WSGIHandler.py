@@ -92,7 +92,9 @@ def application(env,start_response):
 	else:
 		app=Application(path)
 		APP_CACHE[path]=app
+	x=time.time()
 	acenv=Environment(app)
+	print round((time.time()-t)*1000,2)
 	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
 	acenv.UA=env["HTTP_USER_AGENT"]
 	acenv.outputFormat=computeMIME(acenv.mime,acenv.UA)
@@ -108,12 +110,12 @@ def application(env,start_response):
 	acenv.URLpath=filter(lambda x: not str.isspace(x) and len(x)!=0,env['PATH_INFO'].split("/"))
 	output=app.generate(acenv)
 	headers=acenv.outputHeaders
-	headers.append(("Content-Type",acenv.outputFormat))
+	headers.append(("Content-Type",acenv.output["format"]))
 	status='200 OK'
 	if acenv.doRedirect:
 		status="301 Redirected"
 	start_response(status, headers)
-	#print round((time.time()-t)*1000,2)
+	print round((time.time()-t)*1000,2)
 	if not acenv.doRedirect:
 		response.append(output)
 	#h = hpy()

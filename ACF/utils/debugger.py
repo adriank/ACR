@@ -4,7 +4,7 @@
 #TODO move dbgMap outside
 
 class Debugger(object):
-	dbg=True
+	dbg=None
 	_debugStr=None
 	dbgfn=None
 	level=60
@@ -19,7 +19,8 @@ class Debugger(object):
 		self.dbgfn = self.consolelog
 		self.dbgMap = {"debug" : self.DEBUG, "info" : self.INFO, "warning" : self.WARNING, "error" : self.ERROR, "critical" : self.CRITICAL}
 		try:
-			if app.dbg["enabled"] == True:
+			if app.dbg["enabled"]:
+				self.doDebug=True
 				self.level = self.dbgMap[app.dbg["level"].lower()]
 		except (KeyError, TypeError):
 			print 'Cannot read debug settings from app config.'

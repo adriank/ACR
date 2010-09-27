@@ -9,17 +9,21 @@ try:
 except:
 	raise Error("libxsltError","libxslt not installed")
 
+XSLTCache=None
+
 def transform(xml,xslt):
 	try:
 		doc=libxml2.parseDoc(xml)
 	except Exception,e:
 		return "XML parsing Error."
-	try:
-		#TODO implement checking for change of *ALL* xslt files
-		XSLTCache=libxslt.parseStylesheetFile(xslt)
-#		raise str(dir(globals.XSLTCache))
-	except Exception,e:
-		return "XSLT parsing Error."
+	global XSLTCache
+	if not XSLTCache:
+		try:
+			#TODO implement checking for change of *ALL* xslt files
+			XSLTCache=libxslt.parseStylesheetFile(xslt)
+	#		raise str(dir(globals.XSLTCache))
+		except Exception,e:
+			return "XSLT parsing Error."
 	r=XSLTCache.applyStylesheet(doc, None)
 	ret=r.serialize()
 	doc.freeDoc()

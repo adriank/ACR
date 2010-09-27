@@ -22,9 +22,8 @@ from ACF.utils import replaceVars,xmlextras
 from ACF.components import *
 from ACF import db
 import time
-import re, logging
+import re
 
-#log=logging.getLogger('ACF.component.database')
 #re.I==case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
@@ -56,7 +55,7 @@ class DataBase(Component):
 
 	#data is list of complex values
 	def evaluateMR(self,env,query,data):
-		D=env.debug
+		D=env.doDebug
 		if D: env.dbg("start with query='%s' and data=%s",query,data)
 		#dt=self.determineDataType(data)
 		qt=self.determineQueryType(query)
@@ -82,7 +81,7 @@ class DataBase(Component):
 		return ";".join(q)
 
 	def generate(self,env,actionConf):
-		D=env.dbg
+		D=env.doDebug
 		if D:
 			env.info("Component: 'DB'")
 			env.debug("start with actionConf=%s",actionConf)
@@ -105,11 +104,11 @@ class DataBase(Component):
 		else:
 			if D: env.debug("multiRequest not needed")
 		if D: env.info("Querying database with '%s'",query)
-		if True: #env.debug:
+		if True:#env.dbg:
 			t=time.time()
 		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
-		#if True: #env.debug:
-		#	env.debug["dbtimer"]+=time.time()-t
+		if True:#env.dbg:
+			env.dbg["dbtimer"]+=time.time()-t
 		if D: env.debug("'query' returned %s",result)
 		if result:
 			if D: env.debug("Creating list of ordered dicts.")

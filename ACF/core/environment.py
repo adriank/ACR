@@ -44,20 +44,26 @@ class Environment(Debugger):
 	UA=""
 	IP=""
 	output=None
-	outputFormat=None
 	outputConfig="config"
 	prefix="ACF_"
 	doRedirect=False
 	redirect=False
 	tree=None
+	dbg=None
+	doDebug=False
 
 	def __init__(self,app):
-		super(Environment, self).__init__(app)
 		self.generations={}
 		self.mime=[]
 		self.URLpath=[]
 		#populate with app defaults; the class attributes are not in __dict__!
-		self.__dict__.update(filter(lambda t: t[0] in Environment.__dict__, list(app.__dict__.iteritems())))
+		for i in filter(lambda t: t[0] in Environment.__dict__, list(app.__dict__.iteritems())):
+			if type(i[1]) is dict:
+				j=i[1].copy()
+			else:
+				j=i[1]
+			self.__dict__[i[0]]=j
+		super(Environment, self).__init__(app)
 		self.requestStorage={}
 		self.outputHeaders=[]
 		self.cookies={}
