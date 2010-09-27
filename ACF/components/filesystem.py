@@ -31,7 +31,7 @@ class FileSystem(Component):
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
-		D=acenv.debug
+		D=acenv.doDebug
 		path=conf["path"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
@@ -57,7 +57,7 @@ class FileSystem(Component):
 		return List(ret)
 
 	def create(self,acenv,conf,update=False):
-		D=acenv.debug
+		D=acenv.doDebug
 		#path=os.path.join(self.path+conf["path"])
 		#TODO if whole path do not exist -> create all dirs in path
 		o=Object()
@@ -82,7 +82,7 @@ class FileSystem(Component):
 		return self.create(acenv,conf,True)
 
 	def append(self,acenv,conf):
-		D=acenv.debug
+		D=acenv.doDebug
 		o=Object()
 		path=self.path+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
@@ -98,7 +98,7 @@ class FileSystem(Component):
 		return ("object",{"status":"ok"},None)
 
 	def delete(self,acenv,conf):
-		D=acenv.debug
+		D=acenv.doDebug
 		o=Object()
 		path=self.path+replaceVars(acenv,conf["path"])
 		if (os.path.exists(path)):
@@ -110,7 +110,7 @@ class FileSystem(Component):
 		return o
 
 	def copy(self,acenv,conf):
-		D=acenv.debug
+		D=acenv.doDebug
 		o=Object()
 		copyFrom=self.path+replaceVars(acenv,conf["from"])
 		copyTo=self.path+replaceVars(acenv,conf["to"])
@@ -147,7 +147,7 @@ class FileSystem(Component):
 		return g
 
 	def generate(self, acenv, config):
-		D=acenv.debug
+		D=acenv.doDebug
 		if D:
 			acenv.info("Component: 'FS'")
 			acenv.info("Command: '%s'", replaceVars(acenv,config["command"]))

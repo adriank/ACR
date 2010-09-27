@@ -92,10 +92,10 @@ class View(object):
 		try:
 			acenv.URLpath = filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/"))
 			self.parent = app.getView(acenv)
-			if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
+			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
 		except:
 			self.parent = None
-			if D: acenv.debug("Loading a root view.")
+			#if D: acenv.debug("Loading a root view.")
 		for i in tree[2]:
 			if i[0]=="param":
 				inputs.append(i)
@@ -241,6 +241,7 @@ class View(object):
 				acenv.requestStorage[self.inputs[i]["name"]]=default
 
 	def generate(self,acenv):
+		D=acenv.doDebug
 		try:
 			self.inputs
 		except:# inputs is undefined
@@ -252,7 +253,7 @@ class View(object):
 		self.fillPosts(acenv)
 		acenv.requestStorage["__lang__"]=acenv.lang
 		for action in self.actions:
-			acenv.info("define name='%s'",action["name"])
+			if D: acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):
 				#TODO if SET is used in action -> log.error
 				if action["type"]==SET:

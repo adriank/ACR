@@ -103,13 +103,6 @@ def tree2xml(root):
 	rec(root,tab)
 	return "".join(tab)
 
-
-def last(iterable):
-	"""
-	Gives last item of any iterable object.
-	"""
-	return iterable[len(iterable)-1]
-
 #need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
 class Reader(handler.ContentHandler):
 	def __init__(self):
@@ -126,18 +119,18 @@ class Reader(handler.ContentHandler):
 			self.root=ObjectTree([str(name).lower(),attrs,[]])
 			self.path.append(self.root)
 		else:
-			l=last(self.path)
+			l=self.path[-1]
 			l[2].append((str(name).lower(),attrs,[]))
-			self.path.append(last(l[2]))
+			self.path.append(l[2][-1])
 
 	def characters(self,data):
 		if len(data.strip())>0:
-			last(self.path)[2].append(str2obj(data).encode("utf-8"))
+			self.path[-1][2].append(str2obj(data).encode("utf-8"))
 
 	def endElement(self,x):
 		subelems=[]
 		lines=[]
-		elem=last(self.path)[2]
+		elem=self.path[-1][2]
 		for i in elem:
 			if type(i) is tuple:
 				if len(lines):

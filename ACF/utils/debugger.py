@@ -26,7 +26,6 @@ class Debugger(object):
 			print 'Cannot read debug settings from app config.'
 
 	def debug(self, *s):
-		print "dupa"
 		if self.dbgfn and self.level <= self.DEBUG:
 			self.dbgfn("DEBUG", s)
 
