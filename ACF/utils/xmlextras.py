@@ -70,12 +70,12 @@ def tree2xml(root):
 	input: xml tree
 	returns: xml tree parsed to a xml
 	"""
-	def rec(node,tab):
+	def rec(node):
 		if type(node) in [Object,List]:
-			tag=node.__class__.__name__.lower()
-			attrs=node.__dict__.copy()
-			attrs.pop("_value")
+			tag=node._name
 			content=node._value
+			attrs=node.__dict__#.copy()
+			attrs.pop("_value")
 		elif type(node) is tuple:
 			tag=node[0]
 			attrs=node[1]
@@ -88,19 +88,25 @@ def tree2xml(root):
 			tab.append("/>")
 		else:
 			tab.append(">")
-			for i in content:
-				if type(i) in [tuple,Object,List]:
-					rec(i,tab)
-				elif type(i) is str:
-					tab.append(i)
-				else:
-					tab.append(str(i))
+			typ=type(content)
+			if typ is str:
+				tab.append(content)
+			#TODO this is probably wrong
+			else:
+				for i in content:
+					typei=type(i)
+					if typei is str:
+						tab.append(i)
+					elif typei in [tuple,Object,List]:
+						rec(i)
+					else:
+						tab.append(str(content))
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
 	#if D: log.info("Generating XML")
 	tab=[]
-	rec(root,tab)
+	rec(root)
 	return "".join(tab)
 
 #need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower

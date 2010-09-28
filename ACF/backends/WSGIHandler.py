@@ -78,7 +78,7 @@ def computePOST(env):
 	return post
 
 def application(env,start_response):
-	#t=time.time()
+	t=time.time()
 	response=[]
 	if globals.appsDir:
 		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
@@ -115,7 +115,7 @@ def application(env,start_response):
 	start_response(status, headers)
 	if not acenv.doRedirect:
 		response.append(output)
-	#print round((time.time()-t)*1000,2)
+	print round((time.time()-t)*1000,2)
 	#h = hpy()
 	#print h.heap()
 	return response

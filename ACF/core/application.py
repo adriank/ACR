@@ -193,12 +193,15 @@ class Application(object):
 			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"
 		#if True:
-		#	all=round((time.time()-t)*1000,5)
-		#	dbms=round(acenv.dbg["dbtimer"]*1000,5)
-		#	print("Generated in %s"%(all))
-		#	print("DBMS took %s"%(dbms))
-		#	print("Python took %s"%(all-dbms))
-		return s.serialize(acenv)
+		all=round((time.time()-t)*1000,5)
+		dbms=round(acenv.dbg["dbtimer"]*1000,5)
+		print("Generated in %s, where:"%(all))
+		print("	DBMS took %s"%(dbms))
+		print("	Python took %s"%(all-dbms))
+		t=time.time()
+		x=s.serialize(acenv)
+		print "Serializer took %s"%(round((time.time()-t)*1000,5))
+		return x
 
 	def transform(self,acenv):
 		self.getXML(acenv)
