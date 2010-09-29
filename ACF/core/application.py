@@ -118,25 +118,22 @@ class Application(object):
 		return o
 
 	#lazy view objects creation
-	def getView(self,acenv):
-		D=acenv.doDebug
-		URLpath=acenv.URLpath
-		if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
+	def getView(self,URLpath):
+		#D=acenv.doDebug
+		#if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
 		(o, i)=dicttree.get(self.views, URLpath, False)
 		if i==len(URLpath) and type(o) is dict and o.has_key("default"):
 			o=o["default"]
-			if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
+			#if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
 		#TODO handle an event when file was deleted; probably raises exception
 		if type(o) is View and o.isUpToDate():
-			acenv.inputs=URLpath[i:]
-			if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
-			return o
-
-		if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
-		elif D: acenv.info("View is not cached")
+			#if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
+			return (o, URLpath[i:])
+		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
+		#elif D: acenv.info("View is not cached")
 		i=0
 		viewPath=pjoin(self.viewsPath, *URLpath[:i])
-		if D: acenv.debug("Searching from '%s'"%(viewPath))
+		#if D: acenv.debug("Searching from '%s'"%(viewPath))
 		viewName,inputs=URLpath[:i],URLpath[i:]
 		temp=viewPath
 		while len(inputs):
@@ -145,8 +142,8 @@ class Application(object):
 				break
 			viewPath=temp
 			viewName.append(inputs.pop(0))
-		if D: acenv.debug("viewPath: %s"%(viewName))
-		if D: acenv.debug("inputs: %s"%(inputs))
+		#if D: acenv.debug("viewPath: %s"%(viewName))
+		#if D: acenv.debug("inputs: %s"%(inputs))
 		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
 			viewName.append(inputs.pop(0))
 		elif not inputs and os.path.exists(viewPath+".xml"):
@@ -155,11 +152,9 @@ class Application(object):
 			viewName.append("default")
 		else:
 			viewName=["notFound"]
-		acenv.viewPath=viewName
-		acenv.inputs=inputs
-		v=View(viewName, self, acenv)
+		v=View(viewName, self)
 		dicttree.set(self.views, viewName, v)
-		return v
+		return (v, inputs)
 
 	#will be generator
 	def generate(self,acenv):
@@ -173,7 +168,7 @@ class Application(object):
 				acenv.sessionStorage=FileSession(acenv,sessID)
 			except:
 				sessID=None
-		view=self.getView(acenv)
+		view, acenv.inputs=self.getView(acenv.URLpath)
 		view.generate(acenv)
 		#this is little faster than Object
 		langs=[]

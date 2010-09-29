@@ -33,6 +33,7 @@ SET="set"
 COMMAND="command"
 INHERITS="inherits"
 
+	
 def parseParams(nodes,dictionary=False):
 	if not nodes:
 		return None
@@ -58,7 +59,7 @@ def parseParams(nodes,dictionary=False):
 class View(object):
 	#timestamp=0 #file modification timestamp
 	#path="" file path
-	def __init__(self, name, app, acenv):
+	def __init__(self, name, app):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		self.immutable=False
@@ -90,9 +91,7 @@ class View(object):
 		posts=[]
 		output=[]
 		try:
-			#TODO seriously broken!!!
-			acenv.URLpath = filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/"))
-			self.parent = app.getView(acenv)
+			self.parent = app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/")))[0]
 			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
 		except:
 			self.parent = None
@@ -108,12 +107,11 @@ class View(object):
 				posts=i[2]
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
-		if self.parent:
-			self.rawActions = self.parent.rawActions + actions
-		else:
-			self.rawActions = actions
-		self.actions = self.parseActions(self.rawActions)
+		self.actions = self.parseActions(actions)
 		self.inputs=parseParams(inputs)
+		# inputs inheritance
+		if self.parent and self.parent.inputs:
+			self.inputs=self.parent.inputs+self.inputs
 		self.posts=parseParams(posts,True)
 		self.output={}
 		try:
@@ -128,6 +126,13 @@ class View(object):
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
+		## output inheritance
+		#if self.parent and self.parent.outputFormat:
+		#		self.outputFormat=self.parent.outputFormat
+		#		self.outputConfig=self.parent.outputConfig
+		## posts inheritance
+		#if self.parent and self.parent.posts:
+		#	self.posts=self.parent.posts
 		if not self.actions:
 			self.immutable=True
 			return
@@ -136,7 +141,10 @@ class View(object):
 		self.immutable=True
 
 	def parseActions(self,a):
-		ret=[]
+		if self.parent:
+			ret=self.parent.actions[:]
+		else:
+			ret = []
 		try:
 			for i in a:
 				attrs=i[1]
@@ -181,15 +189,12 @@ class View(object):
 				try:
 					while not ret[i]["name"] == name:
 						i+=1
-				except:
+				except: 
+					# TODO raise Error('View not found')
 					ret.append(o)
+					#raise Error('View not found')
 				else:
 					ret.insert(i+n, o)
-
-				#try:
-				#	ret.insert(self.searchAction(ret, before, after), o)
-				#except:
-				#	ret.append(act)
 		except Error,e:
 			pass
 		return ret
@@ -202,10 +207,10 @@ class View(object):
 
 	def fillPosts(self,acenv):
 		#TODO add default values support by doing ticket #13
-		#if D: acenv.info("Create '%s' view",(self.name))
+		if D: acenv.info("Create '%s' view",(self.name))
 		list=acenv.posts
 		if not self.posts or not len(self.posts):
-			#if D: log.debug("list of posts is empty. Returning 'True'.")
+			if D: acenv.debug("list of posts is empty. Returning 'True'.")
 			return True
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		for i in list:
@@ -219,9 +224,9 @@ class View(object):
 	def fillInputs(self,acenv):
 		list=acenv.inputs
 		if not self.inputs or not len(self.inputs):
-			#if D: log.debug("list of inputs is empty. Returning 'True'.")
+			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
-		#if D: log.debug("All parameters were specified")
+		if D: acenv.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		if list:
 			inputsLen=min([len(self.inputs),len(list)])
@@ -249,7 +254,7 @@ class View(object):
 			acenv.generations.append(("object",{"type":"view","name":self.name},None))
 			self.transform(acenv)
 			return
-		#if D: log.debug("Executing with env=%s",acenv)
+		#if D: acenv.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
 		acenv.requestStorage["__lang__"]=acenv.lang
@@ -258,6 +263,7 @@ class View(object):
 			if action["condition"] and not execute(acenv,action["condition"]):
 				#TODO if SET is used in action -> log.error
 				if action["type"]==SET:
+					acenv.debug("Set condition is not true.")
 					break
 				continue
 			component=self.app.getComponent(action["component"])
@@ -268,12 +274,12 @@ class View(object):
 			if not action["name"]:
 					continue
 			if action["type"]==DEFINE:
-				#if D: log.info("Executing action=%s",action)
+				if D: acenv.info("Executing action=%s",action)
 				generation.name=action["name"]
 				generation.view=self.name
 				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
-				#if D: log.info("Executing SET=%s",action)
+				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
 		try:
