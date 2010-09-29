@@ -90,6 +90,7 @@ class View(object):
 		posts=[]
 		output=[]
 		try:
+			#TODO seriously broken!!!
 			acenv.URLpath = filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/"))
 			self.parent = app.getView(acenv)
 			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
