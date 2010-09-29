@@ -10,8 +10,8 @@
 	</x:template>
 <!-- TODO make it template with UL inner element -->
 	<x:template name="menu">
-		<li class="yui-menuitem">
-			<a class="yui-menuitem-content" href="{@href}">
+		<li class="yui3-menuitem">
+			<a class="yui3-menuitem-content" href="{@href}">
 				<x:value-of select="$langdoc/menu/*[local-name()=current()/@name]"/>
 			</a>
 		</li>
@@ -39,7 +39,7 @@
 							</div>
 						</x:when>
 					 <x:otherwise>
-						 <a class="yui-menuitem-content" href="{@href}">
+						 <a class="yui3-menuitem-content" href="{@href}">
 							 <x:value-of select="$langdoc/menu/*[local-name()=current()/@name]"/>
 						 </a>
 					 </x:otherwise>
