@@ -162,9 +162,19 @@
 
 	<x:template match="widget[@type='wiki']" mode="widget">
 		<x:param name="datasource" select="@datasource"/>
+		<x:if test="not($datasource/langid)">
+			<x:copy-of select="$langdoc//noArticle/text()"/>
+		</x:if>
 		<x:if test="$role='admin'">
 			<div class="accms-optionsPanel">
-				<a href="#langid-{$datasource/langid}"/>
+				<x:choose>
+					<x:when test="$datasource/langid">
+						<a href="#langid-{$datasource/langid}"/>
+					</x:when>
+					<x:otherwise>
+						<a href="#langid-{$datasource/langid}"/>
+					</x:otherwise>
+				</x:choose>
 			</div>
 		</x:if>
 		<x:call-template name="templateWidget">
