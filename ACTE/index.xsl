@@ -151,6 +151,9 @@
 		</x:element>
 	</x:template>
 
+	<x:template match="access">
+		<a href="#" accesskey="{@key}"/>
+	</x:template>
 	<!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
 		<x:variable name="values" select="$doc//*[@name=current()/@values]"/>

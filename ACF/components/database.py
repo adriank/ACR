@@ -110,8 +110,7 @@ class DataBase(Component):
 		if True:#env.dbg:
 			env.dbg["dbtimer"]+=time.time()-t
 		if D: env.debug("'query' returned %s",result)
-		print result
-		if len(result["rows"]):
+		if result and len(result["rows"]):
 			if D: env.debug("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
 			first=True #for debugging purposes
