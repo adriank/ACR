@@ -172,7 +172,7 @@
 						<a class="edit" href="#langid-{$datasource/langid}"/>
 					</x:when>
 					<x:otherwise>
-						<a class="add" href="#langid-{$datasource/langid}"/>
+						<a class="add" href="#langid-{@langid}"/>
 					</x:otherwise>
 				</x:choose>
 			</div>
