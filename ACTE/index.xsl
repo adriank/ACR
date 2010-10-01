@@ -69,10 +69,8 @@
 
 	<x:template match="container">
 		<x:variable name="width">
-			<x:choose>
-				<x:when test="count(@width)"><x:value-of select="@width"/></x:when>
-				<x:otherwise><x:value-of select="$configdoc/defaultwidth/node()"/></x:otherwise>
-			</x:choose>
+			<x:value-of select="@width"/>
+			<x:if test="not(@width)"><x:value-of select="$configdoc/defaultwidth/node()"/></x:if>
 		</x:variable>
 		<div class="container w{$width} {@name}">
 			<x:apply-templates select="./*"/>
@@ -86,18 +84,11 @@
 	</x:template>
 
 	<x:template match="script|pagetitle"/>
-	<!-- This is temporary -->
-	<x:template match="body">
-		<x:apply-templates select="$layoutdoc"/>
-	</x:template>
-
 	<x:template match="widget">
 		<x:variable name="datasource" select="$doc/*[@name=current()/@datasource]"/>
 		<x:variable name="tag">
-			<x:choose>
-				<x:when test="count(@tag)"><x:value-of select="@tag"/></x:when>
-				<x:otherwise>div</x:otherwise>
-			</x:choose>
+			<x:value-of select="@tag"/>
+			<x:if test="not(@tag)">div</x:if>
 		</x:variable>
 		<x:element name="{$tag}">
 			<x:attribute name="id"><x:value-of select="@name"/></x:attribute>
@@ -109,19 +100,20 @@
 					</x:call-template>
 				</x:for-each>
 			</x:variable>
+			<x:variable name="type">
+				<x:value-of select="@type"/>
+				<x:if test="not(@type)">template</x:if>
+			</x:variable>
 
 			<x:choose>
 				<x:when test="local-name($datasource)='list'">
-					<x:attribute name="class">widget <x:value-of select="@type"/>-list</x:attribute>
+					<x:attribute name="class">widget <x:value-of select="$type"/>-list</x:attribute>
 					<x:copy-of select="$before"/>
 					<x:variable name="this" select="."/>
 					<x:variable name="subtag">
-						<x:choose>
-							<x:when test="count(@subtag)"><x:value-of select="@subtag"/></x:when>
-							<x:otherwise>div</x:otherwise>
-						</x:choose>
+						<x:value-of select="@subtag"/>
+						<x:if test="not(@subtag)">div</x:if>
 					</x:variable>
-					<x:variable name="type" select="@type"/>
 					<x:for-each select="$datasource/object">
 						<x:element name="{$subtag}">
 							<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
@@ -279,7 +271,8 @@
 							<x:value-of select="translate($temp, ' ', '_')"/>
 						</x:attribute>
 					</x:for-each>
-					<x:for-each select="node()[local-name()!='pars']">
+					<!-- changed node() -> * -->
+					<x:for-each select="*[local-name()!='pars']">
 						<x:call-template name="template">
 							<x:with-param name="datasource" select="$datasource"/>
 						</x:call-template>

@@ -28,7 +28,7 @@
 							<a class="yui3-menu-label" href="#{@name}">
 								<x:value-of select="$langdoc/menu/*[local-name()=current()/@name]"/>
 							</a>
-							<div id="{@name}" class="yui3-menu">
+							<div id="{@name}" class="yui3-menu yui3-menu-hidden">
 								<div class="yui3-menu-content">
 									<ul>
 										<x:for-each select="item">
@@ -92,13 +92,6 @@
 			</x:for-each>
 		</ul>
 	</x:template>
-
-<!-- TODO tagCloud widget -->
-	<x:template match="widget[@type='tagCloud']" mode="widget">
-		<x:for-each select="tag">
-		</x:for-each>
-	</x:template>
-
 	<x:template match="widget[@type='siteMap']" mode="widget">
 		<x:variable name="datasource" select="$doc//*[local-name()=current()/@datasource]"/>
 		<x:variable name="width" select="99.9 div count($datasource/category)"/>
@@ -140,7 +133,7 @@
 	</x:template>
 
 <!-- template execution order is not deterministic -->
-	<x:template match="widget[@type='template']" name="templateWidget" mode="widget">
+	<x:template match="widget[@type='template']|widget[not(@type)]" name="templateWidget" mode="widget">
 		<x:param name="datasource" select="@datasource"/>
 		<x:choose>
 			<x:when test="count(template)">
@@ -163,7 +156,7 @@
 	<x:template match="widget[@type='wiki']" mode="widget">
 		<x:param name="datasource" select="@datasource"/>
 		<x:if test="not($datasource/langid)">
-			<x:copy-of select="$langdoc//noArticle/text()"/>
+			<x:copy-of select="$langdoc//noArticle/node()"/>
 		</x:if>
 		<x:if test="$role='admin'">
 			<div class="accms-optionsPanel">
