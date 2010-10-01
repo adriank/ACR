@@ -8,7 +8,7 @@
 			<a href="/admin-new_view/{$doc//view/@name}"><x:value-of select="$langdoc//notFoundAdmin"/></a>
 		</x:if>
 	</x:template>
-<!-- TODO make it template with UL inner element -->
+
 	<x:template name="menu">
 		<li class="yui3-menuitem">
 			<a class="yui3-menuitem-content" href="{@href}">
@@ -20,7 +20,7 @@
 	<x:template match="widget[@type='menu']" mode="widget">
 		<x:attribute name="class">widget yui3-menu <x:value-of select="@class"/></x:attribute>
 		<div class="yui3-menu-content">
-		<ul>
+		<ul accesskey="@accesskey">
 			<x:for-each select="./item">
 				<li class="yui3-menuitem">
 					<x:choose>

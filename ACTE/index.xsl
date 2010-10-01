@@ -127,7 +127,7 @@
 					</x:if>
 				</x:when>
 				<x:otherwise>
-					<x:attribute name="class">widget <x:value-of select="@type"/>-item</x:attribute>
+					<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
 					<x:copy-of select="$before"/>
 					<x:apply-templates mode="widget" select=".">
 						<x:with-param name="datasource" select="$datasource"/>
@@ -271,8 +271,8 @@
 							<x:value-of select="translate($temp, ' ', '_')"/>
 						</x:attribute>
 					</x:for-each>
-					<!-- changed node() -> * -->
-					<x:for-each select="*[local-name()!='pars']">
+					<!-- changed node() -> text()|* -->
+					<x:for-each select="text()|*[local-name()!='pars']">
 						<x:call-template name="template">
 							<x:with-param name="datasource" select="$datasource"/>
 						</x:call-template>
