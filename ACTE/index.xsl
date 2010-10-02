@@ -152,16 +152,16 @@
 		<form action="{@action}" method="post" enctype="multipart/form-data">
 			<x:for-each select="item">
 				<x:variable name="value">
-					<x:variable name="helper" select="($values/@*|$values/*)[name()=current()/@name]"/>
+					<x:variable name="helper" select="$values/*[name()=current()/@name]"/>
 					<x:choose>
-						<x:when test="count(@value)">
+						<x:when test="@value">
 							<x:copy-of select="$doc//object[@name=current()/@value]/node()"/>
 						</x:when>
 						<x:when test="not($helper)">
-							<x:value-of select="."/>
+							<x:copy-of select="."/>
 						</x:when>
 						<x:otherwise>
-							<x:value-of select="$helper"/>
+							<x:copy-of select="$helper/node()"/>
 						</x:otherwise>
 					</x:choose>
 				</x:variable>
@@ -191,7 +191,7 @@
 									<textarea id="{@name}" name="{@name}" accesskey="{@accesskey}"><x:copy-of select="$value"/></textarea>
 								</x:when>
 								<x:when test="@type='RTE'">
-									<textarea id="{@name}" name="{@name}" accesskey="{@accesskey}" class="accms-RTE"><x:copy-of select="$value"/></textarea>
+									<textarea id="{@name}" name="{@name}" accesskey="{@accesskey}" class="accms-RTE"><x:value-of select="$value"/></textarea>
 								</x:when>
 								<x:when test="@type='checkbox'">
 									<input id="{@name}" type="checkbox" name="{@name}" value="true" accesskey="{@accesskey}">

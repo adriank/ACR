@@ -120,10 +120,13 @@ class DataBase(Component):
 				nodes=[]
 				#TODO optimize returning row and value
 				for i in xrange(len(row)):
-					#if col in actionConf["cdata"]:
-					#	s="<![CDATA["+s.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
+					if fields[i] in actionConf["cdata"]:
+						s="<![CDATA["+row[i].replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
+						print s
 					#if D and first: env.info("'%s' appended as node",col)
-					nodes.append((fields[i],None,[row[i]]))
+					else:
+						s=row[i]
+					nodes.append((fields[i],None,[s]))
 				first=False
 				ret.append(Object(nodes))
 			if len(ret) is 1:
@@ -144,10 +147,12 @@ class DataBase(Component):
 		for node in conf["content"]:
 			if type(node) is str:
 				query=str(" ".join(node.split()))
+		params=conf["params"]
 		return {
 			"query":query,
-			"server":conf["params"].get("server", "default"),
-			"return":conf["params"].get("get","table")
+			"server":params.get("server", "default"),
+			"return":params.get("get","table"),
+			"cdata":map(str.strip,params.get("cdata","").split(","))
 		}
 
 def getObject(config):
