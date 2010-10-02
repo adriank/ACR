@@ -116,7 +116,10 @@
 					</x:variable>
 					<x:for-each select="$datasource/object">
 						<x:element name="{$subtag}">
-							<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
+							<x:attribute name="class">
+								widget <x:value-of select="$type"/>-item
+								<x:if test="position()=1">first</x:if>
+							</x:attribute>
 							<x:apply-templates mode="widget" select="$this">
 								<x:with-param name="datasource" select="."/>
 							</x:apply-templates>

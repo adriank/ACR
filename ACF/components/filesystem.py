@@ -19,6 +19,7 @@
 from ACF.components import Component
 from ACF.errors import *
 from ACF.utils import replaceVars
+from ACF.utils.generations import Object,List
 from ACF.utils.xmlextras import tree2xml
 import os
 import shutil
@@ -53,7 +54,7 @@ class FileSystem(Component):
 		for i in files:
 			o=Object()
 			o.name=i
-			ret.append(l)
+			ret.append(o)
 		return List(ret)
 
 	def create(self,acenv,conf,update=False):
