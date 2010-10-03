@@ -29,23 +29,30 @@ class FileSystem(Component):
 	def __init__(self,config):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
+		self.SHOW_DIRS=True
+		self.SHOW_HIDDEN=False
 		self.path=config[0][2][0]
 
 	#TODO identify directories in an output!!!
 	def list(self,acenv,conf):
 		D=acenv.doDebug
 		fullpath=conf["fullpath"]
-		showDirs=conf.get("showdirs",True)
-		_filter=conf.get("filter","")
+		showDirs=conf.get("showdirs",self.SHOW_DIRS)
+		showHidden=conf.get("showhidden",self.SHOW_HIDDEN)
+		_filter=conf.get("filter",None)
 		files=os.listdir(fullpath)
+		if not showHidden:
+			files=filter(lambda file: not file[0]==".",files)
 		if not showDirs:
 			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),files)
-		else:
-			if D: acenv.warning("'list' has bad value: showDirs=%s", showDirs)
+		#WTF???
+		#else:
+			#if D: acenv.warning("'list' has bad value: showDirs=%s", showDirs)
 		if _filter:
 			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
-		if conf.get("extension","")=="hide":
-			files=map(lambda f:	os.path.splitext(f)[0],files)
+		#WTF???
+		#if conf.get("extension","")=="hide":
+		#	files=map(lambda f:	os.path.splitext(f)[0],files)
 		files.sort()
 		ret=[]
 		if len(files)==0:

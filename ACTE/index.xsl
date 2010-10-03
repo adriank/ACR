@@ -48,6 +48,9 @@
 			<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.2.0/build/node-menunav/assets/skins/sam/node-menunav.css"/>
 			<link href="http://e.acimg.eu/css/style.css" id="customstyles" rel="stylesheet" type="text/css"/>
 			<link href="{$static}css/style.css" rel="stylesheet" type="text/css"/>
+			<x:for-each select="$doc//style">
+				<link href="{@url}" rel="stylesheet" type="text/css"/>
+			</x:for-each>
 			<!--<x:if test="$role='admin'">-->
 			<!--	<link href="http://e.acimg.eu/css/admin.css" rel="stylesheet" type="text/css"/>-->
 			<!--</x:if>-->
@@ -60,9 +63,9 @@
 			<x:if test="count(//error)">
 				<x:copy-of select="//error"/>
 			</x:if>
-			<x:if test="$role='admin'">
-				<div id="accms-admin"/>
-			</x:if>
+			<!--<x:if test="$role='admin'">-->
+			<!--	<div id="accms-admin"/>-->
+			<!--</x:if>-->
 		</body>
 		</html>
 	</x:template>
@@ -83,7 +86,7 @@
 		</div>
 	</x:template>
 
-	<x:template match="script|pagetitle"/>
+	<x:template match="script|pagetitle|style"/>
 	<x:template match="widget">
 		<x:variable name="datasource" select="$doc/*[@name=current()/@datasource]"/>
 		<x:variable name="tag">
