@@ -114,6 +114,9 @@
 						<x:value-of select="@subtag"/>
 						<x:if test="not(@subtag)">div</x:if>
 					</x:variable>
+					<x:if test="$role='admin'">
+						<div class="accms-optionsPanel"/>
+					</x:if>
 					<x:for-each select="$datasource/object">
 						<x:element name="{$subtag}">
 							<x:attribute name="class">
@@ -125,9 +128,6 @@
 							</x:apply-templates>
 						</x:element>
 					</x:for-each>
-					<x:if test="$role='admin'">
-						<div class="accms-optionsPanel"/>
-					</x:if>
 				</x:when>
 				<x:otherwise>
 					<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
@@ -151,7 +151,7 @@
 	</x:template>
 	<!-- TODO add required fields support -->
 	<x:template match="widget[@type='form']" mode="widget">
-		<x:variable name="values" select="$doc//*[@name=current()/@values]"/>
+		<x:variable name="values" select="$doc//object[@name=current()/@values]"/>
 		<form action="{@action}" method="post" enctype="multipart/form-data">
 			<x:for-each select="item">
 				<x:variable name="value">

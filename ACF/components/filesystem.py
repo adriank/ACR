@@ -31,14 +31,15 @@ class FileSystem(Component):
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
 		self.path=config[0][2][0]
 
+	#TODO identify directories in an output!!!
 	def list(self,acenv,conf):
 		D=acenv.doDebug
-		path=conf["path"]
+		fullpath=conf["fullpath"]
 		showDirs=conf.get("showdirs",True)
 		_filter=conf.get("filter","")
-		files=os.listdir(conf["path"])
+		files=os.listdir(fullpath)
 		if not showDirs:
-			files=filter(lambda file: not os.path.isdir(os.path.join(path,file)),files)
+			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),files)
 		else:
 			if D: acenv.warning("'list' has bad value: showDirs=%s", showDirs)
 		if _filter:
@@ -51,9 +52,11 @@ class FileSystem(Component):
 			o=Object()
 			o.code="dirEmpty"
 			return o
+		path=conf["path"]
 		for i in files:
 			o=Object()
 			o.name=i
+			o.path=path
 			ret.append(o)
 		return List(ret)
 
@@ -62,14 +65,14 @@ class FileSystem(Component):
 		#path=os.path.join(self.path+conf["path"])
 		#TODO if whole path do not exist -> create all dirs in path
 		o=Object()
-		if not update and os.path.isfile(conf["path"]):
+		if not update and os.path.isfile(conf["fullpath"]):
 			o.status="error"
 			o.code="fileExists"
 			return o #return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file=open(conf["path"], 'w')
+			file=open(conf["fullpath"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
-			file.write(conf["content"].replace("\r\n","\n"))
+			file.write(conf["content"])#.replace("\r\n","\n"))
 		except IOError,e:
 			o.status="error"
 			o.code="IOError"
@@ -151,24 +154,27 @@ class FileSystem(Component):
 		D=acenv.doDebug
 		if D:
 			acenv.info("Component: 'FS'")
-			acenv.info("Command: '%s'", replaceVars(acenv,config["command"]))
+			acenv.info("Command: '%s'", replaceVars(acenv, config["command"]))
 			# do poprawki
 			if replaceVars(acenv,config["command"]) not in ("list", "create", "update", "append", "delete", "copy", "move", "exists", "get"):
-				acenv.error("Command '%s' not exist!",replaceVars(acenv,config["command"]))
+				acenv.error("Command '%s' do not exist!", replaceVars(acenv, config["command"]))
 		conf={}
 		for i in config:
 			if type(config[i]) is str:
-				conf[i]=replaceVars(acenv,config[i])
+				conf[i]=replaceVars(acenv, config[i])
 			else:
 				conf[i]=config[i]
 			if D:
 				if i!= "command": acenv.dbg("attribute: '%s', value: '%s'", i, conf[i])
 		if D:
 			if not conf["path"]:
-				acenv.warning("missning '/' character at the begginig of 'path' attribute")
+				acenv.warning("path not suplied")
 			elif conf["path"][0] !=  '/':
 				acenv.warning("missning '/' character at the begginig of 'path' attribute")
-		conf["path"]=os.path.join(self.path+conf["path"])
+		#if conf["path"][0]=="/":
+		#	path=conf["path"][1:].split("/")
+		#else: path=conf["path"].split()
+		conf["fullpath"]=os.path.join(self.path,*conf["path"].split("/"))
 		return self.__getattribute__(conf["command"])(acenv,conf)
 
 	def parseAction(self, conf):
