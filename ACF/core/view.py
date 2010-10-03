@@ -260,10 +260,8 @@ class View(object):
 		for action in self.actions:
 			if D: acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):
-				#TODO if SET is used in action -> log.error
 				if action["type"]==SET:
-					acenv.debug("Set condition is not true.")
-					break
+					acenv.warning("Set condition is not meet.")
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list

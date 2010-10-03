@@ -40,7 +40,7 @@ def replaceVars(env,s):
 		except ValueError:
 			storage=getStorage(env,"rs")
 			path=p.split(".")
-		ret=dicttree.get(storage,path)
+		ret=dicttree.get(storage,path) or ""
 		if type(ret) is list:
 			return m.group(0)
 		#keep is None; "" is proper value

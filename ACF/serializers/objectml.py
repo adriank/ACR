@@ -9,4 +9,4 @@ def serialize(env):
 	if env.output["xsltfile"]:
 		xslt="""\n<?xml-stylesheet type="text/xsl" href="%sxslt/%s"?>\n"""%(env.domain,env.output["xsltfile"])
 	#TODO allow one-object output
-	return """<?xml version="1.0" encoding="UTF-8"?>%s<list>%s</list>\n"""%(xslt,"".join(fragments))
+	return """<?xml version="1.0" encoding="UTF-8"?>\n%s<list>%s</list>\n"""%(xslt,"".join(fragments))

@@ -95,7 +95,7 @@ def application(env,start_response):
 	acenv=Environment(app)
 	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
 	acenv.UA=env["HTTP_USER_AGENT"]
-	acenv.outputFormat=computeMIME(acenv.mime,acenv.UA)
+	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
 	#if app.debug["enabled"]:
 	#	log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
