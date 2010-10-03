@@ -43,8 +43,10 @@ def replaceVars(env,s):
 		ret=dicttree.get(storage,path)
 		if type(ret) is list:
 			return m.group(0)
-		if not ret:
-			raise Exception((storageName or "rs")+" storage does not have "+".".join(path)+" property")
+		#keep is None; "" is proper value
+		if ret is None:
+			#TODO change it to Error
+			raise Error((storageName or "rs")+" storage does not have "+".".join(path)+" property")
 		return str(ret)
 
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster

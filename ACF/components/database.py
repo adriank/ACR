@@ -122,7 +122,6 @@ class DataBase(Component):
 				for i in xrange(len(row)):
 					if fields[i] in actionConf["cdata"]:
 						s="<![CDATA["+row[i].replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-						print s
 					#if D and first: env.info("'%s' appended as node",col)
 					else:
 						s=row[i]

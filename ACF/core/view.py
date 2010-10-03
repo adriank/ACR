@@ -33,7 +33,7 @@ SET="set"
 COMMAND="command"
 INHERITS="inherits"
 
-	
+
 def parseParams(nodes,dictionary=False):
 	if not nodes:
 		return None
@@ -85,10 +85,10 @@ class View(object):
 				value=tree[1][i].split("/").pop().lower()
 				ns[key]=value
 		self.namespaces=ns
-		inputs=[]
+		inputSchemas=[]
 		self.conditions=[]
 		actions=[]
-		posts=[]
+		postSchemas=[]
 		output=[]
 		try:
 			self.parent = app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/")))[0]
@@ -98,30 +98,28 @@ class View(object):
 			#if D: acenv.debug("Loading a root view.")
 		for i in tree[2]:
 			if i[0]=="param":
-				inputs.append(i)
+				inputSchemas.append(i)
 			elif i[0]=="condition":
 				self.conditions.append(i)
 			elif i[0]=="output":
 				output.append(i)
 			elif i[0]=="post":
-				posts=i[2]
+				postSchemas=i[2]
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
 		self.actions = self.parseActions(actions)
-		self.inputs=parseParams(inputs)
+		self.inputSchemas=parseParams(inputSchemas)
 		# inputs inheritance
-		if self.parent and self.parent.inputs:
-			self.inputs=self.parent.inputs+self.inputs
-		self.posts=parseParams(posts,True)
+		if self.parent and self.parent.inputSchemas:
+			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
+		self.postSchemas=parseParams(postSchemas,True)
 		self.output={}
 		try:
 			self.output["format"]=output[0][1]["format"]
-		except:
-			pass
+		except: pass
 		try:
 			self.output["xsltfile"]=output[0][1]["xsltfile"]
-		except:
-			pass
+		except: pass
 		try:
 			self.outputConfig=output[0][1]["config"]
 		except:
@@ -189,7 +187,7 @@ class View(object):
 				try:
 					while not ret[i]["name"] == name:
 						i+=1
-				except: 
+				except:
 					# TODO raise Error('View not found')
 					ret.append(o)
 					#raise Error('View not found')
@@ -209,13 +207,13 @@ class View(object):
 		#TODO add default values support by doing ticket #13
 		if D: acenv.info("Create '%s' view",(self.name))
 		list=acenv.posts
-		if not self.posts or not len(self.posts):
+		if not self.postSchemas or not len(self.postSchemas):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
 			return True
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		for i in list:
 			value=list[i]
-			type=self.posts[i]["type"]
+			type=self.postSchemas[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
 					value=value.split(",")
@@ -223,33 +221,34 @@ class View(object):
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
-		if not self.inputs or not len(self.inputs):
+		if not self.inputSchemas or not len(self.inputSchemas):
 			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
 		if D: acenv.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		if list:
-			inputsLen=min([len(self.inputs),len(list)])
+			inputsLen=min([len(self.inputSchemas),len(list)])
 		else:
 			inputsLen=0
 		for i in xrange(0,inputsLen):
-			type=self.inputs[i]["type"]
+			type=self.inputSchemas[i]["type"]
 			value=list[i]
 			if not type or checkType(type,value):
 				if type=="csv":
 					value=value.split(",")
-				acenv.requestStorage[self.inputs[i]["name"]]=value
+				acenv.requestStorage[self.inputSchemas[i]["name"]]=value
 			#else:
 			#	if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
-		for i in xrange(i+1,len(self.inputs)):
-			default=self.inputs[i]["default"]
-			if default:
-				acenv.requestStorage[self.inputs[i]["name"]]=default
+		for i in xrange(i+1,len(self.inputSchemas)):
+			default=self.inputSchemas[i]["default"]
+			#Keep is not None; "" is valid value!
+			if default is not None:
+				acenv.requestStorage[self.inputSchemas[i]["name"]]=default
 
 	def generate(self,acenv):
 		D=acenv.doDebug
 		try:
-			self.inputs
+			self.inputSchemas
 		except:# inputs is undefined
 			acenv.generations.append(("object",{"type":"view","name":self.name},None))
 			self.transform(acenv)

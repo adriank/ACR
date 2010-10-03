@@ -274,7 +274,8 @@
 									</x:call-template>
 								</x:for-each>
 							</x:variable>
-							<x:value-of select="translate($temp, ' ', '_')"/>
+							<!--<x:value-of select="translate($temp, ' ', '_')"/>-->
+							<x:value-of select="$temp"/>
 						</x:attribute>
 					</x:for-each>
 					<!-- changed node() -> text()|* -->
