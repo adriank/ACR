@@ -97,10 +97,10 @@ def tree2xml(root):
 					typei=type(i)
 					if typei is str:
 						tab.append(i)
-					elif typei in [tuple,Object,List]:
+					elif typei in [tuple,Object,List,list]:
 						rec(i)
 					else:
-						tab.append(str(content))
+						tab.append(str(i))
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
