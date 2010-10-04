@@ -54,7 +54,7 @@ class User(Component):
 			return Object()
 
 	def logout(self,acenv,conf):
-		acenv.session.delete()
+		acenv.sessionStorage.delete()
 		return Object()
 
 	def register(self,acenv,conf):
