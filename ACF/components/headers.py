@@ -19,20 +19,19 @@
 
 from ACF import globals
 from ACF.components import *
+from ACF.utils.generations import *
 from ACF.errors import *
-#from ACF.db import pgsql
 from ACF.utils import replaceVars,HTTP
-import logging
-
-log=logging.getLogger('ACF.component.headers')
 
 class Headers(Component):
 	def setcookie(self,env,config):
-		if a[1]["action"].lower()=="set":
-			d={"name":replaceVars(env,a["name"]), "value":replaceVars(env,config["value"])}
-			if a[1].has_key("path"):
-				d["path"]=str(replaceVars(env,a[1]["path"]))
-			HTTP.setCookie(env,d)
+		#if config[1]["action"].lower()=="set":
+		d={"name":replaceVars(env,config["name"]), "value":replaceVars(env,config["value"])}
+		if config.has_key("path"):
+			d["path"]=str(replaceVars(env,config["path"]))
+		print d
+		HTTP.setCookie(env,d)
+		return Object()
 
 	def redirect(self,env,config):
 		log.info("Requested redirect to <a href=\"%s\">%s</a>",replaceVars(env,config["location"]))

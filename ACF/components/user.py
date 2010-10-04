@@ -48,6 +48,7 @@ class User(Component):
 			#acenv.session["fake"]=False
 			return Object()
 		else:
+			if D: acenv.error("Password is not correct")
 			o=Object()
 			o.status="error"
 			o.error="WrongPassword"

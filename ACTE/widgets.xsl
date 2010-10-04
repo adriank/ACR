@@ -85,7 +85,7 @@
 							<img alt="{local-name()}" src="http://e.acimg.eu/flags/{local-name()}.png"/>
 						</x:when>
 						<x:otherwise>
-							<a href="/changeLanguage/{local-name()}"><img alt="{local-name()}" src="http://e.acimg.eu/flags/{local-name()}.png"/></a>
+							<a href="/functions/changeLang/{local-name()}"><img alt="{local-name()}" src="http://e.acimg.eu/flags/{local-name()}.png"/></a>
 						</x:otherwise>
 					</x:choose>
 				</li>

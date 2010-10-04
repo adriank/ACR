@@ -172,7 +172,7 @@ class FileSystem(Component):
 			else:
 				conf[i]=config[i]
 			if D:
-				if i!= "command": acenv.dbg("attribute: '%s', value: '%s'", i, conf[i])
+				if i!= "command": acenv.debug("attribute: '%s', value: '%s'", i, conf[i])
 		if D:
 			if not conf["path"]:
 				acenv.warning("path not suplied")
