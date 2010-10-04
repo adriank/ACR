@@ -36,6 +36,6 @@ def serialize(env):
 		fragments.append(tree2xml(i))
 	xslt=""
 	if env.output["xsltfile"]:
-		xslt="""\n<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
+		xslt="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
 	#TODO allow one-object output
 	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),appDir+"/static/xslt/"+env.output["xsltfile"])
