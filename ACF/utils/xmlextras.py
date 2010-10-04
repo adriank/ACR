@@ -132,6 +132,9 @@ class Reader(handler.ContentHandler):
 	def characters(self,data):
 		if len(data.strip())>0:
 			self.path[-1][2].append(str2obj(data).encode("utf-8"))
+		#TODO make it work with ANY whitespaces in XML files
+		elif len(data)==1 and data[0] not in ["\t","\n"]:
+			self.path[-1][2].append(" ")
 
 	def endElement(self,x):
 		subelems=[]

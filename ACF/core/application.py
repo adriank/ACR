@@ -119,6 +119,11 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,URLpath):
+		#TODO rewrite it:
+		# 1. View.isUpToDate - should check its super view and posibly update object internally
+		#    when view file is deleted, should raise error
+		# 2. here should be try to fileNotFound error which should refresh cache
+		# 3. then check for mistakes (eg. now some views are not cached)
 		#D=acenv.doDebug
 		#if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
 		(o, i)=dicttree.get(self.views, URLpath, False)
