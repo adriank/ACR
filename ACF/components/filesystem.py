@@ -67,6 +67,10 @@ class FileSystem(Component):
 			ret.append(o)
 		return List(ret)
 
+	def tree(self,acenv,conf):
+		#TODO as list but should return whole dir tree. Subdirs should be in subnodes of Object()
+		pass
+
 	def create(self,acenv,conf,update=False):
 		D=acenv.doDebug
 		#path=os.path.join(self.path+conf["path"])

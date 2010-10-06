@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from ACF.utils.xmlextras import tree2xml
 from ACF.errors import Error
-from ACF.globals import appDir
+import os
 #TODO change it to AC CRITICAL error.
 try:
 	import libxml2
@@ -9,22 +9,21 @@ try:
 except:
 	raise Error("libxsltError","libxslt not installed")
 
-XSLTCache=None
+XSLTCache={}
 
 def transform(xml,xslt):
 	try:
 		doc=libxml2.parseDoc(xml)
 	except Exception,e:
 		return "XML parsing Error."
-	global XSLTCache
-	if not XSLTCache:
+	if not XSLTCache.has_key(xslt):
 		try:
 			#TODO implement checking for change of *ALL* xslt files
-			XSLTCache=libxslt.parseStylesheetFile(xslt)
+			XSLTCache[xslt]=libxslt.parseStylesheetFile(xslt)
 	#		raise str(dir(globals.XSLTCache))
 		except Exception,e:
 			return "XSLT parsing Error."
-	r=XSLTCache.applyStylesheet(doc, None)
+	r=XSLTCache[xslt].applyStylesheet(doc, None)
 	ret=r.serialize()
 	doc.freeDoc()
 	r.freeDoc()
@@ -38,4 +37,4 @@ def serialize(env):
 	if env.output["xsltfile"]:
 		xslt="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
 	#TODO allow one-object output
-	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),appDir+"/static/xslt/"+env.output["xsltfile"])
+	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),os.path.join(env.app.appDir,"static/xslt",env.output["xsltfile"]))
