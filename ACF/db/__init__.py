@@ -55,10 +55,11 @@ def get(conf,reload=False):
 		DRIVER_CACHE[uid+"default"]=driver
 		CONFIG_CACHE[uid+"default"]=conf
 	#print "DB not from cache"
+	print DRIVER_CACHE
 	return driver
 
+#TODO this is internally supported by psycopg = delete it and use drivers data escaping functionality
 def escapeString(s):
-	#log.debug("start with string='%s'",s)
 	if type(s) in [str,unicode]:
 		try:
 			return pg.escape_string(s)
