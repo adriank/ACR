@@ -28,8 +28,8 @@ import re
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
-	CONNECTIONS={}#class variable, dont overwrite
 	def __init__(self,config):
+		self.CONNECTIONS={}
 		#if D: log.debug("Instance created with config=%s",config)
 		#should implement lazy db connections
 		if not config:

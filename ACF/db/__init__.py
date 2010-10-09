@@ -35,13 +35,10 @@ def get(conf,reload=False):
 	"""
 	#log.debug("Executing with conf=%s and reload=%s",conf,reload)
 	uid=str(conf)
-	print DRIVER_CACHE
-	print uid
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
 		if object:
-			#print "DB from cache"
-			#log.debug("Returning from cache")
+			#log.debug("DB from cache")
 			return object
 	else:
 		conf=CONFIG_CACHE[uid]

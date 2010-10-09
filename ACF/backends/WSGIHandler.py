@@ -84,7 +84,6 @@ def application(env,start_response):
 		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
 	else:
 		path=globals.appDir
-	print path
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app
