@@ -63,10 +63,10 @@ class FileSystem(Component):
 			o=Object()
 			o.name=i
 			o.path=path
-			o.code="file"
+			o.type="file"
 			if showDirs:
 				if os.path.isdir(os.path.join(fullpath, i)):
-					o.code="dir"
+					o.type="dir"
 			ret.append(o)
 		return List(ret)
 
