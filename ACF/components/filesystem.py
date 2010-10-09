@@ -33,7 +33,6 @@ class FileSystem(Component):
 		self.SHOW_HIDDEN=False
 		self.path=config[0][2][0]
 
-	#TODO identify directories in an output!!!
 	def list(self,acenv,conf):
 		D=acenv.doDebug
 		fullpath=conf["fullpath"]
@@ -64,6 +63,10 @@ class FileSystem(Component):
 			o=Object()
 			o.name=i
 			o.path=path
+			o.code="file"
+			if showDirs:
+				if os.path.isdir(os.path.join(fullpath, i)):
+					o.code="dir"
 			ret.append(o)
 		return List(ret)
 

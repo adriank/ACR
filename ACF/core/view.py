@@ -262,6 +262,7 @@ class View(object):
 			if action["condition"] and not execute(acenv,action["condition"]):
 				if action["type"]==SET:
 					acenv.warning("Set condition is not meet.")
+				acenv.info("Define condition is not meet.")
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list
