@@ -35,6 +35,7 @@ def get(conf,reload=False):
 	"""
 	#log.debug("Executing with conf=%s and reload=%s",conf,reload)
 	uid=str(conf)
+	print uid
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
 		if object:
