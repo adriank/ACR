@@ -19,6 +19,7 @@
 from ACF.utils import replaceVars
 from ACF.components import *
 from ACF.utils.xmlextras import tree2xml
+from xml.sax.saxutils import escape,unescape
 
 class Default(Component):
 	def generate(self, env,config):
@@ -28,9 +29,9 @@ class Default(Component):
 		s=[]
 		for elem in config["content"]:
 			if type(elem) is tuple:
-				s.append(tree2xml(elem))
+				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
-				s.append(elem)
+				s.append(escape(elem))
 		return "".join(s)
 
 def getObject(config):

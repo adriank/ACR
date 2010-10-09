@@ -64,7 +64,7 @@ def str2obj(s):
 	return s
 
 #TO-C
-def tree2xml(root):
+def tree2xml(root,esc=False):
 	"""
 	Converts xml tree to a xml.
 	input: xml tree
@@ -90,17 +90,25 @@ def tree2xml(root):
 			tab.append(">")
 			typ=type(content)
 			if typ is str:
+				if esc:
+					content=escape(content)
 				tab.append(content)
 			#TODO this is probably wrong
 			else:
 				for i in content:
 					typei=type(i)
 					if typei is str:
-						tab.append(i)
+						sI=str(i)
+						if esc:
+							sI=escape(sI)
+						tab.append(sI)
 					elif typei in [tuple,Object,List,list]:
 						rec(i)
 					else:
-						tab.append(str(i))
+						sI=str(i)
+						if esc:
+							sI=escape(sI)
+						tab.append(sI)
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
@@ -109,7 +117,8 @@ def tree2xml(root):
 	rec(root)
 	return "".join(tab)
 
-#need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
+#TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
+#TODO whitespaces checkup and W3C spec verification of whitespace handling in XML and (X)HTML.
 class Reader(handler.ContentHandler):
 	def __init__(self):
 		self.root=None
@@ -143,13 +152,13 @@ class Reader(handler.ContentHandler):
 		for i in elem:
 			if type(i) is tuple:
 				if len(lines):
-					subelems.append("\n".join(lines))
+					subelems.append("".join(lines))
 					lines=[]
 				subelems.append(i)
 			elif type(i) is str:
 				lines.append(i)
 		if len(lines):
-			subelems.append("\n".join(lines))
+			subelems.append("".join(lines))
 		elem[0:len(elem)]=subelems
 		self.path.pop()
 
