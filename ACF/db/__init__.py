@@ -35,6 +35,7 @@ def get(conf,reload=False):
 	"""
 	#log.debug("Executing with conf=%s and reload=%s",conf,reload)
 	uid=str(conf)
+	print DRIVER_CACHE
 	print uid
 	if not reload:
 		object=DRIVER_CACHE.get(uid,None)
@@ -56,7 +57,6 @@ def get(conf,reload=False):
 		DRIVER_CACHE[uid+"default"]=driver
 		CONFIG_CACHE[uid+"default"]=conf
 	#print "DB not from cache"
-	print DRIVER_CACHE
 	return driver
 
 #TODO this is internally supported by psycopg = delete it and use drivers data escaping functionality
