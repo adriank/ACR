@@ -171,8 +171,10 @@ class View(object):
 					"name":attrs.get("name",None),
 					"component":componentName,
 					"condition":make_tree(attrs.get("condition",None)),
+					"default":i[1].get("default",None),
 					"config":self.app.getComponent(componentName).parseAction(actionConfig),
 				}
+				#WTF??? n, name??
 				if before:
 					n,name=0,before
 					if before=='*':
@@ -262,7 +264,8 @@ class View(object):
 			if action["condition"] and not execute(acenv,action["condition"]):
 				if action["type"]==SET:
 					acenv.warning("Set condition is not meet.")
-				acenv.info("Define condition is not meet.")
+					ns,name=NS2Tuple(action["name"],"::")
+					getStorage(acenv,ns or "rs")[name]=action["default"]
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list
