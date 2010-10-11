@@ -29,12 +29,11 @@ class Headers(Component):
 		d={"name":replaceVars(env,config["name"]), "value":replaceVars(env,config["value"])}
 		if config.has_key("path"):
 			d["path"]=str(replaceVars(env,config["path"]))
-		print d
 		HTTP.setCookie(env,d)
 		return Object()
 
 	def redirect(self,env,config):
-		log.info("Requested redirect to <a href=\"%s\">%s</a>",replaceVars(env,config["location"]))
+		if env.doDebug: env.info("Requested redirect to <a href=\"#\">%s</a>"%(replaceVars(env,config["location"])))
 		env.doRedirect=True
 		env.outputHeaders.append(("Location",replaceVars(env,config["location"])))
 		return Object() #("object",{"status":"ok"},None)

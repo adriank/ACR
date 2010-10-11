@@ -23,11 +23,11 @@ def getStorage(env,s):
 	if s=="session" or s=="ss":
 		if not env.sessionStorage:
 			return False
-		return env.sessionStorage
+		return env.sessionStorage.data
 	#elif s=="request" or s=="rs":
 	#	return
 	elif s=="global" or s=="gs":
-		return []
+		return {}
 	return env.requestStorage
 
 def replaceVars(env,s):
@@ -39,7 +39,8 @@ def replaceVars(env,s):
 			storage=getStorage(env,storageName)
 		except ValueError:
 			storage=getStorage(env,"rs")
-			path=p.split(".")
+			path=p
+		path=path.split(".")
 		ret=dicttree.get(storage,path) or ""
 		if type(ret) is list:
 			return m.group(0)

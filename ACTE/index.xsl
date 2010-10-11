@@ -80,6 +80,7 @@
 		</div>
 	</x:template>
 
+	<!-- make 'last' the default type -->
 	<x:template match="column">
 		<div class="column {@type} {@name}">
 			<x:apply-templates select="./*"/>
@@ -110,7 +111,7 @@
 
 			<x:choose>
 				<x:when test="local-name($datasource)='list'">
-					<x:attribute name="class">widget <x:value-of select="$type"/>-list</x:attribute>
+					<x:attribute name="class">widget <x:value-of select="$type"/>-list <x:value-of select="@class"/></x:attribute>
 					<x:copy-of select="$before"/>
 					<x:variable name="this" select="."/>
 					<x:variable name="subtag">

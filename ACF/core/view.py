@@ -66,14 +66,14 @@ class View(object):
 		self.name="/".join(name)
 		self.app=app
 		self.path=os.path.join(app.viewsPath,*name)+".xml"
-		try:
-			self.timestamp=os.stat(self.path).st_mtime
-			tree=xml2tree(self.path)
+		#try:
+		self.timestamp=os.stat(self.path).st_mtime
+		tree=xml2tree(self.path)
 		#TODO support more exception classes;
-		except Exception,e:
-			self.immutable=True
-			raise e
-			raise ViewNotFound("view '%s' not found"%(name))
+		#except Exception,e:
+		#	self.immutable=True
+		#	raise e
+		#	raise ViewNotFound("view '%s' not found"%(name))
 		#the order of inputs is meaningful - needs to be list
 		ns={}
 		if not tree[1]:
