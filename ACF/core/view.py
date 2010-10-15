@@ -263,7 +263,7 @@ class View(object):
 			if D: acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):
 				if action["type"]==SET:
-					acenv.warning("Set condition is not meet.")
+					if D: acenv.warning("Set condition is not meet.")
 					ns,name=NS2Tuple(action["name"],"::")
 					getStorage(acenv,ns or "rs")[name]=action["default"]
 				continue

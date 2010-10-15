@@ -77,20 +77,31 @@ class FileSystem(Component):
 	def create(self,acenv,conf,update=False):
 		D=acenv.doDebug
 		#path=os.path.join(self.path+conf["path"])
-		#TODO if whole path do not exist -> create all dirs in path
 		o=Object()
 		if not update and os.path.isfile(conf["fullpath"]):
 			o.status="error"
 			o.code="fileExists"
 			return o #return ("object",{"status":"error","code":"fileExists"},None)
 		try:
-			file=open(conf["fullpath"], 'w')
+			# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c', 'foo.xml']
+			path = filter(lambda x: not str.isspace(x) and len(x)!=0, conf["path"].split('/'))
+			accessPath=self.path
+			for d in path[:-1]:
+				accessPath=os.path.join(accessPath, d)
+				if os.path.isdir(accessPath):
+					continue
+				os.mkdir(accessPath)	
+			file=open(os.path.join(accessPath, path[-1]), 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
-		except IOError,e:
+		except IOError:
 			o.status="error"
 			o.code="IOError"
-			return cr #return ("object",{"status":"error","code":"IOError"},e)
+			return o #return ("object",{"status":"error","code":"IOError"},e)
+		except OSError:
+			o.status="error"
+			o.code="OSError"
+			return o #return ("object",{"status":"error","code":"OSError"},e)
 		else:
 			file.close()
 		#o.status="ok"
