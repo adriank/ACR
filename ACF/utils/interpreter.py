@@ -460,5 +460,4 @@ def execute(acenv,tree):
 					return first[second]
 	if type(tree) is not tuple:
 		return tree
-	#print tree
 	return exe(tree)

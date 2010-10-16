@@ -33,7 +33,6 @@ SET="set"
 COMMAND="command"
 INHERITS="inherits"
 
-
 def parseParams(nodes,dictionary=False):
 	if not nodes:
 		return None
@@ -86,7 +85,7 @@ class View(object):
 				ns[key]=value
 		self.namespaces=ns
 		inputSchemas=[]
-		self.conditions=[]
+		conditions=[]
 		actions=[]
 		postSchemas=[]
 		output=[]
@@ -95,21 +94,22 @@ class View(object):
 			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
 		except:
 			self.parent = None
-			#if D: acenv.debug("Loading a root view.")
 		for i in tree[2]:
 			if i[0]=="param":
 				inputSchemas.append(i)
 			elif i[0]=="condition":
-				self.conditions.append(i)
+				conditions.append(i)
 			elif i[0]=="output":
 				output.append(i)
 			elif i[0]=="post":
 				postSchemas=i[2]
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
+		self.conditions=self.parseConditions(conditions)
 		self.actions = self.parseActions(actions)
 		self.inputSchemas=parseParams(inputSchemas)
-		# inputs inheritance
+		if not self.inputSchemas:
+			self.inputSchemas=[]
 		if self.parent and self.parent.inputSchemas:
 			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
 		self.postSchemas=parseParams(postSchemas,True)
@@ -124,6 +124,7 @@ class View(object):
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
+		# TODO check if it is correct
 		## output inheritance
 		#if self.parent and self.parent.outputFormat:
 		#		self.outputFormat=self.parent.outputFormat
@@ -137,6 +138,22 @@ class View(object):
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
+
+	def parseConditions(self, a):
+		ret=[]
+		for i in a:
+			attrs=i[1]
+			ret.append({
+				"name": attrs.get("name", None),
+				"value": make_tree(attrs.get("value", None))
+			})
+		return ret
+	
+	def checkConditions(self, acenv):
+		for i in self.conditions:
+			if i["value"] and not execute(acenv, i["value"]):
+				return False
+		return True
 
 	def parseActions(self,a):
 		if self.parent:

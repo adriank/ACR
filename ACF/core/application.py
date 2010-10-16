@@ -51,6 +51,8 @@ class Application(object):
 		self.views={}
 		self.lang="en"
 		self.langs=[]
+		# which view should be executed in respect to global view's conditions
+		self.executedView=None
 		self.viewsPath=os.path.join(appDir, "views")
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
@@ -174,6 +176,23 @@ class Application(object):
 			except:
 				sessID=None
 		view, acenv.inputs=self.getView(acenv.URLpath)
+		
+		# checking global conditions
+		viewList=[]
+		while view:
+			viewList.append(view)
+			view=view.parent
+		viewList.reverse()
+		view=viewList[-1]
+		#from super class to deriverativ classes
+		for v in viewList:
+			if not v.checkConditions(acenv):
+				if not v.parent:
+					acenv.output["format"]="text/html"
+					return "<html><body>Cannot generate view.</body</html>"
+				view=v.parent
+				break
+			
 		view.generate(acenv)
 		#this is little faster than Object
 		langs=[]
