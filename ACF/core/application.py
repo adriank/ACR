@@ -51,8 +51,6 @@ class Application(object):
 		self.views={}
 		self.lang="en"
 		self.langs=[]
-		# which view should be executed in respect to global view's conditions
-		self.executedView=None
 		self.viewsPath=os.path.join(appDir, "views")
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		try:
