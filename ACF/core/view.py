@@ -148,7 +148,7 @@ class View(object):
 				"value": make_tree(attrs.get("value", None))
 			})
 		return ret
-	
+
 	def checkConditions(self, acenv):
 		for i in self.conditions:
 			if i["value"] and not execute(acenv, i["value"]):
@@ -237,13 +237,16 @@ class View(object):
 				if type=="csv":
 					value=value.split(",")
 				acenv.requestStorage[i]=value
+		if len(acenv.requestStorage)<len(self.postSchemas):
+			raise Error("Not enough post fields")
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
 		if not self.inputSchemas or not len(self.inputSchemas):
 			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
-		if D: acenv.debug("All parameters were specified")
+		#XXX this comment is not true
+		#if D: acenv.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
 		if list:
 			inputsLen=min([len(self.inputSchemas),len(list)])
@@ -279,6 +282,7 @@ class View(object):
 		for action in self.actions:
 			if D: acenv.info("define name='%s'",action["name"])
 			if action["condition"] and not execute(acenv,action["condition"]):
+				if D: acenv.warning("Condition is not meet")
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")
 					ns,name=NS2Tuple(action["name"],"::")

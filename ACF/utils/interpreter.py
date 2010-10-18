@@ -458,6 +458,7 @@ def execute(acenv,tree):
 					return first[int(second)]
 				else:
 					return first[second]
+	if acenv.doDebug: acenv.debug(str(tree))
 	if type(tree) is not tuple:
 		return tree
 	return exe(tree)

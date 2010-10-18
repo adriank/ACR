@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #@marcin: docstrings
-
+from ACF.utils.generations import *
 
 def get(d,path,falseOnNotFound=True):
 	"""
 	Returns value from dict hierarchy.
-	input: dict, path which is a list eg ['an', 'example', 'path'], 
+	input: dict, path which is a list eg ['an', 'example', 'path'],
 	returns: False or deepest found dict
 	"""
-	try: 
+	print d
+	if type(d) is Generation:
+		d=d.__dict__
+	try:
 		ret=d
 		i=0
 		for o in path:
@@ -35,5 +38,3 @@ def set(d, path, o):
 			d[key]={}
 		d=d[key]
 	d[path[-1]]=o
-
-

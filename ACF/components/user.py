@@ -27,6 +27,7 @@ from ACF.session.file import FileSession
 class User(Component):
 	def login(self,acenv,conf):
 		D=acenv.doDebug
+		ret=Object()
 		email=replaceVars(acenv,conf["email"])
 		password=replaceVars(acenv,conf["password"])
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)
@@ -34,6 +35,8 @@ class User(Component):
 			result=acenv.app.getDBConn().query(sql)
 		except IndexError:
 			if D: acenv.error("Account not found")
+			ret.status="error"
+			ret.error="AccountNotFound"
 		result=dict(zip(result["fields"], result["rows"][0]))
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
@@ -46,13 +49,12 @@ class User(Component):
 			#is it necessary?
 			acenv.sessionStorage["loggedIn"]=True
 			#acenv.session["fake"]=False
-			return Object()
+			return ret
 		else:
 			if D: acenv.error("Password is not correct")
-			o=Object()
-			o.status="error"
-			o.error="WrongPassword"
-			return Object()
+			ret.status="error"
+			ret.error="WrongPassword"
+			return ret
 
 	def logout(self,acenv,conf):
 		acenv.sessionStorage.delete()

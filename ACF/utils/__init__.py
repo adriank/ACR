@@ -41,7 +41,7 @@ def replaceVars(env,s):
 			storage=getStorage(env,"rs")
 			path=p
 		path=path.split(".")
-		ret=dicttree.get(storage,path) or ""
+		ret=dicttree.get(storage,path)
 		if type(ret) is list:
 			return m.group(0)
 		#keep is None; "" is proper value
