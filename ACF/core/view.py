@@ -104,7 +104,7 @@ class View(object):
 			elif i[0]=="output":
 				output.append(i)
 			elif i[0]=="post":
-				postSchemas=i[2]
+				postSchemas=filter(lambda x: type(x) is not str, i[2])
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
 		self.conditions=self.parseConditions(conditions)
@@ -114,6 +114,7 @@ class View(object):
 			self.inputSchemas=[]
 		if self.parent and self.parent.inputSchemas:
 			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
+		print postSchemas
 		self.postSchemas=parseParams(postSchemas,True)
 		self.output={}
 		try:
