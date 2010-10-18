@@ -21,7 +21,7 @@
 
 from ACF.utils.xmlextras import *
 from ACF.utils import dicttree
-from ACF.utils import json
+from ACF.utils import json_compat
 from ACF.session.file import FileSession
 from ACF.core.view import View
 from ACF.errors import *
