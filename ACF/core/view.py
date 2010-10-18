@@ -95,7 +95,9 @@ class View(object):
 		except:
 			self.parent = None
 		for i in tree[2]:
-			if i[0]=="param":
+			if type(i) is str:
+				continue
+			elif i[0]=="param":
 				inputSchemas.append(i)
 			elif i[0]=="condition":
 				conditions.append(i)
@@ -106,7 +108,7 @@ class View(object):
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
 		self.conditions=self.parseConditions(conditions)
-		self.actions = self.parseActions(actions)
+		self.actions=self.parseActions(actions)
 		self.inputSchemas=parseParams(inputSchemas)
 		if not self.inputSchemas:
 			self.inputSchemas=[]
