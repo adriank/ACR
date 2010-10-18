@@ -121,8 +121,9 @@ def tree2xml(root,esc=False):
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
 #TODO whitespaces checkup and W3C spec verification of whitespace handling in XML and (X)HTML.
 class Reader(handler.ContentHandler):
-	def __init__(self):
+	def __init__(self,newlines):
 		self.root=None
+		self.newlines=newlines
 		self.path=[]
 
 	def startElement(self, name, a):
@@ -142,6 +143,8 @@ class Reader(handler.ContentHandler):
 	def characters(self,data):
 		if len(data.strip())>0:
 			self.path[-1][2].append(str2obj(data).encode("utf-8"))
+		elif self.newlines and len(data)==1 and "\n" in data[0]:
+			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files
 		elif len(data)==1 and data[0] not in ["\t","\n"]:
 			self.path[-1][2].append(" ")
@@ -163,14 +166,14 @@ class Reader(handler.ContentHandler):
 		elem[0:len(elem)]=subelems
 		self.path.pop()
 
-def xml2tree(xmlfile):
+def xml2tree(xmlfile,newlines=False):
 	"""
 	Parses xml resource to xml tree.
 	input: xml file or url resource
 	returns: xml tree
 	"""
 	parser=make_parser()
-	r=Reader()
+	r=Reader(newlines)
 	parser.setContentHandler(r)
 	parser.parse(xmlfile)
 	return r.root
