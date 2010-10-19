@@ -33,26 +33,34 @@ SET="set"
 COMMAND="command"
 INHERITS="inherits"
 
-def parseParams(nodes,dictionary=False):
+def parsePosts(nodes):
 	if not nodes:
-		return None
-	if dictionary:
-		ret={}
-	else:
-		ret=[]
+		return (None,None)
+	ret={}
+	postCount=0
 	for i in nodes:
 		attrs=i[1]
-		if dictionary:
-			ret[attrs["name"]]={
-				"type":attrs.get("type",None),
-				"default":attrs.get("default",None)
-			}
-		else:
-			ret.append({
-				"name":attrs["name"],
-				"type":attrs.get("type",None),
-				"default":attrs.get("default",None)
-			})
+		default=attrs.get("default",None)
+		ret[attrs["name"]]={
+			"type":attrs.get("type",None),
+			"default":default
+		}
+		if default:
+			postCount+=1
+	return (ret,postCount)
+
+def parseInputs(nodes):
+	if not nodes:
+		return None
+	ret=[]
+	postCount=0
+	for i in nodes:
+		attrs=i[1]
+		ret.append({
+			"name":attrs["name"],
+			"type":attrs.get("type",None),
+			"default":attrs.get("default",None)
+		})
 	return ret
 
 class View(object):
@@ -109,13 +117,10 @@ class View(object):
 				actions.append(i)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
-		self.inputSchemas=parseParams(inputSchemas)
-		if not self.inputSchemas:
-			self.inputSchemas=[]
+		self.inputSchemas=parseInputs(inputSchemas) or []
 		if self.parent and self.parent.inputSchemas:
 			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
-		print postSchemas
-		self.postSchemas=parseParams(postSchemas,True)
+		self.postSchemas, self.postCount=parsePosts(postSchemas)
 		self.output={}
 		try:
 			self.output["format"]=output[0][1]["format"]
@@ -228,10 +233,13 @@ class View(object):
 	def fillPosts(self,acenv):
 		#TODO add default values support by doing ticket #13
 		if D: acenv.info("Create '%s' view",(self.name))
-		list=acenv.posts
 		if not self.postSchemas or not len(self.postSchemas):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
 			return True
+		list=acenv.posts
+		if len(list)<len(self.postCount):
+			#TODO normalize the Error messages!
+			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		for i in list:
 			value=list[i]
@@ -240,8 +248,6 @@ class View(object):
 				if type=="csv":
 					value=value.split(",")
 				acenv.requestStorage[i]=value
-		if len(acenv.requestStorage)<len(self.postSchemas):
-			raise Error("Not enough post fields")
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs

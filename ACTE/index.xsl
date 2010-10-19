@@ -240,7 +240,7 @@
 					</x:otherwise>
 				</x:choose>
 			</x:for-each>
-			<input value="{$langdoc/submit/node()}" type="submit" accesskey="s"/>
+			<input id="submit" name="submit" value="{$langdoc/submit/node()}" type="submit" accesskey="s"/>
 		</form>
 	</x:template>
 

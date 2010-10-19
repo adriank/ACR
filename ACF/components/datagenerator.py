@@ -39,7 +39,8 @@ class DataGenerator(Component):
 		else:
 			r=[]
 			for i in config["content"]:
-				r.append(tree2xml(i))
+				if type(i) is not str:
+					r.append(tree2xml(i))
 			ret["content"]="".join(r)
 		return ret
 

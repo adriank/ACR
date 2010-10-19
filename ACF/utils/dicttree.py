@@ -9,7 +9,6 @@ def get(d,path,falseOnNotFound=True):
 	input: dict, path which is a list eg ['an', 'example', 'path'],
 	returns: False or deepest found dict
 	"""
-	print d
 	if type(d) is Generation:
 		d=d.__dict__
 	try:
