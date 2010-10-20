@@ -295,7 +295,7 @@ class View(object):
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")
 					ns,name=NS2Tuple(action["name"],"::")
-					getStorage(acenv,ns or "rs")[name]=action["default"]
+					getStorage(acenv,ns or "rs")[name]=action.get("default") or ""
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list
