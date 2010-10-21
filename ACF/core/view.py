@@ -237,7 +237,7 @@ class View(object):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
 			return True
 		list=acenv.posts
-		if len(list)<len(self.postCount):
+		if len(list)<self.postCount:
 			#TODO normalize the Error messages!
 			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
