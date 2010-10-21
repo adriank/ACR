@@ -241,13 +241,15 @@ class View(object):
 			#TODO normalize the Error messages!
 			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
-		for i in list:
+		for i in self.postSchemas:
 			value=list[i]
 			type=self.postSchemas[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
 					value=value.split(",")
 				acenv.requestStorage[i]=value
+			else:
+				raise Error("Wrong data type suplied")
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
