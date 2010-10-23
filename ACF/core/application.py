@@ -131,7 +131,7 @@ class Application(object):
 			o=o["default"]
 			#if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
 		#TODO handle an event when file was deleted; probably raises exception
-		if type(o) is View and o.isUpToDate():
+		if type(o) is View and (not D or o.isUpToDate()):
 			#if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
 			return (o, URLpath[i:])
 		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
@@ -174,7 +174,7 @@ class Application(object):
 			except:
 				sessID=None
 		view, acenv.inputs=self.getView(acenv.URLpath)
-		
+
 		# checking global conditions
 		viewList=[]
 		while view:
@@ -190,7 +190,7 @@ class Application(object):
 					return "<html><body>Cannot generate view.</body</html>"
 				view=v.parent
 				break
-			
+
 		view.generate(acenv)
 		#this is little faster than Object
 		langs=[]
@@ -212,12 +212,14 @@ class Application(object):
 		#if True:
 		all=round((time.time()-t)*1000,5)
 		dbms=round(acenv.dbg["dbtimer"]*1000,5)
-		print("Generated in %s, where:"%(all))
-		print("	DBMS took %s"%(dbms))
-		print("	Python took %s"%(all-dbms))
-		t=time.time()
+		if D:
+			print("Generated in %s, where:"%(all))
+			print("	DBMS took %s"%(dbms))
+			print("	Python took %s"%(all-dbms))
+			t=time.time()
 		x=s.serialize(acenv)
-		print "Serializer took %s"%(round((time.time()-t)*1000,5))
+		if D:
+			print "Serializer took %s"%(round((time.time()-t)*1000,5))
 		return x
 
 	def transform(self,acenv):

@@ -84,11 +84,13 @@ def application(env,start_response):
 		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
 	else:
 		path=globals.appDir
+	D=False
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app
-		if app.checkRefresh():
-			app = Application(path)
+		D=app.dbg.get("enabled",False)
+		if D and app.checkRefresh():
+			app=Application(path)
 	else:
 		app=Application(path)
 		APP_CACHE[path]=app
@@ -115,7 +117,7 @@ def application(env,start_response):
 	start_response(status, headers)
 	if not acenv.doRedirect:
 		response.append(output)
-	print round((time.time()-t)*1000,2)
+	if D: print round((time.time()-t)*1000,2)
 	#h = hpy()
 	#print h.heap()
 	return response
