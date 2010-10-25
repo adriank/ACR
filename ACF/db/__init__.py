@@ -62,5 +62,5 @@ def escapeString(s):
 		try:
 			return pg.escape_string(s)
 		except:
-			log.warning("There is no escape_string in PyGreSQL. Please update backend.")
+			#log.warning("There is no escape_string in PyGreSQL. Please update backend.")
 			return s

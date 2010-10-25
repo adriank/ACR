@@ -19,9 +19,7 @@
 
 #TODO this file is mess. Need for full rewrite.
 
-import sys,os,re,time#,logging
-#logging.doLog=True
-#logging.doLog=False
+import sys,os,re,time
 from ACF import globals,errors
 from ACF.utils import HTTP
 from ACF.core.environment import Environment
