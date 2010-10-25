@@ -77,7 +77,7 @@ class FileSession(Session):
 					os.unlink(output_file_name)
 		except (OSError, IOError, EOFError),e:
 			#log.error("%s, %s",e["name"],e["message"])
-			pass
+			raise e
 
 	def load(self):
 		#log.info("Loading session from file.")
