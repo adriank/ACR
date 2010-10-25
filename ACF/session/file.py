@@ -59,7 +59,7 @@ class FileSession(Session):
 			os.close(fd)
 		except OSError, e:
 			#log.error("CreateError: session file couldn't be created")
-			raise CreateError
+			raise Error("CreateError")
 		dir, prefix = os.path.split(session_file_name)
 		try:
 			output_file_fd, output_file_name = tempfile.mkstemp(dir=dir,
