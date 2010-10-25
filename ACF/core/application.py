@@ -131,7 +131,7 @@ class Application(object):
 			o=o["default"]
 			#if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
 		#TODO handle an event when file was deleted; probably raises exception
-		if type(o) is View and (not D or o.isUpToDate()):
+		if type(o) is View and o.isUpToDate():
 			#if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
 			return (o, URLpath[i:])
 		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
