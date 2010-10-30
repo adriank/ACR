@@ -32,6 +32,7 @@ DEFINE="define"
 SET="set"
 COMMAND="command"
 INHERITS="inherits"
+IMPORT="import"
 
 def parsePosts(nodes):
 	if not nodes:
@@ -96,7 +97,6 @@ class View(object):
 		conditions=[]
 		actions=[]
 		postSchemas=[]
-		imports=[]
 		output=[]
 		try:
 			self.parent = app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/")))[0]
@@ -114,14 +114,10 @@ class View(object):
 				output.append(i)
 			elif i[0]=="post":
 				postSchemas=filter(lambda x: type(x) is not str, i[2])
-			elif i[0] in [SET,DEFINE]:
+			elif i[0] in [SET,DEFINE, IMPORT]:
 				actions.append(i)
-			elif i[0]=="import":
-				imports.append(i)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
-		# it is important to parse imports after parsing actions because imported actions have already been parsed
-		self.parseImports(imports)
 		self.inputSchemas=parseInputs(inputSchemas) or []
 		if self.parent and self.parent.inputSchemas:
 			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
@@ -152,16 +148,6 @@ class View(object):
 		#past here this object MUST be immutable
 		self.immutable=True
 
-	def parseImports(self, imports):
-		for i in imports:
-			path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
-			v=self.app.getView(path[:-1])[0]
-			for a in v.actions:
-				if a["name"]==path[-1]:
-					self.actions.append(a)
-					self.actions[-1]["name"] = i[1].get("name", None)
-					break
-
 	def parseConditions(self, a):
 		ret=[]
 		for i in a:
@@ -185,6 +171,16 @@ class View(object):
 			ret = []
 		try:
 			for i in a:
+				# import should check befere and after?
+				if i[0]=="import":
+					path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
+					v=self.app.getView(path[:-1])[0]
+					for a in v.actions:
+						if a["name"]==path[-1]:
+							ret.append(a)
+							ret[-1]["name"] = i[1].get("name", None)
+							break
+					continue
 				attrs=i[1]
 				#if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
 				action=NS2Tuple(i[0])[1]
