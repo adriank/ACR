@@ -96,6 +96,7 @@ class View(object):
 		conditions=[]
 		actions=[]
 		postSchemas=[]
+		imports=[]
 		output=[]
 		try:
 			self.parent = app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/")))[0]
@@ -115,8 +116,12 @@ class View(object):
 				postSchemas=filter(lambda x: type(x) is not str, i[2])
 			elif i[0] in [SET,DEFINE]:
 				actions.append(i)
+			elif i[0]=="import":
+				imports.append(i)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
+		# it is important to parse imports after parsing actions because imported actions have already been parsed
+		self.parseImports(imports)
 		self.inputSchemas=parseInputs(inputSchemas) or []
 		if self.parent and self.parent.inputSchemas:
 			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
@@ -146,6 +151,16 @@ class View(object):
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
+
+	def parseImports(self, imports):
+		for i in imports:
+			path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
+			v=self.app.getView(path[:-1])[0]
+			for a in v.actions:
+				if a["name"]==path[-1]:
+					self.actions.append(a)
+					self.actions[-1]["name"] = i[1].get("name", None)
+					break
 
 	def parseConditions(self, a):
 		ret=[]
