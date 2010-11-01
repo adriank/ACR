@@ -154,7 +154,7 @@ class View(object):
 			attrs=i[1]
 			ret.append({
 				"name": attrs.get("name", None),
-				"value": make_tree(attrs.get("value", None))
+				"value": make_tree(attrs.get("value", None) or "".join(i[2]).strip())
 			})
 		return ret
 
@@ -248,7 +248,7 @@ class View(object):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
 			return True
 		list=acenv.posts
-		if len(list)<self.postCount:
+		if not list or len(list)<self.postCount:
 			#TODO normalize the Error messages!
 			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
@@ -334,8 +334,6 @@ class View(object):
 			acenv.output["xsltfile"]=self.output["xsltfile"]
 		except:
 			pass
-		#print "generations"
-		#print acenv.generations
 
 	def isUpToDate(self):
 		return self.timestamp >= os.stat(self.path).st_mtime

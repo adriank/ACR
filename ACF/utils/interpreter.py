@@ -407,11 +407,13 @@ def expression(rbp=0):
 			left=t.led(left)
 	return left
 
-def make_tree(program):
-	if type(program) is not str:
-		return program
+def make_tree(expr):
+	if type(expr) is not str:
+		return expr
+	if expr.isspace():
+		return True
 	global token, next
-	next=tokenize(program).next
+	next=tokenize(expr).next
 	token=next()
 	return expression().getTree()
 

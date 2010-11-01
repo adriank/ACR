@@ -20,11 +20,8 @@
 from ACF.utils import replaceVars
 from ACF import globals
 from ACF.errors import *
-import logging
 import sys
 from ACF.utils.generations import *
-
-log=logging.getLogger('ACF.component')
 
 #dict of component modules
 MODULE_CACHE={}
@@ -37,11 +34,11 @@ def get(name):
 	if module:
 		return module
 	path="ACF.components."+name
-	try:
-		__import__(path)
-	except Error,e:
-		raise e
-		raise Error("ComponentNotFound",str(e))
+	#TODO error handling
+	#try:
+	__import__(path)
+	#except Error,e:
+	#	raise Error("ComponentNotFound",str(e))
 	m=sys.modules[path]
 	MODULE_CACHE[name]=m
 	return m
@@ -51,8 +48,10 @@ class Component(object):
 	def __init__(self, config):
 		self.config=config
 
-	def generate(self,env,conf):
-		raise AbstractClass()
+	def generate(self,acenv, config):
+		return self.__getattribute__(config["command"])(acenv,config)
+	#def generate(self,env,conf):
+	#	raise AbstractClass()
 
 	def parseAction(self,root):
 		return root

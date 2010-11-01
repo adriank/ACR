@@ -56,7 +56,7 @@ class FileSystem(Component):
 		ret=[]
 		if len(files)==0:
 			o=Object()
-			o.code="dirEmpty"
+			o.error="dirEmpty"
 			return o
 		path=conf["path"]
 		for i in files:
@@ -80,7 +80,7 @@ class FileSystem(Component):
 		o=Object()
 		if not update and os.path.isfile(conf["fullpath"]):
 			o.status="error"
-			o.code="fileExists"
+			o.error="fileExists"
 			return o #return ("object",{"status":"error","code":"fileExists"},None)
 		try:
 			# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c', 'foo.xml']
@@ -90,17 +90,17 @@ class FileSystem(Component):
 				accessPath=os.path.join(accessPath, d)
 				if os.path.isdir(accessPath):
 					continue
-				os.mkdir(accessPath)	
+				os.mkdir(accessPath)
 			file=open(os.path.join(accessPath, path[-1]), 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except IOError:
 			o.status="error"
-			o.code="IOError"
+			o.error="IOError"
 			return o #return ("object",{"status":"error","code":"IOError"},e)
 		except OSError:
 			o.status="error"
-			o.code="OSError"
+			o.error="OSError"
 			return o #return ("object",{"status":"error","code":"OSError"},e)
 		else:
 			file.close()

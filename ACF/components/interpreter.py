@@ -18,48 +18,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACF.utils.interpreter import execute,make_tree
-from ACF.utils import getStorage
 from ACF.components import Component
 from ACF.utils.generations import Object
 
 class Interpreter(Component):
-	def generate(self,acenv, config):
-		return self.__getattribute__(config["command"])(acenv,config)
-	
-	def parseAction(self, config):
-		if config["command"] not in ["checkCondition"]:
-			raise Exception("Bad command %s" % config["command"])
-		if (config["command"] == "checkCondition") and not ("name" in config["params"].keys() and "condition" in config["params"].keys()):
-			raise Exception("Missing command '%s' parameters" % config["command"])
-		ret=config["params"].copy()
-		ret["command"]=config["command"]
-		return ret
-	
-	def checkCondition(self, acenv, conf):
-		"""
-			Check condition via internal condition languge interprater
-			and writes returned value to a variable.
-			Parameters:
-				name: returned value will be assigned to a variable called 'name', required
-				condition: a condition to be checked, required
-				storage: which storage the variable belongs to, non required, default is request storage
-		"""
+	def generate(self, acenv, conf):
 		D=acenv.doDebug
-		if D: acenv.debug("Executing command interpreter.checkCondition(%s, %s)" % (conf["name"], conf["condition"]))
-		if conf.has_key("storage"):
-			storage=getStorage(acenv, conf["storage"])
-		else:
-			storage=acenv.requestStorage
+		if D: acenv.debug("Executing expression '%s'", (conf["expression"]))
 		try:
-			storage[conf["name"]]=execute(acenv, make_tree(conf["condition"]))
-			if D: acenv.debug("Condition execution succesful, returned %s" % storage[conf["name"]])
-			return Object()
-		except Exception, e:
-			if D: acenv.info("Condition %s execution failed with error: %s" % (conf["name"], str(e)))
+			o=Object(execute(conf["expression"]))
+		except:
+			if D: acenv.warning("Execution failed with error: %s", (str(e)))
 			o=Object()
 			o.status="error"
 			o.error="ExecutionFailed"
-			return o
-			
+		return o
+
+	def parseAction(self, config):
+		if config["command"] not in ["execute"]:
+			raise Exception("Bad command %s" % config["command"])
+		return {
+			"expression":make_tree("".join(config["content"]).strip().split("\n"))
+			#"command":config["command"]
+		}
+
 def getObject(config):
 	return Interpreter(config)
