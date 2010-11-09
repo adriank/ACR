@@ -37,6 +37,7 @@ class User(Component):
 			if D: acenv.error("Account not found")
 			ret.status="error"
 			ret.error="AccountNotFound"
+			return ret
 		result=dict(zip(result["fields"], result["rows"][0]))
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
