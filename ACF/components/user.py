@@ -33,12 +33,12 @@ class User(Component):
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
+			result=dict(zip(result["fields"], result["rows"][0]))
 		except IndexError:
 			if D: acenv.error("Account not found")
 			ret.status="error"
 			ret.error="AccountNotFound"
 			return ret
-		result=dict(zip(result["fields"], result["rows"][0]))
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
 			if not acenv.sessionStorage:
