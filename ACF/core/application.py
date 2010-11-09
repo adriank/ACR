@@ -190,8 +190,12 @@ class Application(object):
 					return "<html><body>Cannot generate view.</body</html>"
 				view=v.parent
 				break
-
-		view.generate(acenv)
+		try:
+			view.generate(acenv)
+		except Error,e:
+			acenv.generations={
+				"error":("object",{"name":"GlobalError","status":"error","error":e.name},e.error)
+			}
 		#this is little faster than Object
 		langs=[]
 		for i in acenv.langs:
