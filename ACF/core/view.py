@@ -253,7 +253,7 @@ class View(object):
 			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		for i in self.postSchemas:
-			value=list[i]
+			value=list.get(i,self.postSchemas[i]["default"])
 			type=self.postSchemas[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
