@@ -94,14 +94,10 @@ class FileSystem(Component):
 			file=open(os.path.join(accessPath, path[-1]), 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
-		except IOError:
+		except (IOError,OSError) ,e:
 			o.status="error"
-			o.error="IOError"
+			o.error=e
 			return o #return ("object",{"status":"error","code":"IOError"},e)
-		except OSError:
-			o.status="error"
-			o.error="OSError"
-			return o #return ("object",{"status":"error","code":"OSError"},e)
 		else:
 			file.close()
 		#o.status="ok"
@@ -162,8 +158,9 @@ class FileSystem(Component):
 		return o
 
 	def get(self,acenv,conf):
+		path=self.path+replaceVars(acenv,conf["path"])
 		try:
-			file=open(conf["path"],"r")
+			file=open(path,"r")
 			content=file.read()
 		except IOError,e:
 			#FIXIT
@@ -171,9 +168,9 @@ class FileSystem(Component):
 			#print 'cannot open', conf["path"]
 		else:
 			file.close()
-		o=Object()
-		o.content="<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-		return g
+		o=Object("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")
+		#o.content=
+		return o
 
 	def generate(self, acenv, config):
 		D=acenv.doDebug
