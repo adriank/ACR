@@ -82,7 +82,11 @@
 
 	<!-- make 'last' the default type -->
 	<x:template match="column">
-		<div class="column {@type} {@name}">
+		<x:variable name="type">
+			<x:value-of select="@type"/>
+			<x:if test="not(@type)">last</x:if>
+		</x:variable>
+		<div class="column {$type} {@name}">
 			<x:apply-templates select="./*"/>
 		</div>
 	</x:template>
