@@ -94,7 +94,7 @@ class DataBase(Component):
 				multiRequest.append((i,data[i]))
 			else:
 				data[i]=db.escapeString(str(data[i]))
-		query=replaceVars(env,actionConf['query'])
+		query=replaceVars(env,actionConf['query'],data)
 		if D: env.debug("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
 		if len(multiRequest)>0:
@@ -104,10 +104,10 @@ class DataBase(Component):
 		else:
 			if D: env.debug("multiRequest not needed")
 		if D: env.info("Querying database with '%s'",query)
-		if True:#env.dbg:
+		if D:#env.dbg:
 			t=time.time()
 		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
-		if True:#env.dbg:
+		if D:#env.dbg:
 			env.dbg["dbtimer"]+=time.time()-t
 		if D: env.debug("'query' returned %s",result)
 		if result and len(result["rows"]):

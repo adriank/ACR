@@ -176,20 +176,20 @@ class Application(object):
 		view, acenv.inputs=self.getView(acenv.URLpath)
 
 		# checking global conditions
-		viewList=[]
-		while view:
-			viewList.append(view)
-			view=view.parent
-		viewList.reverse()
-		view=viewList[-1]
+		#viewList=[]
+		#while view:
+		#	viewList.append(view)
+		#	view=view.parent
+		#viewList.reverse()
+		#view=viewList[-1]
 		#from super class to deriverativ classes
-		for v in viewList:
-			if not v.checkConditions(acenv):
-				if not v.parent:
-					acenv.output["format"]="text/html"
-					return "<html><body>Cannot generate view.</body</html>"
-				view=v.parent
-				break
+		#for v in viewList:
+		#	if not v.checkConditions(acenv):
+		#		if not v.parent:
+		#			acenv.output["format"]="text/html"
+		#			return "<html><body>Cannot generate view.</body</html>"
+		#		view=v.parent
+		#		break
 		try:
 			view.generate(acenv)
 		except Error,e:

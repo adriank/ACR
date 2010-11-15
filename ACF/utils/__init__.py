@@ -30,7 +30,7 @@ def getStorage(env,s):
 		return {}
 	return env.requestStorage
 
-def replaceVars(env,s):
+def replaceVars(env,s,data=None):
 	def parse(m):
 		p=m.group(0)[2:-1]
 		storageName=""
@@ -38,7 +38,7 @@ def replaceVars(env,s):
 			storageName,path=p.split(PREFIX_DELIMITER)
 			storage=getStorage(env,storageName)
 		except ValueError:
-			storage=getStorage(env,"rs")
+			storage=data or getStorage(env,"rs")
 			path=p
 		path=path.split(".")
 		ret=dicttree.get(storage,path)
