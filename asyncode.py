@@ -27,7 +27,7 @@ from ACF import globals
 #one app run
 #globals.appDir="/home/adrian/ACF/adrian/doc/"
 #for multiple apps run - NotImplementedYet
-globals.appsDir="/home/adrian/ACF/project/"
+globals.appsDir="/home/adrian/projects/"
 host=""
 port=9999
 if len(sys.argv)>1:
