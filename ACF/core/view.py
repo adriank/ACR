@@ -70,6 +70,7 @@ class View(object):
 	def __init__(self, name, app):
 		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
+		#setting immutable because of setter
 		self.immutable=False
 		self.name="/".join(name)
 		self.app=app
@@ -114,7 +115,7 @@ class View(object):
 				output.append(i)
 			elif i[0]=="post":
 				postSchemas=filter(lambda x: type(x) is not str, i[2])
-			elif i[0] in [SET,DEFINE, IMPORT]:
+			elif i[0] in [SET,DEFINE,IMPORT]:
 				actions.append(i)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
@@ -141,9 +142,9 @@ class View(object):
 		## posts inheritance
 		#if self.parent and self.parent.posts:
 		#	self.posts=self.parent.posts
-		if not self.actions:
-			self.immutable=True
-			return
+		#if not self.actions:
+		#	self.immutable=True
+		#	return
 		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
@@ -169,70 +170,70 @@ class View(object):
 			ret=self.parent.actions[:]
 		else:
 			ret = []
-		try:
-			for i in a:
-				# import should check befere and after?
-				if i[0]=="import":
-					path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
-					v=self.app.getView(path[:-1])[0]
-					for a in v.actions:
-						if a["name"]==path[-1]:
-							ret.append(a)
-							ret[-1]["name"] = i[1].get("name", None)
-							break
+		#try:
+		for i in a:
+			# import should check befere and after?
+			if i[0]=="import":
+				path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
+				v=self.app.getView(path[:-1])[0]
+				for a in v.actions:
+					if a["name"]==path[-1]:
+						ret.append(a)
+						ret[-1]["name"] = i[1].get("name", None)
+						break
+				continue
+			attrs=i[1]
+			#if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
+			action=NS2Tuple(i[0])[1]
+			ns=None
+			cmd="default"
+			if i[1].has_key(COMMAND):
+				ns,cmd=NS2Tuple(i[1][COMMAND])
+			componentName=self.namespaces.get(ns,"default")
+			params={}
+			if ns:
+				for j in i[1]:
+					if j.startswith(ns+":") and not j==ns+cmd:
+						params[j.split(":").pop()]=i[1][j]
+			actionConfig={
+				"command":cmd,
+				"params":params,
+				"content":i[2]
+			}
+			before = attrs.get("before", None)
+			after = attrs.get("after", None)
+			o = {
+				"type":action,#DEFINE or SET
+				"command":cmd,#command name
+				"name":attrs.get("name",None),
+				"component":componentName,
+				"condition":make_tree(attrs.get("condition",None)),
+				"default":i[1].get("default",None),
+				"config":self.app.getComponent(componentName).parseAction(actionConfig),
+			}
+			#WTF??? n, name??
+			if before:
+				n,name=0,before
+				if before=='*':
+					ret.insert(0, o)
 					continue
-				attrs=i[1]
-				#if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
-				action=NS2Tuple(i[0])[1]
-				ns=None
-				cmd="default"
-				if i[1].has_key(COMMAND):
-					ns,cmd=NS2Tuple(i[1][COMMAND])
-				componentName=self.namespaces.get(ns,"default")
-				params={}
-				if ns:
-					for j in i[1]:
-						if j.startswith(ns+":") and not j==ns+cmd:
-							params[j.split(":").pop()]=i[1][j]
-				actionConfig={
-					"command":cmd,
-					"params":params,
-					"content":i[2]
-				}
-				before = attrs.get("before", None)
-				after = attrs.get("after", None)
-				o = {
-					"type":action,#DEFINE or SET
-					"command":cmd,#command name
-					"name":attrs.get("name",None),
-					"component":componentName,
-					"condition":make_tree(attrs.get("condition",None)),
-					"default":i[1].get("default",None),
-					"config":self.app.getComponent(componentName).parseAction(actionConfig),
-				}
-				#WTF??? n, name??
-				if before:
-					n,name=0,before
-					if before=='*':
-						ret.insert(0, o)
-						continue
-				elif after:
-					n,name=1,after
-					if after=='*':
-						ret.append(o)
-						continue
-				i=0
-				try:
-					while not ret[i]["name"] == name:
-						i+=1
-				except:
-					# TODO raise Error('View not found')
+			elif after:
+				n,name=1,after
+				if after=='*':
 					ret.append(o)
-					#raise Error('View not found')
-				else:
-					ret.insert(i+n, o)
-		except Error,e:
-			pass
+					continue
+			i=0
+			try:
+				while not ret[i]["name"] == name:
+					i+=1
+			except:
+				# TODO raise Error('View not found')
+				ret.append(o)
+				#raise Error('View not found')
+			else:
+				ret.insert(i+n, o)
+		#except Error,e:
+			#pass
 		return ret
 
 	def __setattr__(self, name, val):

@@ -173,7 +173,8 @@ class Application(object):
 				acenv.sessionStorage=FileSession(acenv,sessID)
 			except:
 				sessID=None
-		view, acenv.inputs=self.getView(acenv.URLpath)
+		try:
+			view, acenv.inputs=self.getView(acenv.URLpath)
 
 		# checking global conditions
 		#viewList=[]
@@ -190,7 +191,6 @@ class Application(object):
 		#			return "<html><body>Cannot generate view.</body</html>"
 		#		view=v.parent
 		#		break
-		try:
 			view.generate(acenv)
 		except Error,e:
 			acenv.generations={

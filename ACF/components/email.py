@@ -17,62 +17,43 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 from ACF import globals
-from ACF.utils import conditionchecker,mail,replaceVars
-from ACF.components import Component
-from ACF.utils.xmlextras import dom2tree
+from ACF.utils import mail,replaceVars
+from ACF.components import *
+#from ACF.utils.xmlextras import dom2tree
 from ACF.errors import *
+import os
 
-class email(Component):
-	def handle(self,data):
-		conf=self.config
-		content=""
-		if conf["content"][1] is not None and conf["content"][1].has_key("fromFile"):
-			file=replaceVars(conf["content"]["fromFile"])
-			try:
-				f=open(globals.appDir+file,"r")
-				content=f.read().decode("utf-8")
-				f.close()
-			except IOError,e:
-				raise Error("fileNotFound",str(e))
-		else:
-			content=conf["content"][2][0]
-		conf["headers"]["Subject"]=replaceVars(conf["headers"]["Subject"])
-		conf["headers"]["From"]=replaceVars(conf["headers"]["From"])
-		conf["headers"]["To"]=replaceVars(conf["headers"]["To"])
-		mail.send(conf["headers"],replaceVars(content))
+class Email(Component):
+	def generate(self,acenv,conf):
+		content=conf["content"]
+		headers={}
+		params=conf["params"]
+		for h in params:
+			headers[h]=replaceVars(acenv,params[h])
+		mail.send(headers,replaceVars(acenv,content))
+		return Object()
 
-def parseConfig(root):
-	r=dom2tree(root)[2]
-	conditions=[]
-	headers={}
-	content=None
-	for elem in r:
-		if elem[0].lower()=="conditions":
-			for e in elem[2]:
-				conditions.append(e)
-		elif elem[0].lower()=="headers":
-			for i in elem[1]:
-				headers[i.capitalize()]=elem[1][i]
-		elif elem[0].lower()=="content":
-			content=elem
-	try:
-		_from=headers["Fromadress"]
-	except KeyError:
-		raise Error("fromAdressNotExist", "headers should have fromAdress attribute")
-	if headers.has_key("Fromname"):
-		_from=headers["Fromname"]+" <"+headers["Fromadress"]+">"
-	try:
-		del(headers["Fromname"], headers["Fromadress"])
-	except Exception:
-		pass
-	headers["From"]=_from
-	return {
-		"conditions":conditions,
-		"content":content,
-		"headers":headers
-	}
+	def parseAction(self,conf):
+		params={}
+		for h in conf["params"]:
+			params[h.capitalize()]=conf["params"][h]
+		conf["params"]=params
+		try:
+			conf["params"]["From"]
+		except KeyError:
+			raise Error("FromAdressNotSpecified", "'from' should be specified")
+		try:
+			conf["params"]["To"]
+		except KeyError:
+			raise Error("ToAdressNotSpecified", "'to' should be specified")
+		try:
+			conf["params"]["Subject"]
+		except KeyError:
+			raise Error("SubjectNotSpecified", "'subject' should be specified")
+		conf['content']="".join(conf['content'])
+		print conf
+		return conf
 
 def getObject(config):
-	return email(config)
+	return Email(config)
