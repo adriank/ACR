@@ -19,12 +19,38 @@
 
 #@marcin: docstrings
 
-import urllib,time
+import urllib,time,cgi
 from ACF.utils.xmlextras import escapeQuotes
 from ACF import globals
 from email.Utils import formatdate
 
 D=False
+
+#SLOW!!!
+def computePOST(env):
+	post=None
+	contentType=env['CONTENT_TYPE']
+	if contentType.startswith("application/x-www-form-urlencoded"):
+		POST=env['wsgi.input'].read()
+		post=parsePOST(POST)
+	elif contentType.startswith("multipart/form-data"):
+		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
+		post={}
+		for i in form.keys():
+			if type(form[i]) is list:
+				l=[]
+				for item in form[i]:
+					l.append(escapeQuotes(urllib.unquote_plus(item.value)))
+				print l
+				post[i]=l
+			elif form[i].filename is not None:
+				post[i]={
+					"filename":form[i].filename,
+					"content":form[i].value
+				}
+			else:
+				post[i]=escapeQuotes(form[i].value)
+	return post
 
 def parsePOST(s):
 	"""
@@ -41,9 +67,9 @@ def parsePOST(s):
 	return d
 
 def parseMultipart(f,tag):
-	if D: log.info("Parsing Multipart/form data (data in HTTP section of this Debug information), tag is %s",tag)
+	#if D: log.info("Parsing Multipart/form data (data in HTTP section of this Debug information), tag is %s",tag)
 	import cgi
-	log.critical("This is not working! Fix needed.")
+	#log.critical("This is not working! Fix needed.")
 	raise str(cgi.FieldStorage(f).keys())
 	ret=[]
 	for ln in f:
@@ -73,7 +99,7 @@ def printHeaders(headers):
 	input: list containing http headers, each header is also list which length is 2.
 	output: multi-line string, each line is a pair of words distanced by ':' delimeter
 	"""
-	if D: log.debug("Printing headers")
+	#if D: log.debug("Printing headers")
 	t=[]
 	h=headers
 	for i in h:
@@ -85,7 +111,7 @@ def getCookieDate(epoch_seconds=None):
 	input: time.time()
 	returns: 'Wdy, DD-Mon-YYYY HH:MM:SS GMT'.
 	"""
-	if D: log.debug("getCookieDate")
+	#if D: log.debug("getCookieDate")
 	rfcdate = formatdate(epoch_seconds)
 	return '%s-%s-%s GMT' % (rfcdate[:7], rfcdate[8:11], rfcdate[12:25])
 
@@ -94,7 +120,7 @@ def parseCookies(acenv,s):
 	input: key=val;key=val
 	returns: d={name:val}
 	"""
-	if D: log.debug("Parsing cookies '%s'",s)
+	#if D: log.debug("Parsing cookies '%s'",s)
 	t=str(s).split(";")
 	d={}
 	for i in t:
