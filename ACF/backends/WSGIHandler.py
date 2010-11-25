@@ -50,31 +50,6 @@ def computeMIME(mime,agent):
 	elif "application/json" in mime and len(mime)==1:
 		return "application/json"
 
-#SLOW!!!
-def computePOST(env):
-	post=None
-	contentType=env['CONTENT_TYPE']
-	if contentType.startswith("application/x-www-form-urlencoded"):
-		POST=env['wsgi.input'].read()
-		post=HTTP.parsePOST(POST)
-	elif contentType.startswith("multipart/form-data"):
-		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
-		post={}
-		for i in form.keys():
-			if type(form[i]) is list:
-				l=[]
-				for item in form[i]:
-					l.append(item.value)
-				post[i]=l
-			elif form[i].filename is not None:
-				post[i]={
-					"filename":form[i].filename,
-					"content":form[i].value
-				}
-			else:
-				post[i]=form[i].value
-	return post
-
 def application(env,start_response):
 	t=time.time()
 	response=[]
@@ -103,7 +78,7 @@ def application(env,start_response):
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
 	post=None
 	if env.get('REQUEST_METHOD',"").lower()=="post":
-		post=computePOST(env)
+		post=HTTP.computePOST(env)
 	acenv.posts=post
 	acenv.URLpath=filter(lambda x: not str.isspace(x) and len(x)!=0,env['PATH_INFO'].split("/"))
 	output=app.generate(acenv)
