@@ -46,13 +46,12 @@ def replaceVars(env,s,data=None):
 			return m.group(0)
 		#keep is None; "" is proper value
 		if ret is None:
-			#TODO change it to Error
-			raise Error((storageName or "rs")+" storage does not have "+".".join(path)+" property")
+			raise Error("NoVariable",(storageName or "rs")+" storage does not have "+".".join(path)+" property")
 		return str(ret)
 
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster
 	if type(s) is not str:
-		raise Exception("Not string, but "+str(s))
+		raise Error("NotString","Not string, but "+str(s))
 	return RE_PATH.sub(parse, s)
 
 def generateID(secret=None):

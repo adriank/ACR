@@ -41,7 +41,6 @@ def computePOST(env):
 				l=[]
 				for item in form[i]:
 					l.append(escapeQuotes(urllib.unquote_plus(item.value)))
-				print l
 				post[i]=l
 			elif form[i].filename is not None:
 				post[i]={

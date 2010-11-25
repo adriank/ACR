@@ -32,7 +32,11 @@ class Default(Component):
 				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
 				s.append(escape(elem))
-		return "".join(s)
+		typ=config["params"].get("type","str")
+		s="".join(s).strip()
+		if typ=="csv":
+			return re.split("\s*,\s*",s)
+		return s
 
 def getObject(config):
 	return Default(config)

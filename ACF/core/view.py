@@ -258,7 +258,7 @@ class View(object):
 			type=self.postSchemas[i]["type"]
 			if not type or checkType(type,value):
 				if type=="csv":
-					value=value.split(",")
+					value=re.split("\s*,\s*",value)
 				acenv.requestStorage[i]=value
 			else:
 				raise Error("Wrong data type suplied")
@@ -276,11 +276,11 @@ class View(object):
 		else:
 			inputsLen=0
 		for i in xrange(0,inputsLen):
-			type=self.inputSchemas[i]["type"]
+			typ=self.inputSchemas[i]["type"]
 			value=list[i]
-			if not type or checkType(type,value):
-				if type=="csv":
-					value=value.split(",")
+			if not typ or checkType(type,value):
+				if typ=="csv":
+					value=re.split("\s*,\s*",value)
 				acenv.requestStorage[self.inputSchemas[i]["name"]]=value
 			#else:
 			#	if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])

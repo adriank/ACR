@@ -18,7 +18,7 @@
 
 from ACF import globals
 from ACF.errors import *
-from ACF.utils import replaceVars,xmlextras
+from ACF.utils import replaceVars
 from ACF.components import *
 from ACF import db
 import time

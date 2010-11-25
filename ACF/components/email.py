@@ -23,6 +23,7 @@ from ACF.components import *
 #from ACF.utils.xmlextras import dom2tree
 from ACF.errors import *
 import os
+import re
 
 class Email(Component):
 	def generate(self,acenv,conf):
@@ -31,7 +32,10 @@ class Email(Component):
 		params=conf["params"]
 		for h in params:
 			headers[h]=replaceVars(acenv,params[h])
-		mail.send(headers,replaceVars(acenv,content))
+			typ=type(params[h])
+			if typ is list:
+				headers[h]=map(lambda x: replaceVars(acenv,x),headers[h])
+		#mail.send(headers,replaceVars(acenv,content))
 		return Object()
 
 	def parseAction(self,conf):
@@ -52,7 +56,6 @@ class Email(Component):
 		except KeyError:
 			raise Error("SubjectNotSpecified", "'subject' should be specified")
 		conf['content']="".join(conf['content'])
-		print conf
 		return conf
 
 def getObject(config):

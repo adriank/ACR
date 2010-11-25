@@ -7,14 +7,16 @@ def get(d,path,falseOnNotFound=True):
 	"""
 	Returns value from dict hierarchy.
 	input: dict, path which is a list eg ['an', 'example', 'path'],
-	returns: False or deepest found dict
+	returns: False or deepest dict found
 	"""
-	if type(d) is Generation:
+	if isinstance(d, Generation):
 		d=d.__dict__
 	try:
 		ret=d
 		i=0
 		for o in path:
+			if isinstance(ret, Generation):
+				ret=ret.__dict__
 			ret=ret[o]
 			i+=1
 	except (AttributeError, KeyError, TypeError):

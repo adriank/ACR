@@ -51,6 +51,7 @@ class handler(object):
 		#if globals.config.has_key("debug") and globals.config["debug"]:
 		#	import time
 		#	t=time.time()
+		#return None
 		cursor=self.conn.cursor()
 		try:
 			cursor.execute(sql)
