@@ -35,7 +35,7 @@ class Email(Component):
 			typ=type(params[h])
 			if typ is list:
 				headers[h]=map(lambda x: replaceVars(acenv,x),headers[h])
-		#mail.send(headers,replaceVars(acenv,content))
+		mail.send(headers,replaceVars(acenv,content))
 		return Object()
 
 	def parseAction(self,conf):
