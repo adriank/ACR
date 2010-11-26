@@ -48,7 +48,7 @@ def computePOST(env):
 					"content":form[i].value
 				}
 			else:
-				post[i]=form[i].value
+				post[i]=escapeQuotes(form[i].value)
 	return post
 
 def parsePOST(s):
