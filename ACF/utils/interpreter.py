@@ -426,8 +426,12 @@ def execute(acenv,tree):
 			return exe(node[1]) or exe(node[2])
 		elif op=="and":
 			return exe(node[1]) and exe(node[2])
-		elif op=="in" or op=="not in":
+		elif op=="not":
+			return not exe(node[1])
+		elif op=="in":
 			return exe(node[1]) in exe(node[2])
+		elif op=="not in":
+			return exe(node[1]) not in exe(node[2])
 		elif op=="is" or op=="is not":
 			fst=exe(node[1])
 			snd=exe(node[2])
@@ -449,6 +453,7 @@ def execute(acenv,tree):
 				evaluatePath()
 		elif op=="(variable)":
 			storage=getStorage(acenv,node[1])
+			#if D: acenv.debug("%s is %s",node[2],var)
 			return dicttree.get(storage,node[2].split('.'))
 		elif op=="[":
 			if len(node) is 2:  # list
@@ -460,7 +465,8 @@ def execute(acenv,tree):
 					return first[int(second)]
 				else:
 					return first[second]
-	if acenv.doDebug: acenv.debug(str(tree))
+	D=acenv.doDebug
+	if D: acenv.debug(str(tree))
 	if type(tree) is not tuple:
 		return tree
 	return exe(tree)
