@@ -100,7 +100,6 @@
 		</x:variable>
 		<x:element name="{$tag}">
 			<x:attribute name="id"><x:value-of select="@name"/></x:attribute>
-
 			<x:variable name="before">
 				<x:for-each select="before/node()">
 					<x:call-template name="template">
@@ -138,7 +137,7 @@
 					</x:for-each>
 				</x:when>
 				<x:otherwise>
-					<x:attribute name="class">widget <x:value-of select="$type"/>-item</x:attribute>
+					<x:attribute name="class">widget <x:value-of select="$type"/>-item <x:value-of select="@class"/></x:attribute>
 					<x:copy-of select="$before"/>
 					<x:apply-templates mode="widget" select=".">
 						<x:with-param name="datasource" select="$datasource"/>
