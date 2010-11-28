@@ -32,7 +32,7 @@ def computePOST(env):
 	contentType=env['CONTENT_TYPE']
 	if contentType.startswith("application/x-www-form-urlencoded"):
 		POST=env['wsgi.input'].read()
-		post=parsePOST(POST)
+		post=parseurlencoded(POST)
 	elif contentType.startswith("multipart/form-data"):
 		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
 		post={}
@@ -48,10 +48,10 @@ def computePOST(env):
 					"content":form[i].value
 				}
 			else:
-				post[i]=escapeQuotes(form[i].value)
+				post[i]=form[i].value
 	return post
 
-def parsePOST(s):
+def parseurlencoded(s):
 	"""
 	Parse url posts, from url string.
 	input: url containing post inputs separated by '&' character, each one is name=val
