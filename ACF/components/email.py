@@ -24,6 +24,7 @@ from ACF.components import *
 from ACF.errors import *
 import os
 import re
+from ACF.utils import dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 
 class Email(Component):
 	def generate(self,acenv,conf):
@@ -33,9 +34,25 @@ class Email(Component):
 		for h in params:
 			headers[h]=replaceVars(acenv,params[h])
 			typ=type(params[h])
-			if typ is list:
-				headers[h]=map(lambda x: replaceVars(acenv,x),headers[h])
-		mail.send(headers,replaceVars(acenv,content))
+		to=headers["To"]
+		content=replaceVars(acenv,content)
+		if to.find("{$")>-1:
+			p=RE_PATH.sub(r"\1", to)
+			try:
+				storageName,path=p.split(PREFIX_DELIMITER)
+				storage=getStorage(acenv,storageName)
+			except ValueError:
+				storage=getStorage(acenv,"rs")
+				path=p
+			path=path.split(".")
+			ret=dicttree.get(storage,path)
+			#for i in ret._value:
+			recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
+			for i in recipients:
+				headers["To"]=i
+				mail.send(headers,content)
+		else:
+			mail.send(headers,content)
 		return Object()
 
 	def parseAction(self,conf):

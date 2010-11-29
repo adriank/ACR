@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from ACF.errors import *
 from ACF.utils.hashcompat import md5_constructor
 from ACF.utils import dicttree
+from ACF.utils.generations import *
 from ACF import globals
 
 if hasattr(random, 'SystemRandom'):
@@ -42,7 +43,7 @@ def replaceVars(env,s,data=None):
 			path=p
 		path=path.split(".")
 		ret=dicttree.get(storage,path)
-		if type(ret) is list:
+		if type(ret) not in [str,Object]:
 			return m.group(0)
 		#keep is None; "" is proper value
 		if ret is None:
