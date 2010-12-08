@@ -47,6 +47,14 @@ def escapeQuotes(s):
 	"""
 	return escape(unescape(s,unescapeDict),escapeDict)
 
+def unescapeQuotes(s):
+	"""
+	Unescapes characters to '<', '>', '\'', '"', '&' in s
+	input: string
+	returns: string with escaped characters
+	"""
+	return unescape(s,unescapeDict)
+
 def str2obj(s):
 	"""
 	Converts string to an object.

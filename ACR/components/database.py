@@ -93,7 +93,10 @@ class DataBase(Component):
 			if type(data[i]) is list:
 				multiRequest.append((i,data[i]))
 			else:
-				data[i]=db.escapeString(str(data[i]))
+				if data[i] is None:
+					data[i]="null"
+				else:
+					data[i]=db.escapeString(str(data[i]))
 		query=replaceVars(env,actionConf['query'],data)
 		if D: env.debug("replaceVars returned '%s'",query)
 		#query is filled with simple type data now
@@ -116,11 +119,12 @@ class DataBase(Component):
 			first=True #for debugging purposes
 			ret=[]
 			fields=result["fields"]
+			cdata=actionConf["cdata"]
 			for row in result["rows"]:
 				nodes=[]
 				#TODO optimize returning row and value
 				for i in xrange(len(row)):
-					if fields[i] in actionConf["cdata"]:
+					if type(row[i]) is str and fields[i] in cdata:
 						s="<![CDATA["+row[i].replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
 					#if D and first: env.info("'%s' appended as node",col)
 					else:

@@ -21,13 +21,13 @@ from ACR.utils.xmlextras import *
 from ACR import globals
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage
+from ACR.utils import getStorage,replaceVars
 from ACR.utils.interpreter import execute,make_tree
 from ACR.utils.checktype import checkType
 from ACR.components import Object, List
 import os
 
-D=True
+#D=True
 DEFINE="define"
 SET="set"
 COMMAND="command"
@@ -41,12 +41,11 @@ def parsePosts(nodes):
 	postCount=0
 	for i in nodes:
 		attrs=i[1]
-		default=attrs.get("default",None)
 		ret[attrs["name"]]={
 			"type":attrs.get("type",None),
-			"default":default
 		}
-		if default:
+		if attrs.has_key("default"):
+			ret[attrs["name"]]["default"]=make_tree(attrs["default"])
 			postCount+=1
 	return (ret,postCount)
 
@@ -60,7 +59,7 @@ def parseInputs(nodes):
 		ret.append({
 			"name":attrs["name"],
 			"type":attrs.get("type",None),
-			"default":attrs.get("default",None)
+			"default":make_tree(attrs.get("default",None))
 		})
 	return ret
 
@@ -208,7 +207,7 @@ class View(object):
 				"name":attrs.get("name",None),
 				"component":componentName,
 				"condition":make_tree(attrs.get("condition",None)),
-				"default":i[1].get("default",None),
+				"default":make_tree(i[1].get("default",None)),
 				"config":self.app.getComponent(componentName).parseAction(actionConfig),
 			}
 			#WTF??? n, name??
@@ -253,15 +252,19 @@ class View(object):
 			#TODO normalize the Error messages!
 			raise Error("Not enough post fields")
 		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
-		for i in self.postSchemas:
-			value=list.get(i,self.postSchemas[i]["default"])
-			type=self.postSchemas[i]["type"]
-			if not type or checkType(type,value):
-				if type=="csv":
+		postSchemas=self.postSchemas
+		for i in postSchemas:
+			value=list.get(i)
+			typ=postSchemas[i]["type"]
+			if not typ or checkType(type,value):
+				if typ=="csv":
 					value=re.split("\s*,\s*",value)
-				acenv.requestStorage[i]=value
 			else:
-				raise Error("Wrong data type suplied")
+				if postSchemas[i].has_key("default"):
+					value=execute(acenv,postSchemas[i]["default"])
+				else:
+					raise Error("Wrong data suplied at field %s.",i)
+			acenv.requestStorage[i]=value
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
@@ -288,7 +291,7 @@ class View(object):
 			default=self.inputSchemas[i]["default"]
 			#Keep is not None; "" is valid value!
 			if default is not None:
-				acenv.requestStorage[self.inputSchemas[i]["name"]]=default
+				acenv.requestStorage[self.inputSchemas[i]["name"]]=execute(default)
 
 	def generate(self,acenv):
 		D=acenv.doDebug
@@ -309,7 +312,9 @@ class View(object):
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")
 					ns,name=NS2Tuple(action["name"],"::")
-					getStorage(acenv,ns or "rs")[name]=action.get("default") or ""
+					default=action.get("default")
+					if default:
+						getStorage(acenv,ns or "rs")[name]=default
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list

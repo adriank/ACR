@@ -23,6 +23,13 @@ class symbol_base(object):
 
 		def getTree(self):
 			if self.id == "(name)":
+				val=self.value.lower()
+				if val in ["true","t"]:
+					return True
+				elif val==["false","f"]:
+					return False
+				elif val in ["none","null"]:
+					return None
 				return (self.id[1:-1], self.value)
 			elif self.id == "(literal)":
 				fstLetter=self.value[0]

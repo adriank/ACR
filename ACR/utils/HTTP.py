@@ -20,11 +20,11 @@
 #@marcin: docstrings
 
 import urllib,time,cgi
-from ACR.utils.xmlextras import escapeQuotes
+from ACR.utils.xmlextras import escapeQuotes,unescapeQuotes
 from ACR import globals
 from email.Utils import formatdate
 
-D=False
+#D=False
 
 #SLOW!!!
 def computePOST(env):
@@ -40,7 +40,7 @@ def computePOST(env):
 			if type(form[i]) is list:
 				l=[]
 				for item in form[i]:
-					l.append(escapeQuotes(urllib.unquote_plus(item.value)))
+					l.append(unescapeQuotes(urllib.unquote_plus(item.value)))
 				post[i]=l
 			elif form[i].filename is not None:
 				post[i]={
@@ -48,7 +48,7 @@ def computePOST(env):
 					"content":form[i].value
 				}
 			else:
-				post[i]=form[i].value
+				post[i]=unescapeQuotes(form[i].value)
 	return post
 
 def parseurlencoded(s):

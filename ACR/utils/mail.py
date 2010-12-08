@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # AsynCode Framework - XML framework allowing developing internet
-# applications without using programming languages. 
+# applications without using programming languages.
 # Copyright (C) 2008-2010  Adrian Kalbarczyk
 
 # This program is free software: you can redistribute it and/or modify
@@ -23,9 +23,9 @@ SENDMAIL = "/usr/sbin/sendmail"
 def send(headers, content):
 	m=[]
 	for i in headers:
-		m.append(i.strip().capitalize()+": "+headers[i]+"\n")
+		m.append(i.strip()+": "+headers[i]+"\n")
 	m.append("\n")
 	m.append(content)
-	p = os.popen("%s -t" % SENDMAIL, "w")
+	p=os.popen("%s -t" % SENDMAIL, "w")
 	p.write("".join(m))
 	p.close()
