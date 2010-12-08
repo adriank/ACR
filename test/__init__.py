@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#unit tests for ACF functions
+#unit tests for ACR functions
 
 from test_utils___init__ import Utils_init
 from test_utils_interpreter import utils_interpreter
@@ -12,7 +12,7 @@ from test_utils_checktype import Utils_checktype
 import unittest
 
 def doTests():
-	print 'Started ACF testing.\n'
+	print 'Started ACR testing.\n'
 
 	utils_init = unittest.TestLoader().loadTestsFromTestCase(Utils_init)
 	utils_dicttree = unittest.TestLoader().loadTestsFromTestCase(Utils_dicttree)
@@ -33,4 +33,4 @@ def doTests():
 	print '\nutils/checktype.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_checktype)
 	
-	print 'Ended ACF testing.'
+	print 'Ended ACR testing.'

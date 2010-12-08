@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils import replaceVars
-from ACF import globals
-from ACF.errors import *
+from ACR.utils import replaceVars
+from ACR import globals
+from ACR.errors import *
 import sys
-from ACF.utils.generations import *
+from ACR.utils.generations import *
 
 #dict of component modules
 MODULE_CACHE={}
@@ -33,7 +33,7 @@ def get(name):
 	module=MODULE_CACHE.get(name,None)
 	if module:
 		return module
-	path="ACF.components."+name
+	path="ACR.components."+name
 	#TODO error handling
 	#try:
 	__import__(path)

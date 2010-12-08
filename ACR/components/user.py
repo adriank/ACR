@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.components import *
-from ACF.utils import replaceVars,generateID
-from ACF import globals
-from ACF.errors import Error
-from ACF.utils.hashcompat import md5_constructor
-from ACF.session.file import FileSession
+from ACR.components import *
+from ACR.utils import replaceVars,generateID
+from ACR import globals
+from ACR.errors import Error
+from ACR.utils.hashcompat import md5_constructor
+from ACR.session.file import FileSession
 
 class User(Component):
 	def login(self,acenv,conf):

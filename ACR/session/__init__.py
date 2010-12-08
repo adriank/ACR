@@ -20,16 +20,16 @@
 # highly modified Django code, relicensed under GPL
 
 import os,sys,time,random,base64,logging
-from ACF import globals
-from ACF.utils import HTTP
+from ACR import globals
+from ACR.utils import HTTP
 from datetime import datetime, timedelta
-from ACF.utils.hashcompat import md5_constructor
+from ACR.utils.hashcompat import md5_constructor
 try:
 	import cPickle as pickle
 except ImportError:
 	import pickle
 
-log = logging.getLogger('ACF.session.base')
+log = logging.getLogger('ACR.session.base')
 
 if hasattr(random, 'SystemRandom'):
 	randrange = random.SystemRandom().randrange

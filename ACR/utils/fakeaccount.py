@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF import globals
+from ACR import globals
 import logging
 
-log = logging.getLogger('ACF.session.file')
+log = logging.getLogger('ACR.session.file')
 
 def create():
 	log.info("Creating fake account")

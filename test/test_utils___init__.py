@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #@marcin: tests for functions getStorage, generateID
 
-from ACF.utils import *
+from ACR.utils import *
 import unittest
 
 class myEnv:

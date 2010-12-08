@@ -20,11 +20,11 @@
 # highly modified Django code, relicensed under GPL
 
 import errno,os,tempfile
-from ACF import globals
-from ACF.session import Session
-from ACF.errors import Error
+from ACR import globals
+from ACR.session import Session
+from ACR.errors import Error
 
-#log = logging.getLogger('ACF.session.file')
+#log = logging.getLogger('ACR.session.file')
 
 class FileSession(Session):
 	def __init__(self, acenv, id=None):

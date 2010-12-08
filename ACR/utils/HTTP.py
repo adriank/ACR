@@ -20,8 +20,8 @@
 #@marcin: docstrings
 
 import urllib,time,cgi
-from ACF.utils.xmlextras import escapeQuotes
-from ACF import globals
+from ACR.utils.xmlextras import escapeQuotes
+from ACR import globals
 from email.Utils import formatdate
 
 D=False

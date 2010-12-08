@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import psycopg2 as dbapi
-from ACF import globals
-from ACF.errors import Error
-from ACF.utils.xmlextras import escapeQuotes
+from ACR import globals
+from ACR.errors import Error
+from ACR.utils.xmlextras import escapeQuotes
 #import logging
 
-#log=logging.getLogger('ACF.dbHandler.pg')
+#log=logging.getLogger('ACR.dbHandler.pg')
 #D=logging.doLog
 
 class handler(object):

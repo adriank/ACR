@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils.interpreter import execute,make_tree
-from ACF.components import Component
-from ACF.utils.generations import Object
+from ACR.utils.interpreter import execute,make_tree
+from ACR.components import Component
+from ACR.utils.generations import Object
 
 class Interpreter(Component):
 	def generate(self, acenv, conf):

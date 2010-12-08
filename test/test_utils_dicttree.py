@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #@marcin: unit tests for functions: dicttree.get, dicttree.set
 
-from ACF.utils import dicttree
+from ACR.utils import dicttree
 import unittest
 
 class Utils_dicttree(unittest.TestCase):

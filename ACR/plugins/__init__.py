@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils import conditionchecker,replaceVars
-from ACF import globals
-from ACF.errors import *
+from ACR.utils import conditionchecker,replaceVars
+from ACR import globals
+from ACR.errors import *
 import logging
 import sys
 
-log = logging.getLogger('ACF.plugin')
+log = logging.getLogger('ACR.plugin')
 
 #dict of component modules
 PLUGIN_CACHE={}
@@ -35,7 +35,7 @@ def get(name):
 	module=PLUGIN_CACHE.get(name,None)
 	if module:
 		return module
-	path="ACF.plugins."+name
+	path="ACR.plugins."+name
 	try:
 		__import__(path)
 	except ImportError,e:

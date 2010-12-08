@@ -20,16 +20,16 @@
 #TODO this file is mess. Need for full rewrite.
 
 import sys,os,re,time
-from ACF import globals,errors
-from ACF.utils import HTTP
-from ACF.core.environment import Environment
-from ACF.core.application import Application
+from ACR import globals,errors
+from ACR.utils import HTTP
+from ACR.core.environment import Environment
+from ACR.core.application import Application
 from cStringIO import StringIO
 import cgi
 #from guppy import hpy
 
 #logging.basicConfig()
-#log=logging.getLogger("ACF.WSGIHandler")
+#log=logging.getLogger("ACR.WSGIHandler")
 #logStream=StringIO()
 #handler=logging.StreamHandler()#(sys.stdout)#(strm=logStream)
 #handler.setFormatter(logging.Formatter('<item origin="%(name)s.%(funcName)s" line="%(lineno)d" level="%(levelname)s" file="%(filename)s"><message>%(message)s</message></item>'))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #@marcin: docstrings
-from ACF.utils.generations import *
+from ACR.utils.generations import *
 
 def get(d,path,falseOnNotFound=True):
 	"""

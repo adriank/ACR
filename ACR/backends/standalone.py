@@ -21,9 +21,9 @@ import logging
 import re
 import os
 import mimetypes
-from ACF.backends.WSGIHandler import application
-from ACF import globals
-from ACF.utils.xmlextras import xml2tree
+from ACR.backends.WSGIHandler import application
+from ACR import globals
+from ACR.utils.xmlextras import xml2tree
 
 def r(s):
 	raise Exception(s)

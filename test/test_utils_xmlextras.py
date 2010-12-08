@@ -3,7 +3,7 @@
 #@marcin: tests for functions: escapeQuotes, str2obj, last, xml2tree, tree2xml, NS2Tuple
 
 import unittest
-from ACF.utils.xmlextras import *
+from ACR.utils.xmlextras import *
 import os
 
 class Utils_xmlextras(unittest.TestCase):

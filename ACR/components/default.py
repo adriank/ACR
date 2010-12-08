@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils import replaceVars
-from ACF.components import *
-from ACF.utils.xmlextras import tree2xml
+from ACR.utils import replaceVars
+from ACR.components import *
+from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 
 class Default(Component):

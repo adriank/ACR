@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF import globals
-from ACF.components import *
-from ACF.utils.generations import *
-from ACF.errors import *
-from ACF.utils import replaceVars,HTTP
+from ACR import globals
+from ACR.components import *
+from ACR.utils.generations import *
+from ACR.errors import *
+from ACR.utils import replaceVars,HTTP
 
 class Headers(Component):
 	def setcookie(self,env,config):

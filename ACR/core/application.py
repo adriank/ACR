@@ -19,15 +19,15 @@
 
 #@marcin: views subdirs implementation
 
-from ACF.utils.xmlextras import *
-from ACF.utils import dicttree
-from ACF.utils import json_compat
-from ACF.session.file import FileSession
-from ACF.core.view import View
-from ACF.errors import *
-from ACF import components,serializers
-from ACF.components import *
-from ACF.globals import MIMEmapper
+from ACR.utils.xmlextras import *
+from ACR.utils import dicttree
+from ACR.utils import json_compat
+from ACR.session.file import FileSession
+from ACR.core.view import View
+from ACR.errors import *
+from ACR import components,serializers
+from ACR.components import *
+from ACR.globals import MIMEmapper
 import time,os
 
 pjoin=os.path.join
@@ -38,7 +38,7 @@ D=False
 class Application(object):
 	appName=""
 	dbg=None
-	prefix="ACF_"
+	prefix="ACR_"
 	storage=None
 	appDir=""
 	lang="en"
@@ -85,7 +85,7 @@ class Application(object):
 		}
 		#engineConf=config.get("/engine")[0]
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
-		self.prefix=(config.get("/prefix") or "ACF")+"_"
+		self.prefix=(config.get("/prefix") or "ACR")+"_"
 		self.sessionDir="".join(config.get("/sessiondir/text()"))
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])

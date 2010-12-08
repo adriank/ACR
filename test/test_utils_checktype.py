@@ -3,7 +3,7 @@
 #@marcin: tests for functions: checkType
 
 import unittest
-from ACF.utils.checktype import *
+from ACR.utils.checktype import *
 
 class Utils_checktype(unittest.TestCase):
 	def test_number(self):

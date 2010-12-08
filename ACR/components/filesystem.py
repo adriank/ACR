@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.components import Component
-from ACF.errors import *
-from ACF.utils import replaceVars
-from ACF.utils.generations import Object,List
-from ACF.utils.xmlextras import tree2xml
+from ACR.components import Component
+from ACR.errors import *
+from ACR.utils import replaceVars
+from ACR.utils.generations import Object,List
+from ACR.utils.xmlextras import tree2xml
 import os
 import shutil
 import fnmatch

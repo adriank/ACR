@@ -2,7 +2,7 @@
 
 #  example test using Tester class
 
-from ACF.utils.tester import Tester
+from ACR.utils.tester import Tester
 
 def testExPositive():
   # the simpliest example of testing function

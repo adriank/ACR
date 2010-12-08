@@ -21,9 +21,9 @@
 #@marcin: functions docstrings
 
 from xml.sax import make_parser, handler
-from ACF.errors import Error
+from ACR.errors import Error
 from xml.sax.saxutils import escape,unescape
-from ACF.components import Object,List
+from ACR.components import Object,List
 import re
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")

@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils import replaceVars,generateID
-from ACF.components import *
+from ACR.utils import replaceVars,generateID
+from ACR.components import *
 
 class KeyGenerator(Component):
 	def generate(self,env,actionConf):

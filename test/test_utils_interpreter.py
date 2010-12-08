@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #@marcin: tests for interpreter and helper functions
 
-from ACF.utils.interpreter import *
+from ACR.utils.interpreter import *
 from random import randint, choice
 import sys, unittest, os
 

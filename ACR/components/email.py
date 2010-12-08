@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF import globals
-from ACF.utils import mail,replaceVars
-from ACF.components import *
-#from ACF.utils.xmlextras import dom2tree
-from ACF.errors import *
+from ACR import globals
+from ACR.utils import mail,replaceVars
+from ACR.components import *
+#from ACR.utils.xmlextras import dom2tree
+from ACR.errors import *
 import os
 import re
-from ACF.utils import dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
+from ACR.utils import dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 
 class Email(Component):
 	def generate(self,acenv,conf):

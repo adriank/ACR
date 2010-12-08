@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from ACF.errors import Error
+from ACR.errors import Error
 
 try:
 	from cjson import *

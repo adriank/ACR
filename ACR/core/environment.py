@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.core.view import View
-from ACF.utils.xmlextras import tpath
-from ACF.utils.debugger import Debugger
+from ACR.core.view import View
+from ACR.utils.xmlextras import tpath
+from ACR.utils.debugger import Debugger
 
 class Environment(Debugger):
 	"""
@@ -45,7 +45,7 @@ class Environment(Debugger):
 	IP=""
 	output=None
 	outputConfig="config"
-	prefix="ACF_"
+	prefix="ACR_"
 	doRedirect=False
 	redirect=False
 	tree=None

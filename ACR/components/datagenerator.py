@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.components import *
-from ACF.utils import replaceVars
-from ACF.utils.xmlextras import tree2xml
-from ACF import globals
-from ACF.errors import Error
-from ACF.utils import json
+from ACR.components import *
+from ACR.utils import replaceVars
+from ACR.utils.xmlextras import tree2xml
+from ACR import globals
+from ACR.errors import Error
+from ACR.utils import json
 
 class DataGenerator(Component):
 	def list(self,acenv,conf):

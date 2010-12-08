@@ -3,11 +3,11 @@
 
 import sys,time,random,base64,re
 from datetime import datetime, timedelta
-from ACF.errors import *
-from ACF.utils.hashcompat import md5_constructor
-from ACF.utils import dicttree
-from ACF.utils.generations import *
-from ACF import globals
+from ACR.errors import *
+from ACR.utils.hashcompat import md5_constructor
+from ACR.utils import dicttree
+from ACR.utils.generations import *
+from ACR import globals
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange

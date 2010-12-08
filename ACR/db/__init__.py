@@ -15,7 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from ACF.errors import *
+from ACR.errors import *
 import sys
 try:
 	import pg
@@ -42,7 +42,7 @@ def get(conf,reload=False):
 			return object
 	else:
 		conf=CONFIG_CACHE[uid]
-	path="ACF.db."+conf["dbms"]
+	path="ACR.db."+conf["dbms"]
 	try:
 		__import__(path)
 	except ImportError,e:

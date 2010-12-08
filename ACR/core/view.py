@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACF.utils.xmlextras import *
-from ACF import globals
-from ACF import components
-from ACF.errors import *
-from ACF.utils import getStorage
-from ACF.utils.interpreter import execute,make_tree
-from ACF.utils.checktype import checkType
-from ACF.components import Object, List
+from ACR.utils.xmlextras import *
+from ACR import globals
+from ACR import components
+from ACR.errors import *
+from ACR.utils import getStorage
+from ACR.utils.interpreter import execute,make_tree
+from ACR.utils.checktype import checkType
+from ACR.components import Object, List
 import os
 
 D=True

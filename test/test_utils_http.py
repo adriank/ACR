@@ -3,11 +3,11 @@
 #@marcin: tests for functions: parsePOST, printHeaders, setCookie, parseCookies
 
 import unittest
-from ACF.utils.HTTP import *
+from ACR.utils.HTTP import *
 
 class myAcenv:
 	def __init__(self):
-		self.prefix = "ACF_"
+		self.prefix = "ACR_"
 
 class Utils_http(unittest.TestCase):
 	def test_parsePOST(self):
@@ -56,7 +56,7 @@ X-Frame-Options:DENY
 		self.assertTrue(ret[0][0] == 'Set-Cookie')
 		t = ret[0][1].split(';')
 		t2 = t[0].split('=')
-		self.assertTrue(t2[0] == 'ACF_foo', t2[1] == 'bar')
+		self.assertTrue(t2[0] == 'ACR_foo', t2[1] == 'bar')
 		date = 1129281102
 		ret = setCookie(myAcenv(), {'name': 'foo', 'value': 'bar', 'date' : date}, True)
 		t = ret[1][1].split(';')
@@ -64,6 +64,6 @@ X-Frame-Options:DENY
 		self.assertTrue(getCookieDate(date) == t2[1])
 	
 	def test_parseCookies(self):
-		self.assertTrue(parseCookies(myAcenv(), 'ACF_a =b;c=d') == {'ACF_a': 'b'})
-		self.assertTrue(parseCookies(myAcenv(), 'ACF_a ="b"') == {'ACF_a': '&quot;b&quot;'})
-		self.assertTrue(parseCookies(myAcenv(), 'ACF_a =b + 2') == {'ACF_a': 'b   2'})
+		self.assertTrue(parseCookies(myAcenv(), 'ACR_a =b;c=d') == {'ACR_a': 'b'})
+		self.assertTrue(parseCookies(myAcenv(), 'ACR_a ="b"') == {'ACR_a': '&quot;b&quot;'})
+		self.assertTrue(parseCookies(myAcenv(), 'ACR_a =b + 2') == {'ACR_a': 'b   2'})

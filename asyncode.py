@@ -4,8 +4,8 @@ import sys,os
 from wsgiref.simple_server import make_server
 from wsgiref import simple_server
 #from wsgiref.handlers import CGIHandler
-from ACF.backends.standalone import standalone_server
-from ACF import globals
+from ACR.backends.standalone import standalone_server
+from ACR import globals
 #import getpass
 #import cProfile
 
@@ -15,17 +15,17 @@ from ACF import globals
 #try:
 #	__import__(username+"_conf")
 #except:
-#	raise Exception("This is development version of ACF! You should download the ACF GA.")
+#	raise Exception("This is development version of ACR! You should download the ACR GA.")
 #sys.argv[0] = 'acf'
 #try:
 #	globals.dirs=filter(os.path.isdir, map(lambda f: os.path.join(globals.appsDir,f),os.listdir(globals.appsDir)))
 #except:
 #	pass
 #this is ugly but we need to set the absolute path so whole system knows where get files from
-#TODO export settings to /etc/ACF/config
-#globals.ACFconf="/home/adrian/ACF/ACFconf.xml"
+#TODO export settings to /etc/ACR/config
+#globals.ACRconf="/home/adrian/ACR/ACRconf.xml"
 #one app run
-#globals.appDir="/home/adrian/ACF/adrian/doc/"
+#globals.appDir="/home/adrian/ACR/adrian/doc/"
 #for multiple apps run - NotImplementedYet
 globals.appsDir="/home/adrian/projects/"
 host=""
