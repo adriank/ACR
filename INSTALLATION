@@ -1,0 +1,73 @@
+1. Requirements
+
+You need to have following software on your box:
+- Python in version 2.5 or 2.6 - 3 branch is not working right now!
+- PostgreSQL 8 or newer - ACF is tested on 8.1 and 8.3 but it should work also in other versions (or you can ask us for free dev account at office@asyncode.com)
+- PyGreSQL and psycopg modules for Python
+
+PostgreSQL is not required, but without it the functionality is limited to manipulating file system, sending emails and some string manipulation tools.
+
+Additionally you can have following Python modules (if ACF can't load them, there will be information about it in debug mode - see below)
+- simplejson - install it if you want output in JSON
+
+2. Installation
+
+Unpack package to a directory of your choice, set the globals.appDir or globals.appsDir (not recommended for begginers!) to your project or directory with projects in the asyncode.py file and run it. Your site will be available at http://localhost:9999/.
+
+Structure of the project directory is:
+
+- app: your application files
+	- config.xml - main configuration file of application - see Configuration section
+	- views - BLSL files in this directory are telling ACF what to do when it is asked to execute the action named as the file - more in Using section
+- static: put all static files here (XML, XSLT, CSS, JavaScript, images)
+	- XSLT - here are two files allowing you to define how output HTML will look - you don't need to change these files; you need to copy files in ACTE directory here.
+	- XML - static data shared across many views
+		- config.xml - global configuration file of ACCMS
+	- texts/{lang}.xml - files with localized texts of UI
+		- types.xml - the set of multiple choice types used in HTML forms (e.g. in select)
+	- errorpages - currently only 404 is supported and it is raised when file is not found.
+- session - session files
+
+3. Configuration
+
+Create an PostgreSQL user and database.
+
+You need to make some changes in files:
+
+a. find line globals.appDir="/var/ACF/app/" in run.py file and change it to the absolute path of your project.
+b. in ../app/config.xml
+	- change paths just like above,
+	- set the values for database connection,
+	- enable the debug mode and set level to "debug" if you want to see debug messages
+	- set languages; one default and comma separated list of supported
+c. configure the ../static/xml/config.xml - i think it is rather simple to figure out what fields mean,
+
+It will be easier in next releases:).
+
+4. Running
+
+Simply execute the ./asyncode.py or python asyncode.py and go to specified url.
+
+5. How it works
+
+In this section we are assuming that client is web browser, but keep in mind that ACF applications are not limited to it. Web browsers are simply most popular clients of internet applications.
+
+The very beggining of the execution process is covered at http://www.optimizeyourcode.com/article/26. The steps that engine performs are:
+
+1. parse URL,
+2. get the view name from URL and parse view file,
+3. if there is POST data - parse it and add to data from URL,
+4. check if data is of declared type,
+5. fill any occurence of {$path} pattern in the file with data from URL and internal structures (e.g. from session),
+6. push file filled with data to execution,
+7. engine will create internal format of output and translate it to one of suported formats (currently XML, JSON and HTML).
+
+Check example application to learn how to use ACF.
+
+You can now consume the data or use ObjectML to do so. If ACTE is in use additional steps are performed:
+
+8. the XML output has attached the index.xsl file so it is executed either by server or browser,
+9. ACTE get the XML file of the same name as view from layout directory,
+10. it executes the data in layout XML and outputs HTML.
+
+There is no documentation besides above for now. You need to hack or ask us.
