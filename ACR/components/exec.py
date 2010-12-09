@@ -43,4 +43,4 @@ class Exec(Component):
 		return conf
 
 def getObject(config):
-	return Email(config)
+	return Exec(config)

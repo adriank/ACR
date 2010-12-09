@@ -1,3 +1,9 @@
+acr (0.1.101209.2) unstable; urgency=low
+
+  * Email -> Exec (typo)
+
+ -- Witold Filipczyk <witekfl@poczta.onet.pl>  Thu, 09 Dec 2010 15:50:01 +0100
+
 acr (0.1.101209.1) unstable; urgency=low
 
   * second release
