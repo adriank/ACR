@@ -262,6 +262,7 @@ class View(object):
 				if typ=="csv":
 					value=re.split("\s*,\s*",value)
 			elif postSchemas[i].has_key("default"):
+				raise postSchemas[i]
 				value=execute(acenv,postSchemas[i]["default"])
 			else:
 				raise Error("Wrong data suplied at field %s.",i)
