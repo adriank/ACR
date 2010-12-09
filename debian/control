@@ -1,0 +1,19 @@
+Source: acruntime
+Section: python
+Priority: standard
+Maintainer: Asyncode <biuro@asyncode.com>
+Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 7.3.5),
+               python-debian
+
+Package: acruntime
+Architecture: all
+Depends: locales, python, ${misc:Depends}, python-lxml, python-pygresql, python-pg, python-libxslt1
+Recommends: lsb-release, iso-codes, python2.6
+Description: Asyncode Runtime
+ Write here what is Asyncode Runtime.
+
+Package: acruntime-acte
+Architecture: all
+Description: Asyncode ACTE
+ Write here what is Asyncode ACTE.
