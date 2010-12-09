@@ -23,7 +23,10 @@ from xml.sax.saxutils import escape,unescape
 
 class Default(Component):
 	def generate(self, env,config):
-		return Object(replaceVars(env, config))
+		s=replaceVars(env, config["string"])
+		if config["output"]:
+			s=escape(s)
+		return Object(s)
 
 	def parseAction(self,config):
 		s=[]
@@ -31,12 +34,15 @@ class Default(Component):
 			if type(elem) is tuple:
 				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
-				s.append(escape(elem))
+				if config.has_key("output"):
+					s.append(escape(elem))
+				else:
+					s.append(elem)
 		typ=config["params"].get("type","str")
 		s="".join(s).strip()
 		if typ=="csv":
 			return re.split("\s*,\s*",s)
-		return s
+		return {"string":s, "output":config.get("output",None)}
 
 def getObject(config):
 	return Default(config)

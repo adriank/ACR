@@ -43,11 +43,13 @@ def replaceVars(env,s,data=None):
 			path=p
 		path=path.split(".")
 		ret=dicttree.get(storage,path)
+		if ret is None:
+			return "null"
 		if type(ret) not in [str,Object]:
 			return m.group(0)
 		#keep is None; "" is proper value
-		if ret is None:
-			raise Error("NoVariable",(storageName or "rs")+" storage does not have "+".".join(path)+" property")
+		#if ret is None:
+		#	raise Error("NoVariable",(storageName or "rs")+" storage does not have "+".".join(path)+" property")
 		return str(ret)
 
 	#can be even faster ""%(vals) and ""%{vals} are 3x faster

@@ -199,9 +199,11 @@ class View(object):
 				"params":params,
 				"content":i[2]
 			}
-			before = attrs.get("before", None)
-			after = attrs.get("after", None)
-			o = {
+			if action==DEFINE:
+				actionConfig["output"]=True
+			before=attrs.get("before", None)
+			after=attrs.get("after", None)
+			o={
 				"type":action,#DEFINE or SET
 				"command":cmd,#command name
 				"name":attrs.get("name",None),
@@ -256,11 +258,11 @@ class View(object):
 		for i in postSchemas:
 			value=list.get(i)
 			typ=postSchemas[i]["type"]
-			if not typ or checkType(type,value):
+			if not typ or checkType(typ,value):
 				if typ=="csv":
 					value=re.split("\s*,\s*",value)
-				if postSchemas[i].has_key("default"):
-					value=execute(acenv,postSchemas[i]["default"])
+			elif postSchemas[i].has_key("default"):
+				value=execute(acenv,postSchemas[i]["default"])
 			else:
 				raise Error("Wrong data suplied at field %s.",i)
 			acenv.requestStorage[i]=value
