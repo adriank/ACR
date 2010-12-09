@@ -58,7 +58,7 @@ class Email(Component):
 	def parseAction(self,conf):
 		params={}
 		for h in conf["params"]:
-			params[h.capitalize()]=conf["params"][h]
+			params[h]=conf["params"][h]
 		conf["params"]=params
 		try:
 			conf["params"]["From"]

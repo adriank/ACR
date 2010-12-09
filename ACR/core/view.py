@@ -259,11 +259,10 @@ class View(object):
 			if not typ or checkType(type,value):
 				if typ=="csv":
 					value=re.split("\s*,\s*",value)
-			else:
 				if postSchemas[i].has_key("default"):
 					value=execute(acenv,postSchemas[i]["default"])
-				else:
-					raise Error("Wrong data suplied at field %s.",i)
+			else:
+				raise Error("Wrong data suplied at field %s.",i)
 			acenv.requestStorage[i]=value
 
 	def fillInputs(self,acenv):
