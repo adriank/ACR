@@ -139,7 +139,7 @@ class Reader(handler.ContentHandler):
 		if len(a)>0:
 			attrs={}
 			for i in a.keys():
-				attrs[str(i).lower()]=str2obj(a[i].strip().encode("utf-8"))
+				attrs[str(i)]=str2obj(a[i].strip().encode("utf-8"))
 		if not len(self.path):
 			self.root=ObjectTree([str(name).lower(),attrs,[]])
 			self.path.append(self.root)
