@@ -40,7 +40,7 @@ def computePOST(env):
 			if type(form[i]) is list:
 				l=[]
 				for item in form[i]:
-					l.append(unescapeQuotes(urllib.unquote_plus(item.value)))
+					l.append(urllib.unquote_plus(item.value))
 				post[i]=l
 			elif form[i].filename is not None:
 				post[i]={
@@ -48,7 +48,7 @@ def computePOST(env):
 					"content":form[i].value
 				}
 			else:
-				post[i]=unescapeQuotes(form[i].value)
+				post[i]=form[i].value
 	return post
 
 def parseurlencoded(s):
@@ -62,7 +62,7 @@ def parseurlencoded(s):
 	d={}
 	for i in t:
 		t2=i.split("=")
-		d[t2[0]]=escapeQuotes(urllib.unquote_plus(t2[1]))
+		d[t2[0]]=urllib.unquote_plus(t2[1])
 	return d
 
 def parseMultipart(f,tag):
@@ -126,6 +126,7 @@ def parseCookies(acenv,s):
 		t2=i.split("=")
 		t2[0]=t2[0].strip()
 		if t2[0].startswith(acenv.prefix):
+			#delete escapeQuotes
 			d[t2[0]]=escapeQuotes(urllib.unquote(t2[1].replace("+"," ")))
 	return d
 

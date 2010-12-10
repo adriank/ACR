@@ -24,8 +24,8 @@ from xml.sax.saxutils import escape,unescape
 class Default(Component):
 	def generate(self, env,config):
 		s=replaceVars(env, config["string"])
-		if config["output"]:
-			s=escape(s)
+		#if config["output"]:
+		#	s=escape(s)
 		return Object(s)
 
 	def parseAction(self,config):

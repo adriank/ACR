@@ -60,5 +60,16 @@ def replaceVars(env,s,data=None):
 def generateID(secret=None):
 	if secret is None:
 		secret=globals.SECRET_KEY
-	key = md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
+	key=md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
 	return key
+
+from ACR.utils import types
+typesMap={
+	"default":types.Type(),
+	"text":types.Text(),
+	"xml":types.XML(),
+	"email":types.Email(),
+	"empty":types.Empty(),
+	"nonempty":types.NonEmpty(),
+	"hexcolor":types.HEXColor()
+}

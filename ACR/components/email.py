@@ -46,7 +46,6 @@ class Email(Component):
 				path=p
 			path=path.split(".")
 			ret=dicttree.get(storage,path)
-			#for i in ret._value:
 			recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
 			for i in recipients:
 				headers["To"]=i

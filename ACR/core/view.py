@@ -21,13 +21,11 @@ from ACR.utils.xmlextras import *
 from ACR import globals
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,replaceVars
+from ACR.utils import getStorage,replaceVars,typesMap
 from ACR.utils.interpreter import execute,make_tree
-from ACR.utils.checktype import checkType
 from ACR.components import Object, List
 import os
 
-#D=True
 DEFINE="define"
 SET="set"
 COMMAND="command"
@@ -42,7 +40,7 @@ def parsePosts(nodes):
 	for i in nodes:
 		attrs=i[1]
 		ret[attrs["name"]]={
-			"type":attrs.get("type",None),
+			"type":typesMap.get(attrs.get("type","default")),
 		}
 		if attrs.has_key("default"):
 			ret[attrs["name"]]["default"]=make_tree(attrs["default"])
@@ -258,14 +256,13 @@ class View(object):
 		for i in postSchemas:
 			value=list.get(i)
 			typ=postSchemas[i]["type"]
-			if not typ or checkType(typ,value):
-				if typ=="csv":
-					value=re.split("\s*,\s*",value)
-			elif postSchemas[i].has_key("default"):
-				raise postSchemas[i]
-				value=execute(acenv,postSchemas[i]["default"])
-			else:
-				raise Error("Wrong data suplied at field %s.",i)
+			try:
+				typ.validate(value)
+			except Error,e:
+				if postSchemas[i].has_key("default"):
+					value=execute(postSchemas[i]["default"])
+				else:
+					raise e
 			acenv.requestStorage[i]=value
 
 	def fillInputs(self,acenv):
