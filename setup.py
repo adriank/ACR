@@ -11,6 +11,4 @@ setup(
 	'ACR.core', 'ACR.db', 'ACR.plugins', 'ACR.serializers', 'ACR.session',
 	'ACR.utils'],
 	requires = ['libxml2', 'libxslt', 'pg', 'psycopg2'],
-#	package_dir = {'ACTE' : 'ACTE'},
-#	package_data = {'ACTE' : ['*']},
 )
