@@ -11,4 +11,4 @@ Architecture: all
 Depends: locales, python, ${misc:Depends}, python-lxml, python-pygresql, python-pg, python-libxslt1
 Recommends: lsb-release, iso-codes, python2.6
 Description: Asyncode Runtime
- Write somethin about AC Runtime.
+ Write something about AC Runtime.
