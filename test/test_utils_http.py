@@ -12,10 +12,11 @@ class myAcenv:
 		self.outputHeaders = []
 
 class Utils_http(unittest.TestCase):
-	def test_parsePOST(self):
-		self.assertTrue(parsePOST('act[0]=0&word[0]=unescape&lang[0]=&act[1]=1&word[1]=escape&lang[1]=') == {'lang[0]': '', 'lang[1]': '', 'act[0]': '0', 'act[1]': '1', 'word[0]': 'unescape', 'word[1]': 'escape'})
-		self.assertTrue(parsePOST('a=2+2') == {'a': '2 2'})
-		self.assertTrue(parsePOST('a=foo/bar&b=g[0]&c=foo.bar&d=\'mar\'') == {'a': 'foo/bar', 'c': 'foo.bar', 'b': 'g[0]', 'd': '&apos;mar&apos;'})
+	def test_parseurlencoded(self):
+		self.assertTrue(parseurlencoded('act[0]=0&word[0]=unescape&lang[0]=&act[1]=1&word[1]=escape&lang[1]=') == {'lang[0]': '', 'lang[1]': '', 'act[0]': '0', 'act[1]': '1', 'word[0]': 'unescape', 'word[1]': 'escape'})
+		self.assertTrue(parseurlencoded('a=2+2') == {'a': '2 2'})
+		self.assertTrue(parseurlencoded('a=foo/bar&b=g[0]&c=foo.bar') == {'a': 'foo/bar', 'c': 'foo.bar', 'b': 'g[0]'})
+		self.assertEqual(parseurlencoded('a=foo/bar&b=g[0]&c=foo.bar&d=\'mar\''), {'a': 'foo/bar', 'c': 'foo.bar', 'b': 'g[0]', 'd': '\'mar\''})
 
 	def test_printHeaders(self):
 		self.assertTrue( printHeaders([

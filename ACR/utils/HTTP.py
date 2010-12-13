@@ -57,7 +57,7 @@ def parseurlencoded(s):
 	input: url containing post inputs separated by '&' character, each one is name=val
 	returns: dict {name1:val1, name2:val2, ..., name_n:val_n}
 	"""
-	if D: log.info("Parsing POST data: %s",escapeQuotes(s))
+	#if D: log.info("Parsing POST data: %s",escapeQuotes(s))
 	t=str(s).split("&")
 	d={}
 	for i in t:
