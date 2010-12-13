@@ -10,11 +10,12 @@ sed -i -e 's/# en_US\.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sed -i -e 's/# en_GB\.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/' /etc/locale.gen
 sed -i -e 's/# pl_PL\.UTF-8 UTF-8/pl_PL.UTF-8 UTF-8/' /etc/locale.gen
 /usr/sbin/locale-gen
-if [ -f /etc/default/locale ]; then
-	sed -i -e 's/^LANG=/#LANG=/g' /etc/default/locale
-fi
-echo 'LANG="en_US.UTF-8"' >> /etc/default/locale
-    ;;
+#if [ -f /etc/default/locale ]; then
+#	sed -i -e 's/^LANG=/#LANG=/g' /etc/default/locale
+#fi
+#echo 'LANG="en_US.UTF-8"' >> /etc/default/locale
+#    ;;
+/etc/init.d/uwsgi restart
   *)
     echo "postinst called with unknown argument \`$1'" >&2
     exit 1
