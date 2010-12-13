@@ -61,7 +61,7 @@ def generateEff_var(n):
 def generateFileTest(s, path):
 	file = open(path, 'w')
 	file.write(s + '\n')
-	file.write(str(make_tree(s)))
+	file.write(str(make_tree(s).tree))
 	file.close()
 
 # efficiency tests, reads data from file, which consists of two lines:
@@ -71,7 +71,7 @@ def test_efficiency(id):
 		file = open ('./test/test' + str(id), 'r')
 		s1 = file.readline().rstrip()
 		s2 = file.readline().rstrip()
-		assert (str(make_tree(s1)) == s2)
+		assert (str(make_tree(s1).tree) == s2)
 		file.close()
 		return True
 	new_test.__name__ = 'test_efficiency' + str(id)
@@ -179,7 +179,7 @@ class Utils_interpreter(unittest.TestCase):
 	def test_const_prefixs_isnot_and_or(self):
 		self.assertEqual(make_tree("None").tree, None)
 		self.assertEqual(make_tree("True or False and None").tree, ('or', True, ('and', False, None)))
-		self.assertEqual(make_tree("~true").tree, ('~', ('name', 'true')))
+		self.assertEqual(make_tree("~true").tree, ('~', True))
 		self.assertEqual(make_tree("~True is not False").tree, ('is not', ('~', True), False))
 	
 	def test_storage_var(self):
