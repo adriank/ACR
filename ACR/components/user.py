@@ -84,8 +84,7 @@ class User(Component):
 			(email,_user,approval_key)
 		VALUES
 			('%s', (%s), '%s')"""%(globals.dbschema,key,globals.dbschema,email,id,generateID())
-		print sql
-		#result=acenv.app.getDBConn().query(sql)
+		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
 		return Object()
 
