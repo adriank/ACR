@@ -8,6 +8,8 @@ from ACR.utils.HTTP import *
 class myAcenv:
 	def __init__(self):
 		self.prefix = "ACR_"
+		self.dbg = None
+		self.outputHeaders = []
 
 class Utils_http(unittest.TestCase):
 	def test_parsePOST(self):
@@ -15,8 +17,8 @@ class Utils_http(unittest.TestCase):
 		self.assertTrue(parsePOST('a=2+2') == {'a': '2 2'})
 		self.assertTrue(parsePOST('a=foo/bar&b=g[0]&c=foo.bar&d=\'mar\'') == {'a': 'foo/bar', 'c': 'foo.bar', 'b': 'g[0]', 'd': '&apos;mar&apos;'})
 
-	def test_#printHeaders(self):
-		self.assertTrue( #printHeaders([
+	def test_printHeaders(self):
+		self.assertTrue( printHeaders([
 ['Server', 'Apache'],
 ['X-Backend-Server', 'pm-app-amo11'],
 ['Vary' ,'Accept-Encoding'],
@@ -52,14 +54,19 @@ X-Frame-Options:DENY
 		self.assertTrue(getCookieDate(518390305) == 'Thu, 05-Jun-1986 21:18:25 GMT')
 
 	def test_setCookie(self):
-		ret = setCookie(myAcenv(), {'name': 'foo', 'value': 'bar'}, True)
+		env = myAcenv()
+		setCookie(env, {'name': 'foo', 'value': 'bar'}, True)
+		ret = env.outputHeaders
 		self.assertTrue(ret[0][0] == 'Set-Cookie')
 		t = ret[0][1].split(';')
 		t2 = t[0].split('=')
 		self.assertTrue(t2[0] == 'ACR_foo', t2[1] == 'bar')
+
 		date = 1129281102
-		ret = setCookie(myAcenv(), {'name': 'foo', 'value': 'bar', 'date' : date}, True)
-		t = ret[1][1].split(';')
+		env = myAcenv()
+		setCookie(env, {'name': 'foo', 'value': 'bar', 'date' : date}, True)
+		ret = env.outputHeaders
+		t = ret[0][1].split(';')
 		t2 = t[1].split('=')
 		self.assertTrue(getCookieDate(date) == t2[1])
 	
