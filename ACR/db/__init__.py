@@ -53,7 +53,7 @@ def get(conf,reload=False):
 	if conf.get("default",False):
 		DRIVER_CACHE[uid+"default"]=driver
 		CONFIG_CACHE[uid+"default"]=conf
-	#print "DB not from cache"
+	##print "DB not from cache"
 	return driver
 
 #TODO this is internally supported by psycopg = delete it and use drivers data escaping functionality

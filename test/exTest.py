@@ -14,10 +14,10 @@ def testExNegative():
   return 2 < 1
 
 def mySetUp():
-  print "Setting env..."
+  #print "Setting env..."
     
 def myCleanUp():
-  print "Cleaning up env..."
+  #print "Cleaning up env..."
 
 def doTests():
   tester = Tester("simpleTestSuite")

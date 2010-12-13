@@ -44,7 +44,7 @@ def computeMIME(mime,agent):
 	if "text/html" in mime or "*/*" in mime:
 		#agent=acenv.UA
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
-			return "text/xml"
+			return "application/xml"
 		else:
 			return "text/html"
 	elif "application/json" in mime and len(mime)==1:
@@ -92,7 +92,7 @@ def application(env,start_response):
 		response.append(output)
 	if D: print round((time.time()-t)*1000,2)
 	#h = hpy()
-	#print h.heap()
+	##print h.heap()
 	return response
 
 try:

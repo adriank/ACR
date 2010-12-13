@@ -131,7 +131,7 @@ class Tester:
             amountFailed = 0
             amountAll = 0
             startTestSet = time()
-            print "Started test suite %s, %s time" % (self.name, self.__nrToStr(i+1))
+            #print "Started test suite %s, %s time" % (self.name, self.__nrToStr(i+1))
             for j in range(0, len(self.testList)):
                 # run single test countTestList times
                 startSingleTest = time()
@@ -143,15 +143,15 @@ class Tester:
                         amountFailed += 1
                         break
                 endSingleTest = time()
-                print "%s: %s %.2f" % (str(self.testList[j]).split(" ")[1], ret, endSingleTest - startSingleTest)
+                #print "%s: %s %.2f" % (str(self.testList[j]).split(" ")[1], ret, endSingleTest - startSingleTest)
             amountGlobal += amountAll
             amountGlobalFailed += amountFailed
             endTestSet = time()
-            print "Result: %.2f correctness." % ((amountAll - amountFailed)/float(amountAll) * 100.0)
-            print "Ended test suite in %.2f\n" % (endTestSet - startTestSet)
+            #print "Result: %.2f correctness." % ((amountAll - amountFailed)/float(amountAll) * 100.0)
+            #print "Ended test suite in %.2f\n" % (endTestSet - startTestSet)
         if count > 1:
-            # prints globals statistic
-            print "Overall corectness: %.2f" % ((amountGlobal - amountGlobalFailed)/float(amountGlobal) * 100.0)
+            # #prints globals statistic
+            #print "Overall corectness: %.2f" % ((amountGlobal - amountGlobalFailed)/float(amountGlobal) * 100.0)
         if self.cleanup != None:
             self.cleanup()
                

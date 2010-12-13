@@ -5,8 +5,9 @@ import sys,time,random,base64,re
 from datetime import datetime, timedelta
 from ACR.errors import *
 from ACR.utils.hashcompat import md5_constructor
+from ACR.utils.xmlextras import escapeQuotes
 from ACR.utils import dicttree
-from ACR.utils.generations import *
+from ACR.utils.generations import Object,List
 from ACR import globals
 
 if hasattr(random, 'SystemRandom'):
@@ -16,6 +17,7 @@ else:
 
 PREFIX_DELIMITER="::"
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
+RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
 D=False
 
 def getStorage(env,s):
@@ -31,7 +33,34 @@ def getStorage(env,s):
 		return {}
 	return env.requestStorage
 
-def replaceVars(env,s,data=None):
+def replaceVars_new(env,l,fn=None):
+	if type(l) is str:
+		return l
+	#print "replaceVars_new"
+	#print l
+	ret=[]
+	for i in l:
+		if type(i) is tuple:
+			storage=getStorage(env,i[0])
+			v=dicttree.get(storage,i[1])
+			if type(v) is Object:
+				v=v._value
+			if type(v) is not List:
+				v=str(v)
+				if fn:
+					v=fn(v)
+			ret.append(v)
+		else:
+			ret.append(i)
+	#print ret
+	if len(ret) is 1:
+		return ret[0]
+	try:
+		return "".join(ret)
+	except TypeError,e:
+		return ret
+
+def replaceVars(env,s,data=None,escape=False):
 	def parse(m):
 		p=m.group(0)[2:-1]
 		storageName=""
@@ -43,6 +72,8 @@ def replaceVars(env,s,data=None):
 			path=p
 		path=path.split(".")
 		ret=dicttree.get(storage,path)
+		if escape:
+			ret=escapeQuotes(str(ret))
 		if ret is None:
 			return "null"
 		if type(ret) not in [str,Object]:
@@ -57,6 +88,31 @@ def replaceVars(env,s,data=None):
 		raise Error("NotString","Not string, but "+str(s))
 	return RE_PATH.sub(parse, s)
 
+def prepareVars(s):
+	splitted=RE_PATH_split.split(s)
+	vars=RE_PATH.findall(s)
+	ret=[]
+	try:
+		while True:
+			ret.append(splitted.pop(0))
+			var=vars.pop(0)
+			try:
+				storageName,path=var.split(PREFIX_DELIMITER)
+			except ValueError:
+				storageName="rs"
+				path=var
+			path=path.split(".")
+			ret.append((storageName,path))
+	except:
+		pass
+	if ret[0]=="":
+		ret.pop(0)
+	if ret and ret[-1]=="":
+		ret.pop()
+	if len(ret) is 1 and type(ret[0]) is str:
+		ret=ret[0]
+	return ret
+
 def generateID(secret=None):
 	if secret is None:
 		secret=globals.SECRET_KEY
@@ -65,11 +121,12 @@ def generateID(secret=None):
 
 from ACR.utils import types
 typesMap={
-	"default":types.Type(),
-	"text":types.Text(),
-	"xml":types.XML(),
-	"email":types.Email(),
-	"empty":types.Empty(),
-	"nonempty":types.NonEmpty(),
-	"hexcolor":types.HEXColor()
+	"default":types.Type,
+	"text":types.Text,
+	"xml":types.Type,
+	"email":types.Email,
+	"number":types.Number,
+	"empty":types.Empty,
+	"nonempty":types.NonEmpty,
+	"hexcolor":types.HEXColor
 }

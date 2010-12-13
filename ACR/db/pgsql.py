@@ -64,7 +64,7 @@ class handler(object):
 		try:
 			d={
 				"rows":cursor.fetchall(),
-				"fields":map(lambda x: x[0],cursor.description)
+				"fields":map(lambda x: x[0], cursor.description)
 			}
 			cursor.close()
 			return d

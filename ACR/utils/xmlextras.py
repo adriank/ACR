@@ -21,9 +21,9 @@
 #@marcin: functions docstrings
 
 from xml.sax import make_parser, handler
-from ACR.errors import Error
 from xml.sax.saxutils import escape,unescape
-from ACR.components import Object,List
+from ACR.errors import Error
+from ACR.utils.generations import Object,List
 import re
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
@@ -150,7 +150,7 @@ class Reader(handler.ContentHandler):
 
 	def characters(self,data):
 		if len(data.strip())>0:
-			self.path[-1][2].append(str2obj(data).encode("utf-8"))
+			self.path[-1][2].append(data.encode("utf-8"))
 		elif self.newlines and len(data)==1 and "\n" in data[0]:
 			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files
@@ -187,23 +187,23 @@ def xml2tree(xmlfile,newlines=False):
 	return r.root
 
 def tpath(root,path):
-	#print "path is "+path
+	##print "path is "+path
 	t=path.split("/")
 	try:
 		t.pop(0)
 		ret=root
 		if t:
-			#print "t: "+str(t)
+			##print "t: "+str(t)
 			for i in t:
 				if type(ret) is list:
 					ret=ret[0]
-				#print i
+				##print i
 				splitter=i.find("[")
 				_filter=None
 				if splitter>0:
 					_filter=i[splitter+1:-1].strip()
 					i=i[0:splitter]
-				#print "ret: "+str(ret)
+				##print "ret: "+str(ret)
 				if i=="*":
 					ret=ret[2]
 				if i=="text()":
@@ -222,7 +222,7 @@ def tpath(root,path):
 							if t[0]=="*":
 								return ret[0][1]
 							return ret[0][1][t[0]]
-				#print "done: "+str(ret)
+				##print "done: "+str(ret)
 	except (AttributeError, KeyError, TypeError,IndexError),e:
 		return None
 	return ret

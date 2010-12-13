@@ -18,7 +18,7 @@
 
 from ACR import globals
 from ACR.errors import *
-from ACR.utils import replaceVars
+from ACR.utils import replaceVars_new,prepareVars
 from ACR.components import *
 from ACR import db
 import time
@@ -80,37 +80,33 @@ class DataBase(Component):
 			return query
 		return ";".join(q)
 
-	def generate(self,env,actionConf):
+	def generate(self,acenv,conf):
+		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
+
+	def none2null(self,s):
+		if s.lower()=="none":
+			return "null"
+		return s
+
+	def colaslist(self,env,conf):
+		query=replaceVars_new(env,conf["query"],self.none2null)
+		result=self.CONNECTIONS[conf.get("server","default")].query(query)
+		ret=[]
+		for i in result["rows"]:
+			ret.append(i[0])
+		return List(ret)
+
+	def query(self,env,conf):
 		D=env.doDebug
 		if D:
 			env.info("Component: 'DB'")
-			env.debug("start with actionConf=%s",actionConf)
-		multiRequest=[]
-		if D: env.debug("Doing escapeString on data")
-		data=env.requestStorage.copy()
-		for i in data:
-			if D: env.info("Type of '%s' is '%s'",i,str(type(data[i]))[7:-2])
-			if type(data[i]) is list:
-				multiRequest.append((i,data[i]))
-			else:
-				if data[i] is None:
-					data[i]="null"
-				else:
-					data[i]=db.escapeString(str(data[i]))
-		query=replaceVars(env,actionConf['query'],data)
+			env.debug("start with actionConf=%s",conf)
+		query=replaceVars_new(env,conf["query"],self.none2null)
 		if D: env.debug("replaceVars returned '%s'",query)
-		#query is filled with simple type data now
-		if len(multiRequest)>0:
-			if D: env.info("multirequest detected")
-			query=self.evaluateMR(env,query,multiRequest)
-			if D: env.debug("evaluateMR returned %s",query)
-		else:
-			if D: env.debug("multiRequest not needed")
-		if D: env.info("Querying database with '%s'",query)
-		if D:#env.dbg:
+		if True or D:
 			t=time.time()
-		result=self.CONNECTIONS[actionConf.get("server","default")].query(query)
-		if D:#env.dbg:
+		result=self.CONNECTIONS[conf.get("server","default")].query(query)
+		if True or D:
 			env.dbg["dbtimer"]+=time.time()-t
 		if D: env.debug("'query' returned %s",result)
 		if result and len(result["rows"]):
@@ -119,7 +115,7 @@ class DataBase(Component):
 			first=True #for debugging purposes
 			ret=[]
 			fields=result["fields"]
-			cdata=actionConf["cdata"]
+			cdata=conf["cdata"]
 			for row in result["rows"]:
 				nodes=[]
 				#TODO optimize returning row and value
@@ -152,9 +148,10 @@ class DataBase(Component):
 				query=str(" ".join(node.split()))
 		params=conf["params"]
 		return {
-			"query":query,
+			"query":prepareVars(query.strip()),
 			"server":params.get("server", "default"),
 			"return":params.get("get","table"),
+			"command":conf["command"],
 			"cdata":map(str.strip,params.get("cdata","").split(","))
 		}
 

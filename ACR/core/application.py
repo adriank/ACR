@@ -104,16 +104,16 @@ class Application(object):
 		return self.DEFAULT_DB
 
 	def getComponent(self,name,conf=None):
-		#print "getComponent"
-		#print name
+		##print "getComponent"
+		##print name
 		if self.COMPONENTS_CACHE.has_key(name):
-			#print "cache"
+			##print "cache"
 			return self.COMPONENTS_CACHE[name]
-		#print "Component not in cache"
-		#print components.get(name)
+		##print "Component not in cache"
+		##print components.get(name)
 		o=components.get(name).getObject(conf)
-		#print o
-		#print "end"
+		##print o
+		##print "end"
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
@@ -193,9 +193,11 @@ class Application(object):
 		#		break
 			view.generate(acenv)
 		except Error,e:
+			#print "Error"
 			acenv.generations={
 				"error":("object",{"name":"GlobalError","status":"error","error":e.name},e.error)
 			}
+			acenv.output["xsltfile"]=view.output.get("xsltfile")
 		#this is little faster than Object
 		langs=[]
 		for i in acenv.langs:
@@ -216,13 +218,13 @@ class Application(object):
 		#if True:
 		all=round((time.time()-t)*1000,5)
 		dbms=round(acenv.dbg["dbtimer"]*1000,5)
-		if D:
+		if True or D:
 			print("Generated in %s, where:"%(all))
 			print("	DBMS took %s"%(dbms))
 			print("	Python took %s"%(all-dbms))
 			t=time.time()
 		x=s.serialize(acenv)
-		if D:
+		if True or D:
 			print "Serializer took %s"%(round((time.time()-t)*1000,5))
 		return x
 

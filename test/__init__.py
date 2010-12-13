@@ -12,7 +12,7 @@ from test_utils_checktype import Utils_checktype
 import unittest
 
 def doTests():
-	print 'Started ACR testing.\n'
+	#print 'Started ACR testing.\n'
 
 	utils_init = unittest.TestLoader().loadTestsFromTestCase(Utils_init)
 	utils_dicttree = unittest.TestLoader().loadTestsFromTestCase(Utils_dicttree)
@@ -20,17 +20,17 @@ def doTests():
 	utils_http = unittest.TestLoader().loadTestsFromTestCase(Utils_http)
 	utils_checktype = unittest.TestLoader().loadTestsFromTestCase(Utils_checktype)
 
-	print 'utils/init.py'	
+	#print 'utils/init.py'	
 	unittest.TextTestRunner(verbosity = 2).run(utils_init)
-	print '\nutils/dicttree.py'
+	#print '\nutils/dicttree.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_dicttree)
-	print '\nutils/interpreter.py'
+	#print '\nutils/interpreter.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_interpreter)
-	print '\nutils/xmlextras.py'
+	#print '\nutils/xmlextras.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_xmlextras)
-	print '\nutils/HTTP.py'
+	#print '\nutils/HTTP.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_http)
-	print '\nutils/checktype.py'
+	#print '\nutils/checktype.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_checktype)
 	
-	print 'Ended ACR testing.'
+	#print 'Ended ACR testing.'

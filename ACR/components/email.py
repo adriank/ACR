@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR import globals
-from ACR.utils import mail,replaceVars
+from ACR.utils import mail,replaceVars,replaceVars_new
 from ACR.components import *
 #from ACR.utils.xmlextras import dom2tree
 from ACR.errors import *
 import os
 import re
-from ACR.utils import dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
+from ACR.utils import List,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 
 class Email(Component):
 	def generate(self,acenv,conf):
@@ -32,25 +32,21 @@ class Email(Component):
 		headers={}
 		params=conf["params"]
 		for h in params:
-			headers[h]=replaceVars(acenv,params[h])
-			typ=type(params[h])
-		to=headers["To"]
+			headers[h]=replaceVars_new(acenv,params[h])
+		##print "headers"
+		recipients=headers["To"]
+		##print headers
 		content=replaceVars(acenv,content)
-		if to.find("{$")>-1:
-			p=RE_PATH.sub(r"\1", to)
-			try:
-				storageName,path=p.split(PREFIX_DELIMITER)
-				storage=getStorage(acenv,storageName)
-			except ValueError:
-				storage=getStorage(acenv,"rs")
-				path=p
-			path=path.split(".")
-			ret=dicttree.get(storage,path)
-			recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
+		#recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
+		typ=type(recipients)
+		if typ is List:
+			recipients=recipients._value
+			typ=list
+		if typ is list:
 			for i in recipients:
 				headers["To"]=i
 				mail.send(headers,content)
-		else:
+		elif typ is str:
 			mail.send(headers,content)
 		return Object()
 

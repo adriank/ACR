@@ -16,16 +16,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils import replaceVars
+from ACR.utils import replaceVars_new,prepareVars
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 
 class Default(Component):
 	def generate(self, env,config):
-		s=replaceVars(env, config["string"])
-		#if config["output"]:
-		#	s=escape(s)
+		#print "default"
+		#print config
+		#print "end default"
+		if config.has_key("output") and config["output"]:
+			s=replaceVars_new(env, config["string"],escape)
+		else:
+			s=replaceVars_new(env, config["string"])
 		return Object(s)
 
 	def parseAction(self,config):
@@ -34,15 +38,8 @@ class Default(Component):
 			if type(elem) is tuple:
 				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
-				if config.has_key("output"):
-					s.append(escape(elem))
-				else:
-					s.append(elem)
-		typ=config["params"].get("type","str")
-		s="".join(s).strip()
-		if typ=="csv":
-			return re.split("\s*,\s*",s)
-		return {"string":s, "output":config.get("output",None)}
+				s.append(elem)
+		return {"string":prepareVars("".join(s)), "output":config.get("output",None)}
 
 def getObject(config):
 	return Default(config)

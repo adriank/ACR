@@ -21,8 +21,8 @@ from ACR.utils.xmlextras import *
 from ACR import globals
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,replaceVars,typesMap
-from ACR.utils.interpreter import execute,make_tree
+from ACR.utils import getStorage,replaceVars,prepareVars,typesMap
+from ACR.utils.interpreter import make_tree
 from ACR.components import Object, List
 import os
 
@@ -39,12 +39,11 @@ def parsePosts(nodes):
 	postCount=0
 	for i in nodes:
 		attrs=i[1]
-		ret[attrs["name"]]={
-			"type":typesMap.get(attrs.get("type","default")),
-		}
+		typ=typesMap.get(attrs.get("type"),typesMap["default"])()
 		if attrs.has_key("default"):
-			ret[attrs["name"]]["default"]=make_tree(attrs["default"])
+			typ.setDefault(make_tree(attrs["default"]))
 			postCount+=1
+		ret[attrs["name"]]=typ
 	return (ret,postCount)
 
 def parseInputs(nodes):
@@ -54,10 +53,12 @@ def parseInputs(nodes):
 	postCount=0
 	for i in nodes:
 		attrs=i[1]
+		typ=typesMap.get(attrs.get("type","default"))()
+		if attrs.has_key("default"):
+			typ.setDefault(make_tree(attrs["default"]))
 		ret.append({
 			"name":attrs["name"],
-			"type":attrs.get("type",None),
-			"default":make_tree(attrs.get("default",None))
+			"type":typ
 		})
 	return ret
 
@@ -191,7 +192,7 @@ class View(object):
 			if ns:
 				for j in i[1]:
 					if j.startswith(ns+":") and not j==ns+cmd:
-						params[j.split(":").pop()]=i[1][j]
+						params[j.split(":").pop()]=prepareVars(i[1][j])
 			actionConfig={
 				"command":cmd,
 				"params":params,
@@ -201,13 +202,21 @@ class View(object):
 				actionConfig["output"]=True
 			before=attrs.get("before", None)
 			after=attrs.get("after", None)
+			if attrs.has_key("condition"):
+				condition=make_tree(attrs["condition"])
+			else:
+				condition=None
+			if attrs.has_key("default"):
+				default=make_tree(attrs["default"])
+			else:
+				default=None
 			o={
 				"type":action,#DEFINE or SET
 				"command":cmd,#command name
 				"name":attrs.get("name",None),
 				"component":componentName,
-				"condition":make_tree(attrs.get("condition",None)),
-				"default":make_tree(i[1].get("default",None)),
+				"condition":condition,
+				"default":default,
 				"config":self.app.getComponent(componentName).parseAction(actionConfig),
 			}
 			#WTF??? n, name??
@@ -235,14 +244,7 @@ class View(object):
 			#pass
 		return ret
 
-	def __setattr__(self, name, val):
-		if name!="immutable" and self.immutable:
-			#if D: log.error("%s is read only",name)
-			raise Exception("PropertyImmutable")
-		self.__dict__[name]=val
-
 	def fillPosts(self,acenv):
-		#TODO add default values support by doing ticket #13
 		if D: acenv.info("Create '%s' view",(self.name))
 		if not self.postSchemas or not len(self.postSchemas):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
@@ -251,46 +253,32 @@ class View(object):
 		if not list or len(list)<self.postCount:
 			#TODO normalize the Error messages!
 			raise Error("Not enough post fields")
-		#TODO debug the key names. Forms should have keys specified in <post/> parameters!
 		postSchemas=self.postSchemas
-		for i in postSchemas:
-			value=list.get(i)
-			typ=postSchemas[i]["type"]
-			try:
-				typ.validate(value)
-			except Error,e:
-				if postSchemas[i].has_key("default"):
-					value=execute(postSchemas[i]["default"])
-				else:
-					raise e
-			acenv.requestStorage[i]=value
+		try:
+			for i in postSchemas:
+				value=list.get(i)
+				typ=postSchemas[i]
+				typ.set(value)
+				acenv.requestStorage[i]=typ.get(acenv)
+		except Error,e:
+			if e.name=="NotValidValue":
+				raise Error("NotValidValue", "Value of %s is invalid"%(i))
 
 	def fillInputs(self,acenv):
 		list=acenv.inputs
-		if not self.inputSchemas or not len(self.inputSchemas):
+		inputSchemas=self.inputSchemas
+		if not inputSchemas or not len(inputSchemas):
 			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
-		#XXX this comment is not true
-		#if D: acenv.debug("All parameters were specified")
 		i=-1 #i in for is not set if len returns 0
-		if list:
-			inputsLen=min([len(self.inputSchemas),len(list)])
-		else:
-			inputsLen=0
-		for i in xrange(0,inputsLen):
-			typ=self.inputSchemas[i]["type"]
-			value=list[i]
-			if not typ or checkType(type,value):
-				if typ=="csv":
-					value=re.split("\s*,\s*",value)
-				acenv.requestStorage[self.inputSchemas[i]["name"]]=value
-			#else:
-			#	if D: log.error("Input value %s didn't pass the type check",acenv.requestStorage[i]["name"])
-		for i in xrange(i+1,len(self.inputSchemas)):
-			default=self.inputSchemas[i]["default"]
-			#Keep is not None; "" is valid value!
-			if default is not None:
-				acenv.requestStorage[self.inputSchemas[i]["name"]]=execute(default)
+		llen=len(list)
+		for i in inputSchemas:
+			typ=i["type"]
+			try:
+				typ.set(list.pop())
+			except:
+				pass
+			acenv.requestStorage[i["name"]]=typ.get(acenv)
 
 	def generate(self,acenv):
 		D=acenv.doDebug
@@ -304,9 +292,15 @@ class View(object):
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
 		acenv.requestStorage["__lang__"]=acenv.lang
+		#print "rs"
+		#print acenv.requestStorage
+		#print "actions"
+		#print self.actions
 		for action in self.actions:
 			if D: acenv.info("define name='%s'",action["name"])
-			if action["condition"] and not execute(acenv,action["condition"]):
+			if action["condition"] and not action["condition"].execute(acenv):
+				#print "condition not meet %s"%(str(action["condition"].tree))
+				#print action["name"]
 				if D: acenv.warning("Condition is not meet")
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")
@@ -318,6 +312,9 @@ class View(object):
 			component=self.app.getComponent(action["component"])
 			#object or list
 			generation=component.generate(acenv,action["config"])
+			##print "generation"
+			##print generation._value
+			##print acenv.requestStorage
 			if not generation:
 				raise Error("ComponentError","Component did not return proper value. Please contact component author.")
 			if not action["name"]:
@@ -331,6 +328,8 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
+			##print acenv.requestStorage
+
 		try:
 			acenv.output["format"]=self.output["format"]
 		except:
@@ -342,3 +341,9 @@ class View(object):
 
 	def isUpToDate(self):
 		return self.timestamp >= os.stat(self.path).st_mtime
+
+	def __setattr__(self, name, val):
+		if name!="immutable" and self.immutable:
+			#if D: log.error("%s is read only",name)
+			raise Exception("PropertyImmutable")
+		self.__dict__[name]=val

@@ -116,7 +116,7 @@ class FileSystem(Component):
 			file.write(content.replace("\r\n","\n"))
 		except IOError:
 			#FIXIT
-			print 'cannot open', path
+			raise Error("IOError", 'cannot open %s'%(path))
 		else:
 			file.close()
 		#o.status="ok"
@@ -165,7 +165,7 @@ class FileSystem(Component):
 		except IOError,e:
 			#FIXIT
 			raise e
-			#print 'cannot open', conf["path"]
+			##print 'cannot open', conf["path"]
 		else:
 			file.close()
 		o=Object("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")

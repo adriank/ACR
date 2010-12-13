@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#@marcin: tests for functions: parsePOST, printHeaders, setCookie, parseCookies
+#@marcin: tests for functions: parsePOST, #printHeaders, setCookie, parseCookies
 
 import unittest
 from ACR.utils.HTTP import *
@@ -15,8 +15,8 @@ class Utils_http(unittest.TestCase):
 		self.assertTrue(parsePOST('a=2+2') == {'a': '2 2'})
 		self.assertTrue(parsePOST('a=foo/bar&b=g[0]&c=foo.bar&d=\'mar\'') == {'a': 'foo/bar', 'c': 'foo.bar', 'b': 'g[0]', 'd': '&apos;mar&apos;'})
 
-	def test_printHeaders(self):
-		self.assertTrue( printHeaders([
+	def test_#printHeaders(self):
+		self.assertTrue( #printHeaders([
 ['Server', 'Apache'],
 ['X-Backend-Server', 'pm-app-amo11'],
 ['Vary' ,'Accept-Encoding'],

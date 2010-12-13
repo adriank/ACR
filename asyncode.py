@@ -10,7 +10,7 @@ from ACR import globals
 #import cProfile
 
 #username=getpass.getuser()
-#print username
+##print username
 #username=getpass.getuser()
 #try:
 #	__import__(username+"_conf")
@@ -32,7 +32,7 @@ host=""
 port=9999
 if len(sys.argv)>1:
 	port=int(sys.argv[1])
-print os.getpid()
+#print os.getpid()
 
 class PimpedWSGIServer(simple_server.WSGIServer):
 	request_queue_size = 500

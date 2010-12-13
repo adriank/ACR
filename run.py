@@ -24,11 +24,11 @@ host=""
 port=9999
 #if len(sys.argv)>1:
 #	port=sys.argv[1]
-#print os.getpid()
+##print os.getpid()
 httpd=make_server(host, port, standalone_server)
 #httpd.serve_forever()
 try:
 	os.environ["PATH_INFO"]=sys.argv[1]
 except:
-	print "Usage ./run.py path"
+	#print "Usage ./run.py path"
 CGIHandler().run(standalone_server)

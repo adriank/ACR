@@ -416,64 +416,69 @@ def expression(rbp=0):
 
 def make_tree(expr):
 	if type(expr) is not str:
-		return expr
-	if expr.isspace():
-		return True
+		return Tree(expr)
+	elif not len(expr.strip()):
+		return Tree(True)
 	global token, next
 	next=tokenize(expr).next
 	token=next()
-	return expression().getTree()
+	return Tree(expression().getTree())
 
-def execute(acenv,tree):
-	def exe(node):
-		if type(node) in [str,int,float] or node in [True,False,None]:
-			return node
-		op=node[0]
-		if op=="or":
-			return exe(node[1]) or exe(node[2])
-		elif op=="and":
-			return exe(node[1]) and exe(node[2])
-		elif op=="not":
-			return not exe(node[1])
-		elif op=="in":
-			return exe(node[1]) in exe(node[2])
-		elif op=="not in":
-			return exe(node[1]) not in exe(node[2])
-		elif op=="is" or op=="is not":
-			fst=exe(node[1])
-			snd=exe(node[2])
-			if type(fst) is str or type(snd) is str:
-				ret=str(fst) == str(snd)
-			else:
-				ret=fst is snd
-			if op=="is not":
-				return not ret
-			else:
-				return ret
-		elif op=="(literal)":
-			fstLetter=node[1][0]
-			if fstLetter is "'":
-				return node[1][1:-1]
-			elif fstLetter.isdigit:
-				return int(node[1])
-			else:
-				evaluatePath()
-		elif op=="(variable)":
-			storage=getStorage(acenv,node[1])
-			#if D: acenv.debug("%s is %s",node[2],var)
-			return dicttree.get(storage,node[2].split('.'))
-		elif op=="[":
-			if len(node) is 2:  # list
-				return map(exe,node[1])
-			if len(node) is 3:  # operator []
-				first=exe(node[1])
-				second=exe(node[2])
-				if type(first) in [list,tuple,str]:
-					return first[int(second)]
+class Tree(object):
+	def __init__(self,tree):
+		self.tree=tree
+
+	def execute(self,acenv):
+		def exe(node):
+			if type(node) in [str,int,float] or node in [True,False,None]:
+				return node
+			op=node[0]
+			if op=="or":
+				return exe(node[1]) or exe(node[2])
+			elif op=="and":
+				return exe(node[1]) and exe(node[2])
+			elif op=="not":
+				return not exe(node[1])
+			elif op=="in":
+				return exe(node[1]) in exe(node[2])
+			elif op=="not in":
+				return exe(node[1]) not in exe(node[2])
+			elif op=="is" or op=="is not":
+				fst=exe(node[1])
+				snd=exe(node[2])
+				if type(fst) is str or type(snd) is str:
+					ret=str(fst) == str(snd)
 				else:
-					return first[second]
-	D=acenv.doDebug
-	if D: acenv.debug(str(tree))
-	if type(tree) is not tuple:
-		return tree
-	return exe(tree)
+					ret=fst is snd
+				if op=="is not":
+					return not ret
+				else:
+					return ret
+			elif op=="(literal)":
+				fstLetter=node[1][0]
+				if fstLetter is "'":
+					return node[1][1:-1]
+				elif fstLetter.isdigit:
+					return int(node[1])
+				else:
+					evaluatePath()
+			elif op=="(variable)":
+				storage=getStorage(acenv,node[1])
+				#if D: acenv.debug("%s is %s",node[2],var)
+				return dicttree.get(storage,node[2].split('.'))
+			elif op=="[":
+				if len(node) is 2:  # list
+					return map(exe,node[1])
+				if len(node) is 3:  # operator []
+					first=exe(node[1])
+					second=exe(node[2])
+					if type(first) in [list,tuple,str]:
+						return first[int(second)]
+					else:
+						return first[second]
+
+		D=acenv.doDebug
+		if D: acenv.debug(str(self.tree))
+		if type(self.tree) is not tuple:
+			return self.tree
+		return exe(self.tree)

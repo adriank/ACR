@@ -14,13 +14,13 @@ sys.setrecursionlimit(20000)
 # helper functions for creating correctness tests
 def generate():
 	file = open('testFile', 'w')
-	print 'Testing parser. Enter a program or \'q\' for exit.'
+	#print 'Testing parser. Enter a program or \'q\' for exit.'
 	while 1:
 		s = raw_input("program: ")
 		if s == 'q':
 			break
 		ans = make_tree(s)
-		print "Answer: %s. Correct [y|n] ?" % str(ans),
+		#print "Answer: %s. Correct [y|n] ?" % str(ans),
 		yesno = raw_input()
 		if yesno == 'y':
 			file.write('self.assertTrue(make_tree("%s") == %s)\n' % (s,ans))

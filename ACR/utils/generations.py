@@ -18,7 +18,7 @@ class Object(Generation):
 	def __str__(self):
 		if type(self._value) is str:
 			return self._value
-		return u'unprintable'
+		return u'un#printable'
 
 class List(Generation):
 	_name="list"
@@ -30,4 +30,4 @@ class List(Generation):
 	def __str__(self):
 		if type(self._value) is str:
 			return self._value
-		return u'unprintable'
+		return u'un#printable'
