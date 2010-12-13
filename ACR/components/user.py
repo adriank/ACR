@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.components import *
-from ACR.utils import replaceVars,generateID
+from ACR.utils import replaceVars_new,generateID
 from ACR import globals
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
@@ -65,8 +65,9 @@ class User(Component):
 		return Object()
 
 	def register(self,acenv,conf):
-		email=replaceVars(acenv,conf["email"])
-		password=replaceVars(acenv,conf["password"])
+		email=replaceVars_new(acenv,conf["email"])
+		print email
+		password=replaceVars_new(acenv,conf["password"])
 		sql="select exists(select * from %s.emails where email='%s')"%(globals.dbschema,email)
 		key=md5_constructor(password).hexdigest()
 		#returns False if email is not registered yet
@@ -83,7 +84,8 @@ class User(Component):
 			(email,_user,approval_key)
 		VALUES
 			('%s', (%s), '%s')"""%(globals.dbschema,key,globals.dbschema,email,id,generateID())
-		result=acenv.app.getDBConn().query(sql)
+		print sql
+		#result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
 		return Object()
 

@@ -52,7 +52,7 @@ def replaceVars_new(env,l,fn=None):
 			ret.append(v)
 		else:
 			ret.append(i)
-	#print ret
+	print ret
 	if len(ret) is 1:
 		return ret[0]
 	try:
