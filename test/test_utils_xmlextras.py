@@ -17,10 +17,10 @@ class Utils_xmlextras(unittest.TestCase):
 		self.assertTrue(str2obj('    false    ') == False)
 		self.assertTrue(str2obj('[2, 3, 4]') == '[2, 3, 4]' and str2obj('{}') == '{}')
 	
-	def test_last(self):
-		self.assertTrue(last([1, 2, 3, -1]) == -1)
-		self.assertTrue(last(('doo', 'bi', 'doo', 'the')) == 'the')
-		self.assertTrue(last('abcdefx') == 'x')
+#	def test_last(self):
+#		self.assertTrue(last([1, 2, 3, -1]) == -1)
+#		self.assertTrue(last(('doo', 'bi', 'doo', 'the')) == 'the')
+#		self.assertTrue(last('abcdefx') == 'x')
 		
 	def test_xml2tree(self):
 		self.assertTrue(xml2tree('./test/test1.xml') == ('messages', None, [('note', {'id': '501'}, [('to', None, ['Tove']), ('from', None, ['Jani']), ('heading', None, ['Reminder']), ('body', None, ["Don't forget me this weekend!"])]), ('note', {'id': '502'}, [('to', None, ['Jani']), ('from', None, ['Tove']), ('heading', None, ['Re: Reminder']), ('body', None, ['I will not'])])]))
