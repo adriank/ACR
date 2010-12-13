@@ -83,110 +83,110 @@ class Utils_interpreter(unittest.TestCase):
 	# corectness tests		
 	# associativity, addition, subtraction, multiplication, division, name literals
 	def test_add(self):
-		self.assertTrue((make_tree("2+3") == ('+',2,3)))
-		self.assertTrue((make_tree("2+(3+4)") == ('+', 2, ('+', 3, 4))))
-		self.assertTrue((make_tree("2+3+4") == make_tree("(2+3)+4")))
+		self.assertEqual(make_tree("2+3").tree, ('+',2,3))
+		self.assertEqual(make_tree("2+(3+4)").tree, ('+', 2, ('+', 3, 4)))
+		self.assertEqual(make_tree("2+3+4").tree, make_tree("(2+3)+4").tree)
 	
 	def test_sub(self):
-		self.assertTrue(make_tree("2-3") == ('-', 2, 3))
-		self.assertTrue(make_tree("2-(3-4)") == ('-', 2, ('-', 3, 4)))
-		self.assertTrue(make_tree("(2-3)-4") == ('-', ('-', 2, 3), 4))
+		self.assertEqual(make_tree("2-3").tree, ('-', 2, 3))
+		self.assertEqual(make_tree("2-(3-4)").tree, ('-', 2, ('-', 3, 4)))
+		self.assertEqual(make_tree("(2-3)-4").tree, ('-', ('-', 2, 3), 4))
 
 	def test_mul(self):
-		self.assertTrue(make_tree("2*3*5*6") == ('*', ('*', ('*', 2, 3), 5), 6))
-		self.assertTrue(make_tree("(2*3)*4") == ('*', ('*', 2, 3), 4))
-		self.assertTrue(make_tree("2*(3*4)") == ('*', 2, ('*', 3, 4)))
+		self.assertEqual(make_tree("2*3*5*6").tree, ('*', ('*', ('*', 2, 3), 5), 6))
+		self.assertEqual(make_tree("(2*3)*4").tree, ('*', ('*', 2, 3), 4))
+		self.assertEqual(make_tree("2*(3*4)").tree, ('*', 2, ('*', 3, 4)))
 
 	def test_div(self):	
-		self.assertTrue(make_tree("1/2/3") == ('/', ('/', 1, 2), 3))
-		self.assertTrue(make_tree("1/(2/3)/4") == ('/', ('/', 1, ('/', 2, 3)), 4))
+		self.assertEqual(make_tree("1/2/3").tree, ('/', ('/', 1, 2), 3))
+		self.assertEqual(make_tree("1/(2/3)/4").tree, ('/', ('/', 1, ('/', 2, 3)), 4))
 
 	def test_arithm_group(self):	
-		self.assertTrue((make_tree("2-3+4+5-7") == ('-', ('+', ('+', ('-', 2, 3), 4), 5), 7)))
-		self.assertTrue((make_tree("33*2/5-2") == ('-', ('/', ('*', 33, 2), 5), 2)))
-		self.assertTrue((make_tree("33-4*5+2/6") == ('+', ('-', 33, ('*', 4, 5)), ('/', 2, 6))))
-		self.assertTrue((make_tree("2//3//4//5") == ('//', ('//', ('//', 2, 3), 4), 5)))
+		self.assertEqual(make_tree("2-3+4+5-7").tree, ('-', ('+', ('+', ('-', 2, 3), 4), 5), 7))
+		self.assertEqual(make_tree("33*2/5-2").tree, ('-', ('/', ('*', 33, 2), 5), 2))
+		self.assertEqual(make_tree("33-4*5+2/6").tree, ('+', ('-', 33, ('*', 4, 5)), ('/', 2, 6)))
+		self.assertEqual(make_tree("2//3//4//5").tree, ('//', ('//', ('//', 2, 3), 4), 5))
 	
 	def test_arithm_bracktes(self):
-		self.assertTrue((make_tree("(33-4)*5+2/6") == ('+', ('*', ('-', 33, 4), 5), ('/', 2, 6))))
-		self.assertTrue((make_tree("2/3/(4/5)*6") == ('*', ('/', ('/', 2, 3), ('/', 4, 5)), 6)))
-		self.assertTrue((make_tree("((2+4))+6") == ('+', ('+', 2, 4), 6)))
+		self.assertEqual(make_tree("(33-4)*5+2/6").tree, ('+', ('*', ('-', 33, 4), 5), ('/', 2, 6)))
+		self.assertEqual(make_tree("2/3/(4/5)*6").tree, ('*', ('/', ('/', 2, 3), ('/', 4, 5)), 6))
+		self.assertEqual(make_tree("((2+4))+6").tree, ('+', ('+', 2, 4), 6))
 	
 	def test_or(self):
-		self.assertTrue((make_tree("1 or 2 or 3") == ('or', 1, ('or', 2, 3))))
+		self.assertEqual(make_tree("1 or 2 or 3").tree, ('or', 1, ('or', 2, 3)))
 	
 	def test_and(self):
-		self.assertTrue((make_tree("1 and (2 and 3)") == ('and', 1, ('and', 2, 3))))
+		self.assertEqual(make_tree("1 and (2 and 3)").tree, ('and', 1, ('and', 2, 3)))
 	
 	def test_not(self):
-		self.assertTrue(make_tree("not 222") == ('not', 222))
-		self.assertTrue((make_tree("not not not 7") == ('not', ('not', ('not', 7)))))
+		self.assertEqual(make_tree("not 222").tree, ('not', 222))
+		self.assertEqual(make_tree("not not not 7").tree, ('not', ('not', ('not', 7))))
 
 	def test_and_or_not(self):
-		self.assertTrue((make_tree("(1 and 2) or 3") == ('or', ('and', 1, 2), 3)))
-		self.assertTrue((make_tree("not 1 and 2") == ('and', ('not', 1), 2)))
-		self.assertTrue((make_tree("not (1 and 2)") == ('not', ('and', 1, 2))))
-		self.assertTrue((make_tree("(not 1) and 2") == ('and', ('not', 1), 2)))
+		self.assertEqual(make_tree("(1 and 2) or 3").tree, ('or', ('and', 1, 2), 3))
+		self.assertEqual(make_tree("not 1 and 2").tree, ('and', ('not', 1), 2))
+		self.assertEqual(make_tree("not (1 and 2)").tree, ('not', ('and', 1, 2)))
+		self.assertEqual(make_tree("(not 1) and 2").tree, ('and', ('not', 1), 2))
 	
 	def test_is(self):
-		self.assertTrue(make_tree("2 is 3") == ('is', 2, 3))
+		self.assertEqual(make_tree("2 is 3").tree, ('is', 2, 3))
 
 	def test_isnot(self):
-		self.assertTrue(make_tree("3 is not 6") == ('is not', 3, 6))
+		self.assertEqual(make_tree("3 is not 6").tree, ('is not', 3, 6))
 		
 	def test_notin(self):
-		self.assertTrue(make_tree("4 not in 6") == ('not in', 4, 6))
-		self.assertTrue(make_tree("1 not in 5 not in 00") == ('not in', ('not in', 1, 5), 0))
+		self.assertEqual(make_tree("4 not in 6").tree, ('not in', 4, 6))
+		self.assertEqual(make_tree("1 not in 5 not in 00").tree, ('not in', ('not in', 1, 5), 0))
 
 	def test_is_isnot_notin_arithm(self):
-		self.assertTrue((make_tree("23 is not 56 or 25 is 57") == ('or', ('is not', 23, 56), ('is', 25, 57))))
-		self.assertTrue((make_tree("2 is 3 is not (not 5)") == ('is not', ('is', 2, 3), ('not', 5))))
-		self.assertTrue((make_tree("1 + 2 or 3 / (not 4)") == ('or', ('+', 1, 2), ('/', 3, ('not', 4)))))
-		self.assertTrue((make_tree("4     and 5       - 1") == ('and', 4, ('-', 5, 1))))
-		self.assertTrue((make_tree("2+3/4-6*7 or 10 is not 11 and 14") == ('or', ('-', ('+', 2, ('/', 3, 4)), ('*', 6, 7)), ('and', ('is not', 10, 11), 14))))
+		self.assertEqual(make_tree("23 is not 56 or 25 is 57").tree, ('or', ('is not', 23, 56), ('is', 25, 57)))
+		self.assertEqual(make_tree("2 is 3 is not (not 5)").tree, ('is not', ('is', 2, 3), ('not', 5)))
+		self.assertEqual(make_tree("1 + 2 or 3 / (not 4)").tree, ('or', ('+', 1, 2), ('/', 3, ('not', 4))))
+		self.assertEqual(make_tree("4     and 5       - 1").tree, ('and', 4, ('-', 5, 1)))
+		self.assertEqual(make_tree("2+3/4-6*7 or 10 is not 11 and 14").tree, ('or', ('-', ('+', 2, ('/', 3, 4)), ('*', 6, 7)), ('and', ('is not', 10, 11), 14)))
 	
 	def test_prefix(self):
-		self.assertTrue((make_tree("~2 + +3") == ('+', ('~', 2), ('+', 3))))
-		self.assertTrue((make_tree("++3") == ('+', ('+', 3))))
-		self.assertTrue((make_tree("-+-3") == ('-', ('+', ('-', 3)))))
+		self.assertEqual(make_tree("~2 + +3").tree, ('+', ('~', 2), ('+', 3)))
+		self.assertEqual(make_tree("++3").tree, ('+', ('+', 3)))
+		self.assertEqual(make_tree("-+-3").tree, ('-', ('+', ('-', 3))))
 	
 	def test_greater_less(self):
-		self.assertTrue((make_tree("2 < 3 < 4 < 5") == ('<', ('<', ('<', 2, 3), 4), 5)))
-		self.assertTrue((make_tree("1 <= (2 <= 3)") == ('<=', 1, ('<=', 2, 3))))
+		self.assertEqual(make_tree("2 < 3 < 4 < 5").tree, ('<', ('<', ('<', 2, 3), 4), 5))
+		self.assertEqual(make_tree("1 <= (2 <= 3)").tree, ('<=', 1, ('<=', 2, 3)))
 	
 	def test_greater_less_prefixs_or(self):
-		self.assertTrue((make_tree("2 >= 1 or +1") == ('or', ('>=', 2, 1), ('+', 1))))
-		self.assertTrue((make_tree("+1 <= ~2 > -3") == ('>', ('<=', ('+', 1), ('~', 2)), ('-', 3))))
+		self.assertEqual(make_tree("2 >= 1 or +1").tree, ('or', ('>=', 2, 1), ('+', 1)))
+		self.assertEqual(make_tree("+1 <= ~2 > -3").tree, ('>', ('<=', ('+', 1), ('~', 2)), ('-', 3)))
 	
 	def test_tuple(self):
-		self.assertTrue(make_tree("(1, 2, 3)") == ('(', [1, 2, 3]))
+		self.assertEqual(make_tree("(1, 2, 3)").tree, ('(', [1, 2, 3]))
 
 	def test_list(self):
-		self.assertTrue((make_tree("[1, 2, 3]") == ('[', [1, 2, 3])))
+		self.assertEqual(make_tree("[1, 2, 3]").tree, ('[', [1, 2, 3]))
 		
 	def test_symbol_dot(self):
-		self.assertTrue(make_tree("a.b") == ('.', ('name', 'a'), ('name', 'b')))
+		self.assertEqual(make_tree("a.b").tree, ('.', ('name', 'a'), ('name', 'b')))
 		# TODO test "a.b.c",  invalid!
 	
 	def test_operator_sqarebrackets(self):
-		self.assertTrue(make_tree("2[3]") == ('[', 2, 3))
-		self.assertTrue(make_tree("2[3][4][5]") == ('[', ('[', ('[', 2, 3), 4), 5))
+		self.assertEqual(make_tree("2[3]").tree, ('[', 2, 3))
+		self.assertEqual(make_tree("2[3][4][5]").tree, ('[', ('[', ('[', 2, 3), 4), 5))
 
 	def test_operator_sqarebrackets_symbol_dot_add_sub_lessequal(self):
-		self.assertTrue((make_tree("object.variable + 2 - list[0]") == ('-', ('+', ('.', ('name', 'object'), ('name', 'variable')), 2), ('[', ('name', 'list'), 0))))
-		self.assertTrue((make_tree("list[6].object[1] <= 1111111") == ('<=', ('[', ('.', ('[', ('name', 'list'), 6), ('name', 'object')), 1), 1111111))	)
+		self.assertEqual(make_tree("object.variable + 2 - list[0]").tree, ('-', ('+', ('.', ('name', 'object'), ('name', 'variable')), 2), ('[', ('name', 'list'), 0)))
+		self.assertEqual(make_tree("list[6].object[1] <= 1111111").tree, ('<=', ('[', ('.', ('[', ('name', 'list'), 6), ('name', 'object')), 1), 1111111))
 		
 	def test_const_prefixs_isnot_and_or(self):
-		self.assertTrue((make_tree("None") == None))
-		self.assertTrue((make_tree("True or False and None") == ('or', True, ('and', False, None))))
-		self.assertTrue((make_tree("~true") == ('~', ('name', 'true'))))
-		self.assertTrue((make_tree("~True is not False") == ('is not', ('~', True), False)))
+		self.assertEqual(make_tree("None").tree, None)
+		self.assertEqual(make_tree("True or False and None").tree, ('or', True, ('and', False, None)))
+		self.assertEqual(make_tree("~true").tree, ('~', ('name', 'true')))
+		self.assertEqual(make_tree("~True is not False").tree, ('is not', ('~', True), False))
 	
 	def test_storage_var(self):
-		self.assertTrue(make_tree("ss::var") == ('(variable)', 'ss', 'var'))
-		self.assertTrue(make_tree("session::var.foo") == ('(variable)', 'session', 'var.foo'))
-		self.assertTrue(make_tree("request::var.s") == ('(variable)', 'request', 'var.s'))
-		self.assertTrue(make_tree("rs::a.b.c.d.e") == ('(variable)', 'rs', 'a.b.c.d.e'))
+		self.assertEqual(make_tree("ss::var").tree, ('(variable)', 'ss', 'var'))
+		self.assertEqual(make_tree("session::var.foo").tree, ('(variable)', 'session', 'var.foo'))
+		self.assertEqual(make_tree("request::var.s").tree, ('(variable)', 'request', 'var.s'))
+		self.assertEqual(make_tree("rs::a.b.c.d.e").tree, ('(variable)', 'rs', 'a.b.c.d.e'))
 
 	
 	# tests invalid expressions
