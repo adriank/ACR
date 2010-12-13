@@ -16,8 +16,8 @@ class Utils_init(unittest.TestCase):
 
 	def test_getStorage(self):
 		self.env.sessionStorage = None
-		self.assertTrue( getStorage(self.env, "Session") == False and getStorage(self.env, "ss") == False)
-		self.assertTrue(  getStorage(self.env, "gs") == [] and getStorage(self.env, "global") == [])
+		self.assertTrue(getStorage(self.env, "Session") == False and getStorage(self.env, "ss") == False)
+		self.assertTrue(not getStorage(self.env, "gs") and not getStorage(self.env, "global"))
 
 	# TODO 
 	def test_replaceVars(self):
