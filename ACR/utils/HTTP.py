@@ -119,7 +119,8 @@ def parseCookies(acenv,s):
 	input: key=val;key=val
 	returns: d={name:val}
 	"""
-	#if D: log.debug("Parsing cookies '%s'",s)
+	D = acenv.doDebug
+	if D: acenv.debug("parseCookies '%s'",s)
 	t=str(s).split(";")
 	d={}
 	for i in t:
@@ -137,7 +138,7 @@ def setCookie(acenv,cookie, test=False):
 	returns: if optional parameter test is set, returns headers.
 					 otherwise, returns None
 	"""
-	D=acenv.dbg
+	D = acenv.doDebug
 	if D: acenv.debug("Adding %s to output headers",cookie)
 	s=acenv.prefix+cookie['name']+"="+cookie['value']
 	if cookie.has_key("date"):

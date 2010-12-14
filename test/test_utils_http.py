@@ -10,6 +10,7 @@ class myAcenv:
 		self.prefix = "ACR_"
 		self.dbg = None
 		self.outputHeaders = []
+		self.doDebug = False
 
 class Utils_http(unittest.TestCase):
 	def test_parseurlencoded(self):
