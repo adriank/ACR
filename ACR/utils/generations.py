@@ -5,6 +5,9 @@ class Generation(object):
 	error=""
 	_value=None
 	def __init__(self,value=None):
+		self.set(value)
+
+	def set(self,value):
 		self._value=value
 
 	def addAttrs(self,attrs):

@@ -16,8 +16,13 @@ class Debugger(object):
 
 	def __init__(self, app):
 		self._debugStr=[]
-		self.dbgfn = self.consolelog
-		self.dbgMap = {"debug" : self.DEBUG, "info" : self.INFO, "warning" : self.WARNING, "error" : self.ERROR, "critical" : self.CRITICAL}
+		self.dbgfn=self.consolelog
+		self.dbgMap={
+			"debug":self.DEBUG,
+			"info":self.INFO,
+			"warning":self.WARNING,
+			"error":self.ERROR,
+			"critical":self.CRITICAL}
 		try:
 			if app.dbg["enabled"]:
 				self.doDebug=True

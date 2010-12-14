@@ -23,14 +23,16 @@ from xml.sax.saxutils import escape,unescape
 
 class Default(Component):
 	def generate(self, env,config):
-		#print "default"
-		#print config
-		#print "end default"
+		D=env.doDebug
+		if D: env.debug("Starting default component generation with %s"%config)
+		o=Object()
 		if config.has_key("output") and config["output"]:
-			s=replaceVars_new(env, config["string"],escape)
+			o.set(replaceVars_new(env, config["string"],escape))
 		else:
-			s=replaceVars_new(env, config["string"])
-		return Object(s)
+			o.set(replaceVars_new(env, config["string"]))
+			o._doFn=False
+		if D: env.debug("Returning %s"%o._value)
+		return o
 
 	def parseAction(self,config):
 		s=[]

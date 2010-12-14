@@ -43,16 +43,20 @@ def replaceVars_new(env,l,fn=None):
 		if type(i) is tuple:
 			storage=getStorage(env,i[0])
 			v=dicttree.get(storage,i[1])
+			doFN=True
 			if type(v) is Object:
+				try:
+					doFN=v._doFn
+				except:
+					pass
 				v=v._value
 			if type(v) is not List:
 				v=str(v)
-				if fn:
+				if fn and doFN:
 					v=fn(v)
 			ret.append(v)
 		else:
 			ret.append(i)
-	print ret
 	if len(ret) is 1:
 		return ret[0]
 	try:

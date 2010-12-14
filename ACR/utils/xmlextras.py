@@ -83,7 +83,11 @@ def tree2xml(root,esc=False):
 			tag=node._name
 			content=node._value
 			attrs=node.__dict__#.copy()
-			attrs.pop("_value")
+			try:
+				attrs.pop("_value")
+				attrs.pop("_doFn")
+			except:
+				pass
 		elif type(node) is tuple:
 			tag=node[0]
 			attrs=node[1]
