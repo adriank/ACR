@@ -21,21 +21,21 @@ from ACR import globals
 from ACR.components import *
 from ACR.utils.generations import *
 from ACR.errors import *
-from ACR.utils import replaceVars,HTTP
+from ACR.utils import replaceVars_new,HTTP
 
 class Headers(Component):
 	def setcookie(self,env,config):
 		#if config[1]["action"].lower()=="set":
-		d={"name":replaceVars(env,config["name"]), "value":replaceVars(env,config["value"])}
+		d={"name":replaceVars_new(env,config["name"]), "value":replaceVars_new(env,config["value"])}
 		if config.has_key("path"):
-			d["path"]=str(replaceVars(env,config["path"]))
+			d["path"]=replaceVars_new(env,config["path"])
 		HTTP.setCookie(env,d)
 		return Object()
 
 	def redirect(self,env,config):
-		if env.doDebug: env.info("Requested redirect to <a href=\"#\">%s</a>"%(replaceVars(env,config["location"])))
+		if env.doDebug: env.info("Requested redirect to <a href=\"#\">%s</a>"%(replaceVars_new(env,config["location"])))
 		env.doRedirect=True
-		env.outputHeaders.append(("Location",replaceVars(env,config["location"])))
+		env.outputHeaders.append(("Location",replaceVars_new(env,config["location"])))
 		return Object() #("object",{"status":"ok"},None)
 
 	def generate(self,env,config):

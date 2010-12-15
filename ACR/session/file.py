@@ -24,14 +24,13 @@ from ACR import globals
 from ACR.session import Session
 from ACR.errors import Error
 
-#log = logging.getLogger('ACR.session.file')
-
 class FileSession(Session):
 	def __init__(self, acenv, id=None):
-		#log.info("Created FileSession object with id=%s",id)
+		D=acenv.doDebug
+		if D: acenv.info("Created FileSession object with id=%s",id)
 		#TODO check if dir exists and raise error when not
 		self.sessDir=acenv.app.sessionDir
-		#log.info("Session directory is set to %s",self.sessDir)
+		if D:acenv.info("Session directory is set to %s",self.sessDir)
 		super(FileSession, self).__init__(acenv,id)
 
 	def exists(self,id):
@@ -104,7 +103,6 @@ class FileSession(Session):
 		self.data=session_data
 
 	def delete(self):
-		#log.info("Deleting session")
 		try:
 			os.unlink(self._key_to_file())
 		except OSError:

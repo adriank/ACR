@@ -18,7 +18,7 @@
 
 from ACR.components import Component
 from ACR.errors import *
-from ACR.utils import replaceVars
+from ACR.utils import prepareVars, replaceVars_new
 from ACR.utils.generations import Object,List
 from ACR.utils.xmlextras import tree2xml
 import os
@@ -26,11 +26,11 @@ import shutil
 import fnmatch
 
 class FileSystem(Component):
+	SHOW_DIRS=True
+	SHOW_HIDDEN=False
 	def __init__(self,config):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
-		self.SHOW_DIRS=True
-		self.SHOW_HIDDEN=False
 		self.path=config[0][2][0]
 
 	def list(self,acenv,conf):
@@ -158,9 +158,9 @@ class FileSystem(Component):
 		return o
 
 	def get(self,acenv,conf):
-		path=self.path+replaceVars(acenv,conf["path"])
+		fullpath=conf["fullpath"]
 		try:
-			file=open(path,"r")
+			file=open(fullpath,"r")
 			content=file.read()
 		except IOError,e:
 			#FIXIT
@@ -168,7 +168,9 @@ class FileSystem(Component):
 			##print 'cannot open', conf["path"]
 		else:
 			file.close()
-		o=Object("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")
+		o=Object()
+		o.set("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")
+		o._doFn=False
 		#o.content=
 		return o
 
@@ -176,32 +178,29 @@ class FileSystem(Component):
 		D=acenv.doDebug
 		if D:
 			acenv.info("Component: 'FS'")
-			acenv.info("Command: '%s'", replaceVars(acenv, config["command"]))
-			# do poprawki
-			if replaceVars(acenv,config["command"]) not in ("list", "create", "update", "append", "delete", "copy", "move", "exists", "get"):
-				acenv.error("Command '%s' do not exist!", replaceVars(acenv, config["command"]))
+			acenv.info("Command: '%s'", config["command"])
+		c=config["params"]
 		conf={}
-		for i in config:
-			if type(config[i]) is str:
-				conf[i]=replaceVars(acenv, config[i])
-			else:
-				conf[i]=config[i]
-			if D:
-				if i!= "command": acenv.debug("attribute: '%s', value: '%s'", i, conf[i])
+		for i in c:
+			conf[i]=replaceVars_new(acenv, c[i])
 		if D:
 			if not conf["path"]:
-				acenv.warning("path not suplied")
+				acenv.error("path not suplied")
 			elif conf["path"][0] !=  '/':
-				acenv.warning("missning '/' character at the begginig of 'path' attribute")
-		#if conf["path"][0]=="/":
-		#	path=conf["path"][1:].split("/")
-		#else: path=conf["path"].split()
+				acenv.error("missning '/' character at the begginig of 'path' attribute")
+		try:
+			conf["content"]=replaceVars_new(acenv,config["content"])
+		except:
+			pass
 		conf["fullpath"]=os.path.join(self.path,*conf["path"].split("/"))
-		return self.__getattribute__(conf["command"])(acenv,conf)
+		return self.__getattribute__(config["command"])(acenv,conf)
 
 	def parseAction(self, conf):
-		ret={"command":conf["command"]}
-		ret.update(conf["params"])
+		if conf["command"] not in ("list", "create", "update", "append", "delete", "copy", "move", "exists", "get"):
+			raise Error("Command '%s' do not exist!", config["command"])
+		ret={
+			"command":conf["command"]
+		}
 		if conf["content"]:
 			s=[]
 			for elem in conf["content"]:
@@ -209,7 +208,12 @@ class FileSystem(Component):
 					s.append(tree2xml(elem))
 				elif type(elem) is str:
 					s.append(elem)
-			ret["content"]="\n".join(s)
+			ret["content"]=prepareVars("\n".join(s))
+		p=conf["params"]
+		params={}
+		for i in p:
+			params[i.lower()]=prepareVars(p[i])
+		ret["params"]=params
 		return ret
 
 def getObject(config):

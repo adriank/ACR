@@ -54,4 +54,5 @@ class Component(object):
 	#	raise AbstractClass()
 
 	def parseAction(self,root):
+		print root
 		return root

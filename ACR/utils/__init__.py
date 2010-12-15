@@ -34,7 +34,9 @@ def getStorage(env,s):
 	return env.requestStorage
 
 def replaceVars_new(env,l,fn=None):
-	if type(l) is str:
+	try:
+		l.__iter__
+	except:
 		return l
 	#print "replaceVars_new"
 	#print l
@@ -93,6 +95,8 @@ def replaceVars(env,s,data=None,escape=False):
 	return RE_PATH.sub(parse, s)
 
 def prepareVars(s):
+	if type(s) is not str:
+		return s
 	splitted=RE_PATH_split.split(s)
 	vars=RE_PATH.findall(s)
 	ret=[]
