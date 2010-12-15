@@ -1,3 +1,9 @@
+acr (0.3) stable; urgency=low
+
+  * 0.3 release
+
+ -- Witold Filipczyk <witekfl@poczta.onet.pl>  Wed, 15 Dec 2010 09:04:01 +0100
+
 acr (0.1.101210) unstable; urgency=low
 
   * test
