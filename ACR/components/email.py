@@ -54,15 +54,15 @@ class Email(Component):
 		try:
 			conf["params"]["From"]
 		except KeyError:
-			raise Error("FromAdressNotSpecified", "'from' should be specified")
+			raise Error("FromAdressNotSpecified", "'From' should be specified")
 		try:
 			conf["params"]["To"]
 		except KeyError:
-			raise Error("ToAdressNotSpecified", "'to' should be specified")
+			raise Error("ToAdressNotSpecified", "'To' should be specified")
 		try:
 			conf["params"]["Subject"]
 		except KeyError:
-			raise Error("SubjectNotSpecified", "'subject' should be specified")
+			raise Error("SubjectNotSpecified", "'Subject' should be specified")
 		conf['content']="".join(conf['content'])
 		return conf
 
