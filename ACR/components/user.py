@@ -28,8 +28,8 @@ class User(Component):
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		ret=Object()
-		email=replaceVars(acenv,conf["email"])
-		password=replaceVars(acenv,conf["password"])
+		email=replaceVars_new(acenv,conf["email"])
+		password=replaceVars_new(acenv,conf["password"])
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)

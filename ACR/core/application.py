@@ -175,29 +175,16 @@ class Application(object):
 				sessID=None
 		try:
 			view, acenv.inputs=self.getView(acenv.URLpath)
-
-		# checking global conditions
-		#viewList=[]
-		#while view:
-		#	viewList.append(view)
-		#	view=view.parent
-		#viewList.reverse()
-		#view=viewList[-1]
-		#from super class to deriverativ classes
-		#for v in viewList:
-		#	if not v.checkConditions(acenv):
-		#		if not v.parent:
-		#			acenv.output["format"]="text/html"
-		#			return "<html><body>Cannot generate view.</body</html>"
-		#		view=v.parent
-		#		break
 			view.generate(acenv)
 		except Error,e:
 			#print "Error"
 			acenv.generations={
 				"error":("object",{"name":"GlobalError","status":"error","error":e.name},e.error)
 			}
-			acenv.output["xsltfile"]=view.output.get("xsltfile")
+			try:
+				acenv.output["xsltfile"]=view.output.get("xsltfile")
+			except:
+				pass
 		#this is little faster than Object
 		langs=[]
 		for i in acenv.langs:
