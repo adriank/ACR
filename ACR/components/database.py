@@ -152,6 +152,7 @@ class DataBase(Component):
 			"server":params.get("server", "default"),
 			"return":params.get("get","table"),
 			"command":conf["command"],
+			#TODO change it to re.strip
 			"cdata":map(str.strip,params.get("cdata","").split(","))
 		}
 

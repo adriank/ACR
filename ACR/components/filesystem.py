@@ -209,11 +209,7 @@ class FileSystem(Component):
 				elif type(elem) is str:
 					s.append(elem)
 			ret["content"]=prepareVars("\n".join(s))
-		p=conf["params"]
-		params={}
-		for i in p:
-			params[i.lower()]=prepareVars(p[i])
-		ret["params"]=params
+		ret["params"]=conf["params"]
 		return ret
 
 def getObject(config):

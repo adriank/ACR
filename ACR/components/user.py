@@ -66,7 +66,6 @@ class User(Component):
 
 	def register(self,acenv,conf):
 		email=replaceVars_new(acenv,conf["email"])
-		print email
 		password=replaceVars_new(acenv,conf["password"])
 		sql="select exists(select * from %s.emails where email='%s')"%(globals.dbschema,email)
 		key=md5_constructor(password).hexdigest()

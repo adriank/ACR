@@ -16,12 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils import replaceVars,generateID
+from ACR.utils import replaceVars_new,generateID
 from ACR.components import *
+from ACR.utils.hashcompat import md5_constructor
 
 class KeyGenerator(Component):
-	def generate(self,env,actionConf):
+	def generate(self,env,conf):
 		#D=env.doDebug
+		command=conf["command"]
+		if command=="md5":
+			password=replaceVars_new(conf["params"]["passwd"])
+			return Object(md5_constructor(password).hexdigest())
 		return Object(generateID())
 
 def getObject(config):
