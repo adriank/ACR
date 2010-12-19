@@ -68,7 +68,8 @@ class User(Component):
 		email=replaceVars_new(acenv,conf["email"])
 		password=replaceVars_new(acenv,conf["password"])
 		sql="select exists(select * from %s.emails where email='%s')"%(globals.dbschema,email)
-		key=md5_constructor(password).hexdigest()
+		passwd=md5_constructor(password).hexdigest()
+		key=generateID()
 		#returns False if email is not registered yet
 		if acenv.app.getDBConn().query(sql)["rows"][0][0]:
 			o=Object()
@@ -82,7 +83,14 @@ class User(Component):
 		INSERT into %s.emails
 			(email,_user,approval_key)
 		VALUES
-			('%s', (%s), '%s')"""%(globals.dbschema,key,globals.dbschema,email,id,generateID())
+			('%s', (%s), '%s')"""%(
+			globals.dbschema,
+			passwd,
+			globals.dbschema,
+			email,
+			id,
+			key
+		)
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
 		return Object()

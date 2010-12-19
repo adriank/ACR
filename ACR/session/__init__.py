@@ -19,7 +19,7 @@
 
 # highly modified Django code, relicensed under GPL
 
-import os,sys,time,random,base64,logging
+import os,sys,time,random,base64
 from ACR import globals
 from ACR.utils import HTTP
 from datetime import datetime, timedelta
@@ -28,8 +28,6 @@ try:
 	import cPickle as pickle
 except ImportError:
 	import pickle
-
-log = logging.getLogger('ACR.session.base')
 
 if hasattr(random, 'SystemRandom'):
 	randrange = random.SystemRandom().randrange
@@ -111,12 +109,12 @@ class Session(object):
 		raise NotImplementedError
 
 	def create(self,acenv):
-		log.debug("executed, function with no parameters")
+		#log.debug("executed, function with no parameters")
 		self.id=self.generateID()
 		HTTP.setCookie(acenv,{"name":"SESS", "value":self.id, "path":"/"})
 
 	def deleteCookie(self,acenv):
-		log.info("Deleting session cookie")
+		#log.info("Deleting session cookie")
 		import time
 		t=time.time()-10000
 		log.debug("Session cookie deleted by setting date to %s",t)
