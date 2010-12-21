@@ -18,10 +18,10 @@ else:
 PREFIX_DELIMITER="::"
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
 RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
-D=False
 
 def getStorage(env,s):
-	if D: log.debug("Executed with s=%s",s)
+	D=env.doDebug
+	if D: env.debug("Executed with s=%s",s)
 	s=s.lower()
 	if s=="session" or s=="ss":
 		if not env.sessionStorage:
@@ -44,7 +44,7 @@ def replaceVars_new(env,l,fn=None):
 	for i in l:
 		if type(i) is tuple:
 			storage=getStorage(env,i[0])
-			v=dicttree.get(storage,i[1])
+			v=dicttree.get(storage,i[1],False)
 			doFN=True
 			if type(v) is Object:
 				try:
