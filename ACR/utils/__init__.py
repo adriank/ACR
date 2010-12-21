@@ -44,7 +44,7 @@ def replaceVars_new(env,l,fn=None):
 	for i in l:
 		if type(i) is tuple:
 			storage=getStorage(env,i[0])
-			v=dicttree.get(storage,i[1],False)
+			v=dicttree.get(storage,i[1])
 			doFN=True
 			if type(v) is Object:
 				try:
