@@ -245,6 +245,7 @@ class View(object):
 		return ret
 
 	def fillPosts(self,acenv):
+		D=acenv.doDebug
 		if D: acenv.info("Create '%s' view",(self.name))
 		if not self.postSchemas or not len(self.postSchemas):
 			if D: acenv.debug("list of posts is empty. Returning 'True'.")
@@ -265,6 +266,7 @@ class View(object):
 				raise Error("NotValidValue", "Value of %s is invalid"%(i))
 
 	def fillInputs(self,acenv):
+		D=acenv.doDebug
 		list=acenv.inputs
 		inputSchemas=self.inputSchemas
 		if not inputSchemas or not len(inputSchemas):

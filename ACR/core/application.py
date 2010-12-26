@@ -29,11 +29,11 @@ from ACR import components,serializers
 from ACR.components import *
 from ACR.globals import MIMEmapper
 import time,os
+import locale
 
 pjoin=os.path.join
 pexists=os.path.exists
 pisdir=os.path.isdir
-D=False
 
 class Application(object):
 	appName=""
@@ -228,12 +228,13 @@ class Application(object):
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [defaultLang]+attrs.get("supported", "").split(",")))
 		self.lang=self.langs[0]
+		locale.setlocale(locale.LC_ALL, locale.normalize(self.lang+".UTF8"))
 
 	def __str__(self):
 		return str(self.__dict__)
 
 	def __setattr__(self, name, val):
 		if self.immutable and not name=="DEFAULT_DB":
-			if D: log.error("%s is read only",name)
+			#if D: log.error("%s is read only",name)
 			raise Exception("PropertyImmutable")
 		self.__dict__[name]=val

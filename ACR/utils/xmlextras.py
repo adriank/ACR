@@ -25,9 +25,9 @@ from xml.sax.saxutils import escape,unescape
 from ACR.errors import Error
 from ACR.utils.generations import Object,List
 import re
+from datetime import datetime
 
 RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
-D=False
 unescapeDict={"&apos;":"'","&quot;":"\""}
 escapeDict={"'":"&apos;","\"":"&quot;"}
 
@@ -79,7 +79,8 @@ def tree2xml(root,esc=False):
 	returns: xml tree parsed to a xml
 	"""
 	def rec(node):
-		if type(node) in [Object,List]:
+		nodetype=type(node)
+		if nodetype in [Object,List]:
 			tag=node._name
 			content=node._value
 			attrs=node.__dict__#.copy()
@@ -88,7 +89,7 @@ def tree2xml(root,esc=False):
 				attrs.pop("_doFn")
 			except:
 				pass
-		elif type(node) is tuple:
+		elif nodetype is tuple:
 			tag=node[0]
 			attrs=node[1]
 			content=node[2]
@@ -111,10 +112,12 @@ def tree2xml(root,esc=False):
 				for i in content:
 					typei=type(i)
 					if typei is str:
-						sI=str(i)
+						sI=i
 						if esc:
 							sI=escape(sI)
 						tab.append(sI)
+					elif typei is datetime:
+						tab.append(i.strftime("%A, %d %B %Y, %X"))
 					elif typei in [tuple,Object,List,list]:
 						rec(i)
 					else:

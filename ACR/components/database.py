@@ -135,7 +135,7 @@ class DataBase(Component):
 				#	#value
 				#	return Object(ret[2][0][2][0])
 			else:
-				return List(ret) #("list",{},ret)
+				return List(ret)
 		else:
 			return Object()
 		return ret
