@@ -22,7 +22,7 @@ import re
 import os
 import mimetypes
 from ACR.backends.WSGIHandler import application
-from ACR import globals
+from ACR import acconfig
 from ACR.utils.xmlextras import xml2tree
 
 def r(s):
@@ -33,10 +33,10 @@ def serve_static(env,start_response):
 	length=0
 	status="200 OK"
 	extension=env["PATH_INFO"].split(".").pop()
-	if globals.appDir:
-		path=globals.appDir
+	if acconfig.appDir:
+		path=acconfig.appDir
 	else:
-		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(":")[0])
+		path=os.path.join(acconfig.appsDir,env["HTTP_HOST"].split(":")[0])
 	try:
 		config=xml2tree(os.path.join(path,"config.xml"))
 	except IOError:

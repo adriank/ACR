@@ -18,13 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import psycopg2 as dbapi
-from ACR import globals
+from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.xmlextras import escapeQuotes
-#import logging
-
-#log=logging.getLogger('ACR.dbHandler.pg')
-#D=logging.doLog
 
 class handler(object):
 	def __init__(self,conf):
@@ -36,19 +32,19 @@ class handler(object):
 		self.conn=dbapi.connect("dbname='"+conf["defaultdb"]+"' host='"+host+"' user='"+conf["user"]+"' password='"+conf["password"]+"'")
 		self.conn.set_isolation_level(0)
 		#if D: log.info("Successfuly connected to PostgreSQL.")
-		q="SET search_path TO "+globals.dbschema+", public"
-		if conf.has_key("schema"):
-			q+=", "+conf["schema"]
+		#q="SET CLIENT_ENCODING TO '';SET search_path TO "+acconfig.dbschema+", public"
+		#if conf.has_key("schema"):
+		#	q+=", "+conf["schema"]
 		#TODO lazy query - should be executed with first query
 		#if D: log.warning("Internal database query. Change debug level to 'debug' to see details.")
-		try:
-			self.query(q)
-		except:
-			pass
+		#try:
+		#	self.query(q)
+		#except:
+		#	pass
 
 	def query(self,sql):
 		#if D: log.debug("Executing with sql='%s' and dictionary=%s",sql,dictionary)
-		#if globals.config.has_key("debug") and globals.config["debug"]:
+		#if acconfig.config.has_key("debug") and acconfig.config["debug"]:
 		#	import time
 		#	t=time.time()
 		#return None

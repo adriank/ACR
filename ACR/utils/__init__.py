@@ -8,7 +8,7 @@ from ACR.utils.hashcompat import md5_constructor
 from ACR.utils.xmlextras import escapeQuotes
 from ACR.utils import dicttree
 from ACR.utils.generations import Object,List
-from ACR import globals
+from ACR import acconfig
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -34,12 +34,14 @@ def getStorage(env,s):
 	return env.requestStorage
 
 def replaceVars_new(env,l,fn=None):
+	"""
+	l - output of prepareVars
+	fn - function that will be executed on each string
+	"""
 	try:
 		l.__iter__
 	except:
 		return l
-	#print "replaceVars_new"
-	#print l
 	ret=[]
 	for i in l:
 		if type(i) is tuple:
@@ -123,7 +125,7 @@ def prepareVars(s):
 
 def generateID(secret=None):
 	if secret is None:
-		secret=globals.SECRET_KEY
+		secret=acconfig.SECRET_KEY
 	key=md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
 	return key
 

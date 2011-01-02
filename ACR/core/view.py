@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.utils.xmlextras import *
-from ACR import globals
+from ACR import acconfig
 from ACR import components
 from ACR.errors import *
 from ACR.utils import getStorage,replaceVars,prepareVars,typesMap

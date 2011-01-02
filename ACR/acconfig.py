@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+
 dbschema="asyncode"
 SECRET_KEY="MySecret"
 appDir=""
 appsDir=""
-dirs=None
 
 logLevels={
 	'debug': logging.DEBUG,
@@ -39,9 +39,3 @@ MIMEmapper={
 	"application/json":"json",
 	"application/xhtml+xml":"objectml"
 }
-
-class Request:
-	def __init__(self):
-		self.headers = []
-		
-request = Request()

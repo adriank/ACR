@@ -25,10 +25,6 @@ class Object(Generation):
 
 class List(Generation):
 	_name="list"
-	#def __init__(self,value=None):
-	#	#checks if value is indeed a list (iterable, sequence)
-	#	iter(value)
-	#	self._value=value
 
 	def __str__(self):
 		if type(self._value) is str:

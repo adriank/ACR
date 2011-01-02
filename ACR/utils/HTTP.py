@@ -21,7 +21,7 @@
 
 import urllib,time,cgi
 from ACR.utils.xmlextras import escapeQuotes,unescapeQuotes
-from ACR import globals
+from ACR import acconfig
 from email.Utils import formatdate
 
 #D=False
@@ -133,7 +133,7 @@ def parseCookies(acenv,s):
 
 def setCookie(acenv,cookie, test=False):
 	"""
-	Inserts a cookie to globals.request.headers.
+	Inserts a cookie to acconfig.request.headers.
 	input: an Environment object's instance and dict.
 	returns: if optional parameter test is set, returns headers.
 					 otherwise, returns None

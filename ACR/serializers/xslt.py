@@ -20,7 +20,7 @@ def transform(xml,xslt):
 		try:
 			#TODO implement checking for change of *ALL* xslt files
 			XSLTCache[xslt]=libxslt.parseStylesheetFile(xslt)
-	#		raise str(dir(globals.XSLTCache))
+	#		raise str(dir(acconfig.XSLTCache))
 		except Exception,e:
 			return "XSLT parsing Error."
 	r=XSLTCache[xslt].applyStylesheet(doc, None)

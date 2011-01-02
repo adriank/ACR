@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.utils import replaceVars
-from ACR import globals
+from ACR import acconfig
 from ACR.errors import *
 import sys
 from ACR.utils.generations import *

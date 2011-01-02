@@ -150,7 +150,7 @@ class Tester:
             #print "Result: %.2f correctness." % ((amountAll - amountFailed)/float(amountAll) * 100.0)
             #print "Ended test suite in %.2f\n" % (endTestSet - startTestSet)
         if count > 1:
-            # #prints globals statistic
+            # #prints acconfig statistic
             #print "Overall corectness: %.2f" % ((amountGlobal - amountGlobalFailed)/float(amountGlobal) * 100.0)
         if self.cleanup != None:
             self.cleanup()

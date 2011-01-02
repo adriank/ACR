@@ -20,7 +20,7 @@
 from ACR.components import *
 from ACR.utils import replaceVars
 from ACR.utils.xmlextras import tree2xml
-from ACR import globals
+from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils import json
 

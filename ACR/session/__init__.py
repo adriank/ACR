@@ -20,7 +20,7 @@
 # highly modified Django code, relicensed under GPL
 
 import os,sys,time,random,base64
-from ACR import globals
+from ACR import acconfig
 from ACR.utils import HTTP
 from datetime import datetime, timedelta
 from ACR.utils.hashcompat import md5_constructor
@@ -69,7 +69,7 @@ class Session(object):
 		del self.data[key]
 		self.modified = True
 
-	def generateID(self, secret=globals.SECRET_KEY):
+	def generateID(self, secret=acconfig.SECRET_KEY):
 		"Returns session key that isn't being used."
 		# The random module is seeded when this Apache child is created.
 		# Use settings.SECRET_KEY as added salt.
@@ -87,13 +87,13 @@ class Session(object):
 	def encode(self, session_dict):
 		"Returns the given session dictionary pickled and encoded as a string."
 		pickled = pickle.dumps(session_dict, pickle.HIGHEST_PROTOCOL)
-		pickled_md5 = md5_constructor(pickled + globals.SECRET_KEY).hexdigest()
+		pickled_md5 = md5_constructor(pickled + acconfig.SECRET_KEY).hexdigest()
 		return base64.encodestring(pickled + pickled_md5)
 
 	def decode(self, session_data):
 		encoded_data = base64.decodestring(session_data)
 		pickled, tamper_check = encoded_data[:-32], encoded_data[-32:]
-		if md5_constructor(pickled + globals.SECRET_KEY).hexdigest() != tamper_check:
+		if md5_constructor(pickled + acconfig.SECRET_KEY).hexdigest() != tamper_check:
 			raise SuspiciousOperation("User tampered with session cookie.")
 		try:
 			return pickle.loads(pickled)

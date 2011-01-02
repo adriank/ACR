@@ -16,15 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR import globals
+from ACR import acconfig
 from ACR.errors import *
 from ACR.utils import replaceVars_new,prepareVars
 from ACR.components import *
 from ACR import db
 import time
 import re
+import locale
 
-#re.I==case-insensitive regular expression
+#re.I is case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
 
 class DataBase(Component):
@@ -44,6 +45,7 @@ class DataBase(Component):
 			for node in i[2]:
 				cfg[node[0]]="".join(node[2]).strip()
 			conn=db.get(cfg)
+			#conn.query("SET CLIENT_ENCODING TO '%s'"%(locale.normalize(config["lang"]+".UTF8")))
 			self.CONNECTIONS[attrs.get("name","default")]=conn
 			if attrs.get("default",False):#attrs["default"] is True or False or is not set
 				self.CONNECTIONS["default"]=conn

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import globals
+import acconfig
 import sys
 import cPickle
 
 def get(name):
 	try:
-		file=open(globals.installDir+"/cache/"+name+".dump","r")
+		file=open(acconfig.installDir+"/cache/"+name+".dump","r")
 		return cPickle.load(file)
 	except IOError:
 		return False
@@ -15,7 +15,7 @@ def get(name):
 
 def add(obj):
 	try:
-		file=open(globals.installDir+"/cache/"+name+".dump","w")
+		file=open(acconfig.installDir+"/cache/"+name+".dump","w")
 		return cPickle.dump(obj,file,2)
 	except IOError:
 		return False

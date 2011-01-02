@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR import globals
+from ACR import acconfig
 import logging
 
 log = logging.getLogger('ACR.session.file')
@@ -25,10 +25,10 @@ log = logging.getLogger('ACR.session.file')
 def create():
 	log.info("Creating fake account")
 	log.warning("Executing internal query")
-	sql="insert into "+globals.dbschema+""".users DEFAULT VALUES;
-	SELECT currval('"""+globals.dbschema+".users_id_seq') AS id"""
-	id=globals.getDB().rawQuery(sql)[0]['id']
-	log.info("Adding ID=%s, fake=True and lang=%s to session storage",id,globals.defaultLang)
-	globals.session['ID']=id
-	globals.session["fake"]=True
-	globals.session['lang']=globals.defaultLang
+	sql="insert into "+acconfig.dbschema+""".users DEFAULT VALUES;
+	SELECT currval('"""+acconfig.dbschema+".users_id_seq') AS id"""
+	id=acconfig.getDB().rawQuery(sql)[0]['id']
+	log.info("Adding ID=%s, fake=True and lang=%s to session storage",id,acconfig.defaultLang)
+	acconfig.session['ID']=id
+	acconfig.session["fake"]=True
+	acconfig.session['lang']=acconfig.defaultLang

@@ -20,7 +20,7 @@
 # highly modified Django code, relicensed under GPL
 
 import errno,os,tempfile
-from ACR import globals
+from ACR import acconfig
 from ACR.session import Session
 from ACR.errors import Error
 

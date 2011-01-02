@@ -27,7 +27,7 @@ from ACR.core.view import View
 from ACR.errors import *
 from ACR import components,serializers
 from ACR.components import *
-from ACR.globals import MIMEmapper
+from ACR.acconfig import MIMEmapper
 import time,os
 import locale
 
@@ -198,7 +198,7 @@ class Application(object):
 			acenv.generations["acf:user"]=("object",{"ID":str(sess["ID"]),"name":"acf:user","email":sess["email"],"role":sess["role"]},None)
 			acenv.sessionStorage.save()
 		try:
-			s=serializers.get(globals.MIMEmapper.get(acenv.output["format"]))
+			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"]))
 		except Error, e:
 			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"

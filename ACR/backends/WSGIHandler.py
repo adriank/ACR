@@ -20,7 +20,7 @@
 #TODO this file is mess. Need for full rewrite.
 
 import sys,os,re,time
-from ACR import globals,errors
+from ACR import acconfig,errors
 from ACR.utils import HTTP
 from ACR.core.environment import Environment
 from ACR.core.application import Application
@@ -53,10 +53,10 @@ def computeMIME(mime,agent):
 def application(env,start_response):
 	t=time.time()
 	response=[]
-	if globals.appsDir:
-		path=os.path.join(globals.appsDir,env["HTTP_HOST"].split(':')[0])
+	if acconfig.appsDir:
+		path=os.path.join(acconfig.appsDir,env["HTTP_HOST"].split(':')[0])
 	else:
-		path=globals.appDir
+		path=acconfig.appDir
 	D=False
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
@@ -72,7 +72,7 @@ def application(env,start_response):
 	acenv.UA=env["HTTP_USER_AGENT"]
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
 	#if app.debug["enabled"]:
-	#	log.setLevel(globals.logLevels.get(app.debug["level"],logging.ERROR))
+	#	log.setLevel(acconfig.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE',None):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))

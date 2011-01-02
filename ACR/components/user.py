@@ -19,7 +19,7 @@
 
 from ACR.components import *
 from ACR.utils import replaceVars_new,generateID
-from ACR import globals
+from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
 from ACR.session.file import FileSession
@@ -30,7 +30,7 @@ class User(Component):
 		ret=Object()
 		email=replaceVars_new(acenv,conf["email"])
 		password=replaceVars_new(acenv,conf["password"])
-		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(globals.dbschema,globals.dbschema,email)
+		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(acconfig.dbschema,acconfig.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
 			result=dict(zip(result["fields"], result["rows"][0]))
@@ -67,7 +67,7 @@ class User(Component):
 	def register(self,acenv,conf):
 		email=replaceVars_new(acenv,conf["email"])
 		password=replaceVars_new(acenv,conf["password"])
-		sql="select exists(select * from %s.emails where email='%s')"%(globals.dbschema,email)
+		sql="select exists(select * from %s.emails where email='%s')"%(acconfig.dbschema,email)
 		passwd=md5_constructor(password).hexdigest()
 		key=generateID()
 		#returns False if email is not registered yet
@@ -75,7 +75,7 @@ class User(Component):
 			o=Object()
 			o.error="EmailAdressAllreadySubscribed"
 			return o
-		id="SELECT currval('%s.users_id_seq')"%(globals.dbschema)
+		id="SELECT currval('%s.users_id_seq')"%(acconfig.dbschema)
 		sql="""INSERT into %s.users
 			(password)
 		VALUES
@@ -84,9 +84,9 @@ class User(Component):
 			(email,_user,approval_key)
 		VALUES
 			('%s', (%s), '%s')"""%(
-			globals.dbschema,
+			acconfig.dbschema,
 			passwd,
-			globals.dbschema,
+			acconfig.dbschema,
 			email,
 			id,
 			key
