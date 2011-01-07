@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from ACR.utils.interpreter import *
+import readline
+
 class FakeEnv(object):
 	requestStorage={}
 	doDebug=False
@@ -21,3 +23,4 @@ try:
 			print e
 except KeyboardInterrupt:
 	pass
+print
