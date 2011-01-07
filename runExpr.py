@@ -15,6 +15,9 @@ print """AC Runtime BLSL Expression interactive shell
 
 try:
 	while True:
-		print make_tree(raw_input(">>> ")).execute(fakeEnv)
+		try:
+			print make_tree(raw_input(">>> ")).execute(fakeEnv)
+		except Exception,e:
+			print e
 except KeyboardInterrupt:
 	pass

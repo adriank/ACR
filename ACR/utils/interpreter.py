@@ -441,9 +441,15 @@ class Tree(object):
 			elif op=="and":
 				return exe(node[1]) and exe(node[2])
 			elif op=="+":
-				return exe(node[1]) + exe(node[2])
+				if len(node)>2:
+					return exe(node[1]) + exe(node[2])
+				else:
+					return exe(node[1])
 			elif op=="-":
-				return exe(node[1]) - exe(node[2])
+				if len(node)>2:
+					return exe(node[1]) - exe(node[2])
+				else:
+					return - exe(node[1])
 			elif op=="*":
 				return exe(node[1]) * exe(node[2])
 			elif op=="/":
