@@ -36,7 +36,10 @@ class symbol_base(object):
 				if fstLetter is "'":
 					return self.value[1:-1]
 				elif fstLetter.isdigit():
-					return int(self.value)
+					try:
+						return int(self.value)
+					except:
+						return float(self.value)
 				else:
 					if self.value=="True":
 						return True
@@ -437,6 +440,14 @@ class Tree(object):
 				return exe(node[1]) or exe(node[2])
 			elif op=="and":
 				return exe(node[1]) and exe(node[2])
+			elif op=="+":
+				return exe(node[1]) + exe(node[2])
+			elif op=="-":
+				return exe(node[1]) - exe(node[2])
+			elif op=="*":
+				return exe(node[1]) * exe(node[2])
+			elif op=="/":
+				return exe(node[1]) / exe(node[2])
 			elif op=="not":
 				return not exe(node[1])
 			elif op=="in":
