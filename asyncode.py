@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import argparse
 import sys,os
 from wsgiref.simple_server import make_server
 from wsgiref import simple_server
 from ACR.backends.standalone import standalone_server
 from ACR import acconfig
 
-acconfig.appsDir="/home/adrian/projects/"
-host=""
-port=9999
-if len(sys.argv)>1:
-	port=int(sys.argv[1])
+#acconfig.appsDir="/home/adrian/projects/"
+#host=""
+#port=9999
+#if len(sys.argv)>1:
+#	port=int(sys.argv[1])
 #print os.getpid()
 
 class WSGIServer(simple_server.WSGIServer):
@@ -22,6 +23,21 @@ class Handler(simple_server.WSGIRequestHandler):
 
 #args = parser.parse_args()
 
-httpd=WSGIServer((host,port), Handler)
-httpd.set_app(standalone_server)
-httpd.serve_forever()
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser(description='Command line options')
+	parser.add_argument('--port', type=int, help='port number')
+	parser.add_argument('--host', dest='host', help='host')
+	parser.add_argument('-p', '--project', dest='appsDir', help='project dir')
+	parser.add_argument('-P', '--projectDir', dest='appDir', help='project common dir')
+	parser.add_argument('-c', '--config', dest='ACRconf', help='config file')
+	parser.set_defaults(port = 9999, host='', appsDir='', appDir='', ACRconf='')
+	args = parser.parse_args()
+	print args
+
+	acconfig.appsDir = args.appsDir
+	acconfig.ACRconf = args.ACRconf #"/home/adrian/ACR/ACRconf.xml"
+	acconfig.appDir = args.appDir #"/home/adrian/ACR/adrian/doc/"
+
+	httpd = WSGIServer((args.host, args.port), Handler)
+	httpd.set_app(standalone_server)
+	httpd.serve_forever()
