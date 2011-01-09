@@ -109,7 +109,7 @@ class View(object):
 			elif name=="output":
 				output.append(node)
 			elif name=="post":
-				postSchemas=filter(lambda x: type(x) is not str, i[2])
+				postSchemas=filter(lambda x: type(x) is not str, node[2])
 			elif name in ACTIONS:
 				actions.append(node)
 		self.conditions=self.parseConditions(conditions)
@@ -249,10 +249,12 @@ class View(object):
 
 	def fillPosts(self,acenv):
 		D=acenv.doDebug
-		if D: acenv.info("Create '%s' view",(self.name))
+		if D:
+			acenv.debug("START fillPosts")
 		if not self.postSchemas or not len(self.postSchemas):
-			if D: acenv.debug("list of posts is empty. Returning 'True'.")
+			if D: acenv.debug("posts schema is empty. Returning 'True'.")
 			return True
+		if D:acenv.debug("postSchemas is %s",self.postSchemas)
 		list=acenv.posts
 		if not list or len(list)<self.postCount:
 			#TODO normalize the Error messages!
@@ -271,14 +273,13 @@ class View(object):
 	def fillInputs(self,acenv):
 		D=acenv.doDebug
 		if D: acenv.debug("START fillInputs")
-		list=acenv.inputs
 		inputSchemas=self.inputSchemas
-		if D:
-			acenv.debug("inputSchemas are: %s",inputSchemas)
-			acenv.debug("inputs are: %s",list)
+		if D: acenv.debug("inputSchemas are: %s",inputSchemas)
 		if not inputSchemas or not len(inputSchemas):
 			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
+		list=acenv.inputs
+		if D: acenv.debug("inputs are: %s",list)
 		for i in inputSchemas:
 			typ=i["type"]
 			try:
