@@ -325,7 +325,7 @@ class View(object):
 					ns,name=NS2Tuple(action["name"],"::")
 					default=action.get("default")
 					if default:
-						getStorage(acenv,ns or "rs")[name]=default
+						getStorage(acenv,ns or "rs")[name]=default.execute(acenv)
 				continue
 			component=self.app.getComponent(action["component"])
 			#object or list
