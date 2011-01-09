@@ -241,15 +241,16 @@ class View(object):
 						j+=1
 				except:
 					pass
-				if not before and not after:
-					try:
-						ret[j]=o
-					except:
-						pass
-					continue
 				else:
-					#the before or after will handle insertion
-					ret.pop(j)
+					if not before and not after:
+						try:
+							ret[j]=o
+						except:
+							pass
+						continue
+					else:
+						#the before or after will handle insertion
+						ret.pop(j)
 			#inserts or appends when ref was not found
 			j=0
 			try:
