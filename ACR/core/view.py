@@ -24,7 +24,7 @@ from ACR.errors import *
 from ACR.utils import getStorage,replaceVars,prepareVars,typesMap
 from ACR.utils.interpreter import make_tree
 from ACR.components import Object, List
-import os
+import os,re
 
 DEFINE="define"
 SET="set"
@@ -63,10 +63,7 @@ def parseInputs(nodes):
 	return ret
 
 class View(object):
-	#timestamp=0 #file modification timestamp
-	#path="" file path
 	def __init__(self, name, app):
-		#if D: log.info("Created %s",name)
 		#All "static" computations should be here. Don't do it inside handle!
 		#setting immutable because of setter
 		self.immutable=False
@@ -79,43 +76,42 @@ class View(object):
 		#TODO support more exception classes;
 		#except Exception,e:
 		#	self.immutable=True
-		#	raise e
 		#	raise ViewNotFound("view '%s' not found"%(name))
-		#the order of inputs is meaningful - needs to be list
 		ns={}
 		if not tree[1]:
 			return
-		#parses xmlns: attributes and extracts namespaces
+		#parses "xmlns:" attributes and extracts namespaces
 		for i in tree[1]:
 			if i.startswith("xmlns:"):
 				key=i.split(":")[1]
 				value=tree[1][i].split("/").pop().lower()
 				ns[key]=value
 		self.namespaces=ns
+		#checks whether view inherits from another view
+		try:
+			self.parent=app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"].split("/")))[0]
+		except:
+			self.parent=None
 		inputSchemas=[]
 		conditions=[]
 		actions=[]
 		postSchemas=[]
 		output=[]
-		try:
-			self.parent = app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"]  .split("/")))[0]
-			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
-		except:
-			self.parent = None
 		ACTIONS=[SET,DEFINE,IMPORT]
-		for i in tree[2]:
-			if type(i) is str:
+		for node in tree[2]:
+			if type(node) is str:
 				continue
-			elif i[0]=="param":
-				inputSchemas.append(i)
-			elif i[0]=="condition":
-				conditions.append(i)
-			elif i[0]=="output":
-				output.append(i)
-			elif i[0]=="post":
+			name=node[0]
+			if name=="param":
+				inputSchemas.append(node)
+			elif name=="condition":
+				conditions.append(node)
+			elif name=="output":
+				output.append(node)
+			elif name=="post":
 				postSchemas=filter(lambda x: type(x) is not str, i[2])
-			elif i[0] in ACTIONS:
-				actions.append(i)
+			elif name in ACTIONS:
+				actions.append(node)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
 		self.inputSchemas=parseInputs(inputSchemas) or []
@@ -153,8 +149,8 @@ class View(object):
 		for i in a:
 			attrs=i[1]
 			ret.append({
-				"name": attrs.get("name", None),
-				"value": make_tree(attrs.get("value", None) or "".join(i[2]).strip())
+				"name":attrs.get("name"),
+				"value":make_tree(attrs.get("value") or "".join(i[2]).strip())
 			})
 		return ret
 
@@ -164,104 +160,91 @@ class View(object):
 				return False
 		return True
 
+	#def importAction(self,action):
+	#	path=re.split("/*",action[1].get("path"))
+	#	v=self.app.getView(path[:-1])[0]
+	#	for a in v.actions:
+	#		if a["name"]==path[-1]:
+	#			ret.append(a)
+	#			ret[-1]["name"]=action[1].get("name", None)
+	#			break
+
+	def parseAction(self,action):
+		""" Gets tuple representation of action XML element and returns dict-based configuration """
+		attrs=action[1]
+		ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
+		params={}
+		if ns:
+			for attr in attrs:
+				if attr.startswith(ns+":") and not attr==ns+cmd:
+					params[attr.split(":").pop()]=prepareVars(action[1][attr])
+		ret={
+			"command":cmd,
+			"params":params,
+			"content":action[2]
+		}
+		if action[0]==DEFINE:
+			ret["output"]=True
+		return ret
+
 	def parseActions(self,actions):
+		def findAction(actions,name):
+			if not name:
+				return None
+			i=len(actions)-1
+			if i<=0:
+				return None
+			try:
+				while not actions[i]["name"]==name:
+					i-=1
+				return i
+			except:
+				return None
+			else:
+				return len(actions)
+
 		if self.parent:
 			ret=self.parent.actions[:]
 		else:
-			ret = []
-		#try:
-		for i in actions:
-			# import should check befere and after?
-			if i[0]=="import":
-				path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
-				v=self.app.getView(path[:-1])[0]
-				for a in v.actions:
-					if a["name"]==path[-1]:
-						ret.append(a)
-						ret[-1]["name"] = i[1].get("name", None)
-						break
-				continue
-			attrs=i[1]
-			#if D: log.debug("parsing action '%s' config for component %s",attrs.get("name","NotSet"),attrs["component"])
-			action=NS2Tuple(i[0])[1]
-			ns=None
-			cmd="default"
-			if attrs.has_key(COMMAND):
-				ns,cmd=NS2Tuple(attrs[COMMAND])
+			ret=[]
+		for action in actions:
+			#if i[0]=="import":
+			#	self.importAction(i[0])
+			#	continue
+			typ=action[0]
+			attrs=action[1]
+			ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
 			componentName=self.namespaces.get(ns,"default")
-			params={}
-			if ns:
-				for attr in attrs:
-					#TODO and not attr=.. is it necessary?
-					if attr.startswith(ns+":") and not attr==ns+cmd:
-						params[attr.split(":").pop()]=prepareVars(i[1][attr])
-			actionConfig={
-				"command":cmd,
-				"params":params,
-				"content":i[2]
-			}
-			if action==DEFINE:
-				actionConfig["output"]=True
-			if attrs.has_key("condition"):
-				condition=make_tree(attrs["condition"])
-			else:
-				condition=None
-			if attrs.has_key("default"):
-				default=make_tree(attrs["default"])
-			else:
-				default=None
 			o={
-				"type":action,#DEFINE or SET
-				"command":cmd,#command name
+				"type":typ,#DEFINE or SET
+				#"command":cmd,#command name
 				"name":attrs.get("name",None),
 				"component":componentName,
-				"condition":condition,
-				"default":default,
-				"config":self.app.getComponent(componentName).parseAction(actionConfig),
+				"condition":make_tree(attrs.get("condition")),
+				"default":make_tree(attrs.get("default")),
+				"config":self.app.getComponent(componentName).parseAction(self.parseAction(action)),
 			}
+
+			# positions the action in the list of actions
 			before=attrs.get("before")
 			after=attrs.get("after")
+			parentPos=findAction(ret,o["name"])
 			if before:
 				if before=='*':
 					ret.insert(0, o)
-					continue
-				pos=0
-				refName=before
+					ret.pop(parentPos)
+				else:
+					ret.insert(findAction(ret,before),o)
 			elif after:
 				if after=='*':
 					ret.append(o)
-					continue
-				pos=1
-				refName=after
-			j=0
-			#replaces existing action
-			if self.parent:
-				try:
-					while not ret[j]["name"]==o["name"]:
-						j+=1
-				except:
-					pass
+					ret.pop(parentPos)
 				else:
-					if not before and not after:
-						try:
-							ret[j]=o
-						except:
-							pass
-						continue
-					else:
-						#the before or after will handle insertion
-						ret.pop(j)
-			#inserts or appends when ref was not found
-			j=0
-			try:
-				while not ret[j]["name"]==name:
-					j+=1
-			except:
-				ret.append(o)
+					ret.insert(findAction(ret,after)+1,o)
 			else:
-				ret.insert(j+pos, o)
-		#except Error,e:
-			#pass
+				if parentPos:
+					ret.pop(parentPos)
+				ret.append(o)
 		return ret
 
 	def fillPosts(self,acenv):

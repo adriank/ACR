@@ -65,15 +65,9 @@ def serve_static(env,start_response):
 def standalone_server(env,start_response):
 	try:
 		extension=env["PATH_INFO"].split(".").pop()
-	except Exception,e:
+	except:
 		pass
 	else:
 		if extension=="ico" or (len(extension)<5 and mimetypes.types_map.get('.'+extension,"ERROR") !='ERROR'):
-		#log.debug("A static file request")
 			return serve_static(env,start_response)
-	#headers=[
-	#	('Content-type', mimetypes.types_map['.html'])
-	#]
-	#start_response("200 OK",headers)
-	#return ["sss"]
 	return application(env, start_response)

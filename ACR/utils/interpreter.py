@@ -418,6 +418,8 @@ def expression(rbp=0):
 	return left
 
 def make_tree(expr):
+	if expr is None:
+		return None
 	if type(expr) is not str:
 		return Tree(expr)
 	elif not len(expr.strip()):
