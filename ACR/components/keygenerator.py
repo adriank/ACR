@@ -25,8 +25,8 @@ class KeyGenerator(Component):
 		#D=env.doDebug
 		command=conf["command"]
 		if command=="md5":
-			password=replaceVars_new(conf["params"]["passwd"])
-			return Object(md5_constructor(password).hexdigest())
+			value=replaceVars_new(env,conf["params"]["value"])
+			return Object(md5_constructor(value).hexdigest())
 		return Object(generateID())
 
 def getObject(config):
