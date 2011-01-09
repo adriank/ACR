@@ -52,16 +52,10 @@ class Type(object):
 			if self.default:
 				return self.default.execute(acenv)
 			else:
-				raise Error("NotValidValue")
+				raise Error("ValueNotVaild")
 
 	def reset(self):
 		self._value=None
-
-	#def __repr__(self):
-	#	return str(self._value)
-	#
-	#def __str__(self):
-	#	return self.__repr__()
 
 	def validate(self,value,config=None):
 		return True
@@ -83,10 +77,8 @@ class Text(Type):
 
 class Number(Type):
 	def validate(self,value,config=None):
-		#if not type(value) is str:
-		#	raise Error("ShouldBeString", "Should be string but is %s",type(value))
 		if not value.isdigit():
-			raise Error("NotNumber", "Should be number")
+			raise Error("NotNumber", "Should be number, but is %s",value)
 		return True
 
 	def _prepareValue(self,value):
@@ -106,11 +98,10 @@ class Empty(Type):
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
-		# shortest is a@a.pl == 6 letters
 		if len(value) is 0:
 			return True
 		else:
-			raise Error("NotEmptyString", "Should be a empty string")
+			raise Error("NotEmptyString", "Should be an empty string")
 
 class NonEmpty(Type):
 	def validate(self,value,config=None):
@@ -121,7 +112,7 @@ class NonEmpty(Type):
 			#print value
 			return True
 		else:
-			raise Error("EmptyString", "Should be a not empty string")
+			raise Error("EmptyString", "Should not be an empty string")
 
 class HEXColor(Type):
 	COLOR_RE=re.compile("^([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})$")

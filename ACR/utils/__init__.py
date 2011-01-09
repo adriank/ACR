@@ -68,34 +68,6 @@ def replaceVars_new(env,l,fn=None):
 	except TypeError,e:
 		return ret
 
-def replaceVars(env,s,data=None,escape=False):
-	def parse(m):
-		p=m.group(0)[2:-1]
-		storageName=""
-		try:
-			storageName,path=p.split(PREFIX_DELIMITER)
-			storage=getStorage(env,storageName)
-		except ValueError:
-			storage=data or getStorage(env,"rs")
-			path=p
-		path=path.split(".")
-		ret=dicttree.get(storage,path)
-		if escape:
-			ret=escapeQuotes(str(ret))
-		if ret is None:
-			return "null"
-		if type(ret) not in [str,Object]:
-			return m.group(0)
-		#keep is None; "" is proper value
-		#if ret is None:
-		#	raise Error("NoVariable",(storageName or "rs")+" storage does not have "+".".join(path)+" property")
-		return str(ret)
-
-	#can be even faster ""%(vals) and ""%{vals} are 3x faster
-	if type(s) is not str:
-		raise Error("NotString","Not string, but "+str(s))
-	return RE_PATH.sub(parse, s)
-
 def prepareVars(s):
 	if type(s) is not str:
 		return s

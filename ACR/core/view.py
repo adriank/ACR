@@ -21,7 +21,7 @@ from ACR.utils.xmlextras import *
 from ACR import acconfig
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,replaceVars,prepareVars,typesMap
+from ACR.utils import getStorage,prepareVars,typesMap
 from ACR.utils.interpreter import make_tree
 from ACR.components import Object, List
 import os,re
@@ -270,20 +270,25 @@ class View(object):
 
 	def fillInputs(self,acenv):
 		D=acenv.doDebug
+		if D: acenv.debug("START fillInputs")
 		list=acenv.inputs
 		inputSchemas=self.inputSchemas
+		if D:
+			acenv.debug("inputSchemas are: %s",inputSchemas)
+			acenv.debug("inputs are: %s",list)
 		if not inputSchemas or not len(inputSchemas):
 			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
 			return True
-		i=-1 #i in for is not set if len returns 0
-		llen=len(list)
 		for i in inputSchemas:
 			typ=i["type"]
 			try:
-				typ.set(list.pop())
+				typ.set(list.pop(0))
 			except:
 				pass
 			acenv.requestStorage[i["name"]]=typ.get(acenv)
+		if D:
+			acenv.debug("RS is: %s",acenv.requestStorage)
+			acenv.debug("END fillInputs")
 
 	def generate(self,acenv):
 		D=acenv.doDebug
@@ -333,7 +338,6 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-			##print acenv.requestStorage
 
 		try:
 			acenv.output["format"]=self.output["format"]
