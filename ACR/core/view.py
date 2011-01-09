@@ -236,8 +236,11 @@ class View(object):
 			j=0
 			#replaces existing action
 			if self.parent:
-				while not ret[j]["name"]==o["name"]:
-					j+=1
+				try:
+					while not ret[j]["name"]==o["name"]:
+						j+=1
+				except:
+					pass
 				if not before and not after:
 					try:
 						ret[j]=o
