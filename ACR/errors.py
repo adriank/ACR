@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# AsynCode Framework - XML framework allowing developing internet
+# Asyncode Runtime - XML framework allowing developing internet
 # applications without using programming languages.
 # Copyright (C) 2008-2010  Adrian Kalbarczyk
 

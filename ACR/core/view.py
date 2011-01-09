@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# AsynCode Framework - XML framework allowing developing internet
+# Asyncode Runtime - XML framework allowing developing internet
 # applications without using programming languages.
 # Copyright (C) 2008-2010  Adrian Kalbarczyk
 
@@ -102,6 +102,7 @@ class View(object):
 			#if D: acenv.debug("Loaded base view: %s" % tree[1]["inherits"])
 		except:
 			self.parent = None
+		ACTIONS=[SET,DEFINE,IMPORT]
 		for i in tree[2]:
 			if type(i) is str:
 				continue
@@ -113,7 +114,7 @@ class View(object):
 				output.append(i)
 			elif i[0]=="post":
 				postSchemas=filter(lambda x: type(x) is not str, i[2])
-			elif i[0] in [SET,DEFINE,IMPORT]:
+			elif i[0] in ACTIONS:
 				actions.append(i)
 		self.conditions=self.parseConditions(conditions)
 		self.actions=self.parseActions(actions)
@@ -163,13 +164,13 @@ class View(object):
 				return False
 		return True
 
-	def parseActions(self,a):
+	def parseActions(self,actions):
 		if self.parent:
 			ret=self.parent.actions[:]
 		else:
 			ret = []
 		#try:
-		for i in a:
+		for i in actions:
 			# import should check befere and after?
 			if i[0]=="import":
 				path=filter(lambda x: not str.isspace(x) and len(x)!=0,i[1].get("path", None).split("/"))
@@ -185,14 +186,15 @@ class View(object):
 			action=NS2Tuple(i[0])[1]
 			ns=None
 			cmd="default"
-			if i[1].has_key(COMMAND):
-				ns,cmd=NS2Tuple(i[1][COMMAND])
+			if attrs.has_key(COMMAND):
+				ns,cmd=NS2Tuple(attrs[COMMAND])
 			componentName=self.namespaces.get(ns,"default")
 			params={}
 			if ns:
-				for j in i[1]:
-					if j.startswith(ns+":") and not j==ns+cmd:
-						params[j.split(":").pop()]=prepareVars(i[1][j])
+				for attr in attrs:
+					#TODO and not attr=.. is it necessary?
+					if attr.startswith(ns+":") and not attr==ns+cmd:
+						params[attr.split(":").pop()]=prepareVars(i[1][attr])
 			actionConfig={
 				"command":cmd,
 				"params":params,
@@ -200,8 +202,6 @@ class View(object):
 			}
 			if action==DEFINE:
 				actionConfig["output"]=True
-			before=attrs.get("before", None)
-			after=attrs.get("after", None)
 			if attrs.has_key("condition"):
 				condition=make_tree(attrs["condition"])
 			else:
@@ -219,27 +219,43 @@ class View(object):
 				"default":default,
 				"config":self.app.getComponent(componentName).parseAction(actionConfig),
 			}
-			#WTF??? n, name??
+			before=attrs.get("before")
+			after=attrs.get("after")
 			if before:
-				n,name=0,before
 				if before=='*':
 					ret.insert(0, o)
 					continue
+				pos=0
+				refName=before
 			elif after:
-				n,name=1,after
 				if after=='*':
 					ret.append(o)
 					continue
-			i=0
+				pos=1
+				refName=after
+			j=0
+			#replaces existing action
+			if self.parent:
+				while not ret[j]["name"]==o["name"]:
+					j+=1
+				if not before and not after:
+					try:
+						ret[j]=o
+					except:
+						pass
+					continue
+				else:
+					#the before or after will handle insertion
+					ret.pop(j)
+			#inserts or appends when ref was not found
+			j=0
 			try:
-				while not ret[i]["name"] == name:
-					i+=1
+				while not ret[j]["name"]==name:
+					j+=1
 			except:
-				# TODO raise Error('View not found')
 				ret.append(o)
-				#raise Error('View not found')
 			else:
-				ret.insert(i+n, o)
+				ret.insert(j+pos, o)
 		#except Error,e:
 			#pass
 		return ret
