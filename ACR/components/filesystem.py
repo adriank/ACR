@@ -96,7 +96,7 @@ class FileSystem(Component):
 				currPath=os.path.join(currPath, d)
 				if not os.path.isdir(currPath):
 					os.mkdir(currPath)
-			file=open(os.path.join(accessPath, path[-1]), 'w')
+			file=open(conf["fullpath"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except (IOError,OSError) ,e:
