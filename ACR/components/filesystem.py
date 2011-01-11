@@ -28,6 +28,7 @@ import fnmatch
 class FileSystem(Component):
 	SHOW_DIRS=True
 	SHOW_HIDDEN=False
+	ONLY_DIRS=False
 	def __init__(self,config):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
@@ -38,20 +39,17 @@ class FileSystem(Component):
 		fullpath=conf["fullpath"]
 		showDirs=conf.get("showdirs",self.SHOW_DIRS)
 		showHidden=conf.get("showhidden",self.SHOW_HIDDEN)
-		_filter=conf.get("filter",None)
-		files=os.listdir(fullpath)
-		if not showHidden:
-			files=filter(lambda file: not file[0]==".",files)
-		if not showDirs:
-			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),files)
-		#WTF???
-		#else:
-			#if D: acenv.warning("'list' has bad value: showDirs=%s", showDirs)
+		onlyDirs=conf.get("onlydirs",self.ONLY_DIRS)
+		_filter=conf.get("filter")
+		all=os.listdir(fullpath).sort()
 		if _filter:
-			files=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
-		#WTF???
-		#if conf.get("extension","")=="hide":
-		#	files=map(lambda f:	os.path.splitext(f)[0],files)
+			all=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
+		if not showHidden:
+			all=filter(lambda file: not file[0]==".",files)
+		files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),files)
+		dirs=None
+		if showDirs:
+			dirs=filter(lambda dir: dir not in files,all)
 		files.sort()
 		ret=[]
 		if len(files)==0:
@@ -59,15 +57,21 @@ class FileSystem(Component):
 			o.error="dirEmpty"
 			return o
 		path=conf["path"]
-		for i in files:
-			o=Object()
-			o.name=i
-			o.path=path
-			#o.type="file"
-			if showDirs:
-				if os.path.isdir(os.path.join(fullpath, i)):
-					o.type="dir"
-			ret.append(o)
+		if dirs:
+			for i in dirs:
+				o=Object()
+				o.name=i
+				o.path=path
+				o.type="dir"
+				ret.append(o)
+		if files and not onlyDirs:
+			for i in files:
+				o=Object()
+				o.name=i
+				o.path=path
+				#TODO change it to mimetype
+				#o.type="file"
+				ret.append(o)
 		return List(ret)
 
 	def tree(self,acenv,conf):
@@ -81,7 +85,7 @@ class FileSystem(Component):
 		if not update and os.path.isfile(conf["fullpath"]):
 			o.status="error"
 			o.error="fileExists"
-			return o #return ("object",{"status":"error","code":"fileExists"},None)
+			return o
 		try:
 			# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c', 'foo.xml']
 			path = filter(lambda x: not str.isspace(x) and len(x)!=0, conf["path"].split('/'))
