@@ -32,7 +32,7 @@ class FileSystem(Component):
 	def __init__(self,config):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
-		self.path=config[0][2][0]
+		self.abspath=config[0][2][0]
 
 	def list(self,acenv,conf):
 		D=acenv.doDebug
@@ -47,11 +47,12 @@ class FileSystem(Component):
 			all=filter(lambda file: fnmatch.fnmatch(file, _filter),all)
 		if not showHidden:
 			all=filter(lambda file: not file[0]==".",all)
-		files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),all)
+		if not onlydirs:
+			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),all)
+			files.sort()
 		dirs=None
 		if showDirs:
 			dirs=filter(lambda dir: dir not in files,all)
-		files.sort()
 		ret=[]
 		if len(files)==0:
 			o=Object()
@@ -81,7 +82,7 @@ class FileSystem(Component):
 
 	def create(self,acenv,conf,update=False):
 		D=acenv.doDebug
-		#path=os.path.join(self.path+conf["path"])
+		#path=os.path.join(self.abspath+conf["path"])
 		o=Object()
 		if not update and os.path.isfile(conf["fullpath"]):
 			o.status="error"
@@ -89,24 +90,22 @@ class FileSystem(Component):
 			return o
 		try:
 			# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c', 'foo.xml']
-			path = filter(lambda x: not str.isspace(x) and len(x)!=0, conf["path"].split('/'))
-			accessPath=self.path
+			path=os.path.normpath(conf["path"]).split("/")
+			currPath=self.abspath
 			for d in path[:-1]:
-				accessPath=os.path.join(accessPath, d)
-				if os.path.isdir(accessPath):
-					continue
-				os.mkdir(accessPath)
+				currPath=os.path.join(currPath, d)
+				if not os.path.isdir(currPath):
+					os.mkdir(currPath)
 			file=open(os.path.join(accessPath, path[-1]), 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except (IOError,OSError) ,e:
 			o.status="error"
 			o.error=e
-			return o #return ("object",{"status":"error","code":"IOError"},e)
+			return o
 		else:
 			file.close()
-		#o.status="ok"
-		return o #return ("object",{"status":"ok"},None)
+		return o
 
 	def update(self,acenv,conf):
 		return self.create(acenv,conf,True)
@@ -114,7 +113,7 @@ class FileSystem(Component):
 	def append(self,acenv,conf):
 		D=acenv.doDebug
 		o=Object()
-		path=self.path+replaceVars(acenv,conf["path"])
+		path=self.abspath+replaceVars(acenv,conf["path"])
 		content=replaceVars(acenv,conf["content"])
 		try:
 			file=open(path, 'a')
@@ -130,7 +129,7 @@ class FileSystem(Component):
 	def delete(self,acenv,conf):
 		D=acenv.doDebug
 		o=Object()
-		path=self.path+replaceVars(acenv,conf["path"])
+		path=self.abspath+replaceVars(acenv,conf["path"])
 		if (os.path.exists(path)):
 			if (os.path.isfile(path)):
 				os.remove(path)
@@ -142,23 +141,23 @@ class FileSystem(Component):
 	def copy(self,acenv,conf):
 		D=acenv.doDebug
 		o=Object()
-		copyFrom=self.path+replaceVars(acenv,conf["from"])
-		copyTo=self.path+replaceVars(acenv,conf["to"])
+		copyFrom=self.abspath+replaceVars(acenv,conf["from"])
+		copyTo=self.abspath+replaceVars(acenv,conf["to"])
 		if (os.path.isfile(copyFrom)):
 			shutil.copyfile(copyFrom, copyTo)
 		return o
 
 	def move(self,acenv,conf):
 		o=Object()
-		copyFrom=self.path+replaceVars(acenv,conf["from"])
-		copyTo=self.path+replaceVars(acenv,conf["to"])
+		copyFrom=self.abspath+replaceVars(acenv,conf["from"])
+		copyTo=self.abspath+replaceVars(acenv,conf["to"])
 		if (os.path.isfile(copyFrom)):
 			shutil.move(copyFrom, copyTo)
 		return o
 
 	def exists(self,acenv,conf):
 		o=Object()
-		path=self.path+replaceVars(acenv,conf["path"])
+		path=self.abspath+replaceVars(acenv,conf["path"])
 		o.exists=os.path.isfile(path)
 		return o
 
@@ -191,13 +190,13 @@ class FileSystem(Component):
 		if D:
 			if not conf["path"]:
 				acenv.error("path not suplied")
-			elif conf["path"][0] !=  '/':
+			elif conf["path"][0]!='/':
 				acenv.error("missning '/' character at the begginig of 'path' attribute")
 		try:
 			conf["content"]=replaceVars_new(acenv,config["content"])
 		except:
 			pass
-		conf["fullpath"]=os.path.join(self.path,*conf["path"].split("/"))
+		conf["fullpath"]=os.path.join(self.abspath,*conf["path"].split("/"))
 		return self.__getattribute__(config["command"])(acenv,conf)
 
 	def parseAction(self, conf):
