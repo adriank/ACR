@@ -43,10 +43,10 @@ class FileSystem(Component):
 		_filter=conf.get("filter")
 		all=os.listdir(fullpath).sort()
 		if _filter:
-			all=filter(lambda file: fnmatch.fnmatch(file, _filter),files)
+			all=filter(lambda file: fnmatch.fnmatch(file, _filter),all)
 		if not showHidden:
-			all=filter(lambda file: not file[0]==".",files)
-		files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),files)
+			all=filter(lambda file: not file[0]==".",all)
+		files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),all)
 		dirs=None
 		if showDirs:
 			dirs=filter(lambda dir: dir not in files,all)
