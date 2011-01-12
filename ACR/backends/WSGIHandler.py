@@ -41,8 +41,9 @@ import cgi
 APP_CACHE={}
 
 def computeMIME(mime,agent):
+	if not agent:
+		return mime[0]
 	if "text/html" in mime or "*/*" in mime:
-		#agent=acenv.UA
 		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
 			return "application/xml"
 		else:
@@ -68,12 +69,12 @@ def application(env,start_response):
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
-	acenv.mime=map(str.strip, env["HTTP_ACCEPT"].split(";")[0].split(","))
-	acenv.UA=env["HTTP_USER_AGENT"]
+	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";")[0].split(","))
+	acenv.UA=env.get("HTTP_USER_AGENT")
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
 	#if app.debug["enabled"]:
 	#	log.setLevel(acconfig.logLevels.get(app.debug["level"],logging.ERROR))
-	if env.get('HTTP_COOKIE',None):
+	if env.get('HTTP_COOKIE'):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
 	post=None

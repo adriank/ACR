@@ -35,8 +35,8 @@ class ObjectTree(tuple):
 	def __init__(self,seq):
 		tuple.__init__(seq)
 
-	def get(self,path):
-		return tpath(self,path)
+	def get(self,path,default=None):
+		return tpath(self,path,default)
 
 #TO-C
 def escapeQuotes(s):
@@ -193,7 +193,7 @@ def xml2tree(xmlfile,newlines=False):
 	parser.parse(xmlfile)
 	return r.root
 
-def tpath(root,path):
+def tpath(root,path, default=None):
 	#print "path is "+path
 	t=path.split("/")
 	try:
@@ -231,7 +231,7 @@ def tpath(root,path):
 							return ret[0][1][t[0]]
 				#print "done: "+str(ret)
 	except (AttributeError, KeyError, TypeError,IndexError),e:
-		return None
+		return default
 	return ret
 
 def NS2Tuple(s,delimiter=":"):

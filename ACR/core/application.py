@@ -69,19 +69,19 @@ class Application(object):
 			raise Exception("Application name not set in configuration file!")
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
-		self.domain="".join(config.get("/domain/text()") or ["localhost"])
+		self.domain="".join(config.get("/domain/text()",["localhost"]))
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
-				"enabled":config.get("/debug[@enable]") or False,
-				"level":config.get("/debug[@level]") or "error",
+				"enabled":config.get("/debug[@enable]"),
+				"level":config.get("/debug[@level]","error"),
 				"dbtimer":0,
 				"dbcounter":0
 			}
 		self.output={
-			"engine":config.get("/output[@engine]") or None,
-			"xsltfile":config.get("/output[@xsltfile]") or None,
-			"format":config.get("/output[@format]") or "application/xml"
+			"engine":config.get("/output[@engine]"),
+			"xsltfile":config.get("/output[@xsltfile]"),
+			"format":config.get("/output[@format]","application/xml")
 		}
 		#engineConf=config.get("/engine")[0]
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
