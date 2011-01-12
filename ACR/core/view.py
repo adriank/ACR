@@ -234,6 +234,7 @@ class View(object):
 					ret.insert(0, o)
 					ret.pop(parentPos)
 				else:
+					print before
 					ret.insert(findAction(ret,before),o)
 			elif after:
 				if after=='*':
