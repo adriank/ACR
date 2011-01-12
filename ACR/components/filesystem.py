@@ -47,7 +47,7 @@ class FileSystem(Component):
 			all=filter(lambda file: fnmatch.fnmatch(file, _filter),all)
 		if not showHidden:
 			all=filter(lambda file: not file[0]==".",all)
-		if not onlydirs:
+		if not onlyDirs:
 			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),all)
 			files.sort()
 		dirs=None
