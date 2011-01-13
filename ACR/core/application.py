@@ -20,8 +20,7 @@
 #@marcin: views subdirs implementation
 
 from ACR.utils.xmlextras import *
-from ACR.utils import dicttree
-from ACR.utils import json_compat
+from ACR.utils import dicttree, json_compat
 from ACR.session.file import FileSession
 from ACR.core.view import View
 from ACR.errors import *
@@ -44,8 +43,8 @@ class Application(object):
 	lang="en"
 	immutable=False
 	def __init__(self,appDir):
-		#cache for component objects
 		self.immutable=False
+		#cache for component objects
 		self.COMPONENTS_CACHE={}
 		self.DEFAULT_DB=None
 		self.views={}

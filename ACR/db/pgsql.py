@@ -47,6 +47,7 @@ class handler(object):
 		#if acconfig.config.has_key("debug") and acconfig.config["debug"]:
 		#	import time
 		#	t=time.time()
+		cursor=self.conn.cursor()
 		try:
 			cursor.execute(sql)
 			#self.conn.commit()

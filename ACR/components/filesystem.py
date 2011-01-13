@@ -88,14 +88,14 @@ class FileSystem(Component):
 			o.status="error"
 			o.error="fileExists"
 			return o
+		# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c']
+		path=os.path.normpath(conf["path"]).split("/")[:-1]
+		currPath=self.abspath
+		for d in path:
+			currPath=os.path.join(currPath, d)
+			if not os.path.isdir(currPath):
+				os.mkdir(currPath)
 		try:
-			# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c', 'foo.xml']
-			path=os.path.normpath(conf["path"]).split("/")
-			currPath=self.abspath
-			for d in path[:-1]:
-				currPath=os.path.join(currPath, d)
-				if not os.path.isdir(currPath):
-					os.mkdir(currPath)
 			file=open(conf["fullpath"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
@@ -103,6 +103,7 @@ class FileSystem(Component):
 			o.status="error"
 			o.error=e
 			return o
+		#FIXME - else or finally or smth else?
 		else:
 			file.close()
 		return o
@@ -112,53 +113,44 @@ class FileSystem(Component):
 
 	def append(self,acenv,conf):
 		D=acenv.doDebug
-		o=Object()
-		path=self.abspath+replaceVars(acenv,conf["path"])
-		content=replaceVars(acenv,conf["content"])
+		path=acenv,conf["fullpath"]
 		try:
 			file=open(path, 'a')
-			file.write(content.replace("\r\n","\n"))
-		except IOError:
-			#FIXIT
-			raise Error("IOError", 'cannot open %s'%(path))
+			file.write(conf['content'])#.replace("\r\n","\n")
+		except IOError,e:
+			raise Error("IOError", 'cannot open %s'%(e))
 		else:
 			file.close()
-		#o.status="ok"
-		return ("object",{"status":"ok"},None)
+		return Object()
 
 	def delete(self,acenv,conf):
 		D=acenv.doDebug
-		o=Object()
 		path=self.abspath+replaceVars(acenv,conf["path"])
 		if (os.path.exists(path)):
 			if (os.path.isfile(path)):
 				os.remove(path)
 			else:
 				shutil.rmtree(path)
-		#o.status="ok"
-		return o
+		return Object()
 
 	def copy(self,acenv,conf):
-		D=acenv.doDebug
-		o=Object()
-		copyFrom=self.abspath+replaceVars(acenv,conf["from"])
-		copyTo=self.abspath+replaceVars(acenv,conf["to"])
-		if (os.path.isfile(copyFrom)):
+		#D=acenv.doDebug
+		copyFrom=os.path.join(self.abspath,*replaceVars(acenv,conf["from"]).split("/"))
+		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
+		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.copyfile(copyFrom, copyTo)
-		return o
+		return Object()
 
 	def move(self,acenv,conf):
-		o=Object()
-		copyFrom=self.abspath+replaceVars(acenv,conf["from"])
-		copyTo=self.abspath+replaceVars(acenv,conf["to"])
-		if (os.path.isfile(copyFrom)):
+		copyFrom=os.path.join(self.abspath,*replaceVars(acenv,conf["from"]).split("/"))
+		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
+		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.move(copyFrom, copyTo)
 		return o
 
 	def exists(self,acenv,conf):
 		o=Object()
-		path=self.abspath+replaceVars(acenv,conf["path"])
-		o.exists=os.path.isfile(path)
+		o.exists=os.path.isfile(conf["fullpath"])
 		return o
 
 	def get(self,acenv,conf):
@@ -169,26 +161,25 @@ class FileSystem(Component):
 		except IOError,e:
 			#FIXIT
 			raise e
-			##print 'cannot open', conf["path"]
+			#print 'cannot open', conf["path"]
 		else:
 			file.close()
 		o=Object()
 		o.set("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")
 		o._doFn=False
-		#o.content=
 		return o
 
 	def generate(self, acenv, config):
 		D=acenv.doDebug
 		if D:
 			acenv.info("Component: 'FS'")
-			acenv.info("Command: '%s'", config["command"])
+			acenv.info("Executing command: '%s'", config["command"])
 		c=config["params"]
 		conf={}
 		for i in c:
 			conf[i]=replaceVars_new(acenv, c[i])
 		if D:
-			if not conf["path"]:
+			if not conf.get("path"):
 				acenv.error("path not suplied")
 			elif conf["path"][0]!='/':
 				acenv.error("missning '/' character at the begginig of 'path' attribute")
