@@ -142,6 +142,9 @@ class CSV(List):
 # file type
 
 class File(Type):
+	def set(self,value):
+		self.value=self._prepareValue(value)
+
 	def validate(self,value,config=None):
 		return True
 
