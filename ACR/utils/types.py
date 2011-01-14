@@ -138,3 +138,12 @@ class List(Type):
 class CSV(List):
 	RE_DELIMITER=re.compile("\s*,\s*")
 	pass
+
+# file type
+
+class File(Type):
+	def validate(self,value,config=None):
+		return True
+
+	def _prepareValue(self,value):
+		return value
