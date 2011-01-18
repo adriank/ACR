@@ -78,6 +78,7 @@ def tree2xml(root,esc=False):
 	input: xml tree
 	returns: xml tree parsed to a xml
 	"""
+	#TODO move parts of it to Generation object
 	def rec(node):
 		nodetype=type(node)
 		if nodetype in [Object,List]:

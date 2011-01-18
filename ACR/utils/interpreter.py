@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-# code in public domain from http://effbot.org/zone/simple-top-down-parsing.htm
+# code from http://effbot.org/zone/simple-top-down-parsing.htm
+# licence of original code was public domain
+# relicenced to GPL v3 by Asyncode Ltd. and:
+# - specialized to work with ACR,
+# - added interpreter,
+# - optimized
 
 # !!!NOT THREAD SAFE!!!
 
 import sys
 from cStringIO import StringIO
-from ACR.utils import getStorage,dicttree
+from ACR.utils import getStorage, dicttree
 
 symbol_table={}
 
@@ -304,8 +309,6 @@ def led(self, left):
 		self.second=expression(60)
 		return self
 
-# displays
-
 @method(symbol("("))
 def nud(self):
 		self.first=[]
@@ -359,16 +362,16 @@ def nud(self):
 #		advance("}")
 #		return self
 
+import tokenize
+type_map={
+	tokenize.NUMBER: "(literal)",
+	tokenize.STRING: "(literal)",
+	tokenize.OP: "(operator)",
+	tokenize.NAME: "(name)",
+	tokenize.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
+}
 # python tokenizer
 def tokenize_python(program):
-	import tokenize
-	type_map={
-		tokenize.NUMBER: "(literal)",
-		tokenize.STRING: "(literal)",
-		tokenize.OP: "(operator)",
-		tokenize.NAME: "(name)",
-		tokenize.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
-	}
 	for t in tokenize.generate_tokens(StringIO(program).next):
 		try:
 			#change this to output python values in correct type

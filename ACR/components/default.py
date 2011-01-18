@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils import replaceVars_new,prepareVars
+from ACR.utils import replaceVars,prepareVars
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
@@ -27,9 +27,9 @@ class Default(Component):
 		if D: env.debug("Starting default component generation with %s"%config)
 		o=Object()
 		if config.has_key("output") and config["output"]:
-			o.set(replaceVars_new(env, config["string"],escape))
+			o.set(replaceVars(env, config["string"],escape))
 		else:
-			o.set(replaceVars_new(env, config["string"]))
+			o.set(replaceVars(env, config["string"]))
 			o._doFn=False
 		if D: env.debug("Returning %s"%o._value)
 		return o

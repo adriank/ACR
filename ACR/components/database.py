@@ -18,7 +18,7 @@
 
 from ACR import acconfig
 from ACR.errors import *
-from ACR.utils import replaceVars_new,prepareVars
+from ACR.utils import replaceVars,prepareVars
 from ACR.components import *
 from ACR import db
 import time
@@ -27,6 +27,7 @@ import locale
 
 #re.I is case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
+EMPTY_OBJECT=Object()
 
 class DataBase(Component):
 	def __init__(self,config):
@@ -91,7 +92,7 @@ class DataBase(Component):
 		return s
 
 	def colaslist(self,env,conf):
-		query=replaceVars_new(env,conf["query"],self.none2null)
+		query=replaceVars(env,conf["query"],self.none2null)
 		result=self.CONNECTIONS[conf.get("server","default")].query(query)
 		ret=[]
 		for i in result["rows"]:
@@ -103,7 +104,7 @@ class DataBase(Component):
 		if D:
 			env.info("Component: 'DB'")
 			env.debug("start with actionConf=%s",conf)
-		query=replaceVars_new(env,conf["query"],self.none2null)
+		query=replaceVars(env,conf["query"],self.none2null)
 		if D: env.debug("replaceVars returned '%s'",query)
 		if True or D:
 			t=time.time()
@@ -139,7 +140,7 @@ class DataBase(Component):
 			else:
 				return List(ret)
 		else:
-			return Object()
+			return EMPTY_OBJECT
 		return ret
 
 	#parses one action config which is passed to object

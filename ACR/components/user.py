@@ -18,18 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.components import *
-from ACR.utils import replaceVars_new,generateID
+from ACR.utils import replaceVars,generateID
 from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
 from ACR.session.file import FileSession
 
+EMPTY_OBJECT=Object()
+
 class User(Component):
+	ROLE="user"
+	APPROVED=False
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		ret=Object()
-		email=replaceVars_new(acenv,conf["email"])
-		password=replaceVars_new(acenv,conf["password"])
+		email=replaceVars(acenv,conf["email"])
+		password=replaceVars(acenv,conf["password"])
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(acconfig.dbschema,acconfig.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
@@ -62,11 +66,13 @@ class User(Component):
 			acenv.sessionStorage.delete()
 		except:
 			pass
-		return Object()
+		return EMPTY_OBJECT
 
+	#TODO test and debug!
 	def register(self,acenv,conf):
-		email=replaceVars_new(acenv,conf["email"])
-		password=replaceVars_new(acenv,conf["password"])
+		email=replaceVars(acenv,conf["email"])
+		password=replaceVars(acenv,conf["password"])
+		role=replaceVars(acenv,conf.get("role",self.ROLE))
 		sql="select exists(select * from %s.emails where email='%s')"%(acconfig.dbschema,email)
 		passwd=md5_constructor(password).hexdigest()
 		key=generateID()
@@ -75,25 +81,28 @@ class User(Component):
 			o=Object()
 			o.error="EmailAdressAllreadySubscribed"
 			return o
+		#XXX implement psycopg escaping!!!
 		id="SELECT currval('%s.users_id_seq')"%(acconfig.dbschema)
 		sql="""INSERT into %s.users
-			(password)
+			(password,role)
 		VALUES
-			('%s');
+			('%s', '%s');
 		INSERT into %s.emails
-			(email,_user,approval_key)
+			(email,_user,approval_key,approved)
 		VALUES
-			('%s', (%s), '%s')"""%(
+			('%s', (%s), %s)"""%(
 			acconfig.dbschema,
 			passwd,
+			role,
 			acconfig.dbschema,
 			email,
 			id,
-			key
+			key,
+			conf.get("approved",self.APPROVED)
 		)
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
-		return Object()
+		return EMPTY_OBJECT
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)

@@ -27,13 +27,13 @@ def getStorage(env,s):
 		if not env.sessionStorage:
 			return False
 		return env.sessionStorage.data
-	#elif s=="request" or s=="rs":
+	#elif s=="app" or s=="as":
 	#	return
 	elif s=="global" or s=="gs":
 		return {}
 	return env.requestStorage
 
-def replaceVars_new(env,l,fn=None):
+def replaceVars(env,l,fn=None):
 	"""
 	l - output of prepareVars
 	fn - function that will be executed on each string

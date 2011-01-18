@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR import acconfig
-from ACR.utils import mail,replaceVars,replaceVars_new
+from ACR.utils import mail,replaceVars,replaceVars
 from ACR.components import *
 #from ACR.utils.xmlextras import dom2tree
 from ACR.errors import *
@@ -26,13 +26,15 @@ import os
 import re
 from ACR.utils import List,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 
+EMPTY_OBJECT=Object()
+
 class Email(Component):
 	def generate(self,acenv,conf):
 		content=conf["content"]
 		headers={}
 		params=conf["params"]
 		for h in params:
-			headers[h]=replaceVars_new(acenv,params[h])
+			headers[h]=replaceVars(acenv,params[h])
 		##print "headers"
 		recipients=headers["To"]
 		##print headers
@@ -48,7 +50,7 @@ class Email(Component):
 				mail.send(headers,content)
 		elif typ is str:
 			mail.send(headers,content)
-		return Object()
+		return EMPTY_OBJECT
 
 	def parseAction(self,conf):
 		try:

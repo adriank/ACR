@@ -18,7 +18,7 @@
 
 from ACR.components import Component
 from ACR.errors import *
-from ACR.utils import prepareVars, replaceVars_new
+from ACR.utils import prepareVars, replaceVars
 from ACR.utils.generations import Object,List
 from ACR.utils.xmlextras import tree2xml
 import os
@@ -177,14 +177,14 @@ class FileSystem(Component):
 		c=config["params"]
 		conf={}
 		for i in c:
-			conf[i]=replaceVars_new(acenv, c[i])
+			conf[i]=replaceVars(acenv, c[i])
 		if D:
 			if not conf.get("path"):
 				acenv.error("path not suplied")
 			elif conf["path"][0]!='/':
 				acenv.error("missning '/' character at the begginig of 'path' attribute")
 		try:
-			conf["content"]=replaceVars_new(acenv,config["content"])
+			conf["content"]=replaceVars(acenv,config["content"])
 		except:
 			pass
 		conf["fullpath"]=os.path.join(self.abspath,*conf["path"].split("/"))
