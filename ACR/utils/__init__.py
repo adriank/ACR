@@ -110,5 +110,6 @@ typesMap={
 	"number":types.Number,
 	"empty":types.Empty,
 	"nonempty":types.NonEmpty,
-	"hexcolor":types.HEXColor
+	"hexcolor":types.HEXColor,
+	"file":types.File
 }
