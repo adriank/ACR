@@ -362,24 +362,25 @@ def nud(self):
 #		advance("}")
 #		return self
 
-import tokenize
+import tokenize as tokenizer
 type_map={
-	tokenize.NUMBER: "(literal)",
-	tokenize.STRING: "(literal)",
-	tokenize.OP: "(operator)",
-	tokenize.NAME: "(name)",
-	tokenize.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
+	tokenizer.NUMBER: "(literal)",
+	tokenizer.STRING: "(literal)",
+	tokenizer.OP: "(operator)",
+	tokenizer.NAME: "(name)",
+	tokenizer.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
 }
+
 # python tokenizer
 def tokenize_python(program):
-	for t in tokenize.generate_tokens(StringIO(program).next):
+	for t in tokenizer.generate_tokens(StringIO(program).next):
 		try:
 			#change this to output python values in correct type
 			yield type_map[t[0]], t[1]
 		except KeyError:
-			if t[0] == tokenize.NL:
+			if t[0] == tokenizer.NL:
 				continue
-			if t[0] == tokenize.ENDMARKER:
+			if t[0] == tokenizer.ENDMARKER:
 				break
 			else:
 				raise SyntaxError("Syntax error")

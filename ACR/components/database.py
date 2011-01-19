@@ -125,10 +125,9 @@ class DataBase(Component):
 				for i in xrange(len(row)):
 					if type(row[i]) is str and fields[i] in cdata:
 						s="<![CDATA["+row[i].replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
-					#if D and first: env.info("'%s' appended as node",col)
 					else:
 						s=row[i]
-					nodes.append((fields[i],None,[s]))
+					nodes.append((fields[i],s))
 				first=False
 				ret.append(Object(nodes))
 			if len(ret) is 1:

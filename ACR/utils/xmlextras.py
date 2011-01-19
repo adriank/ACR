@@ -71,6 +71,18 @@ def str2obj(s):
 	#TODO is that correct?
 	return s
 
+def serialize(value,doEscape=False):
+	typev=type(value)
+	if typev is str:
+		sI=value
+		if doEscape:
+			sI=escape(sI)
+		return sI
+	elif typev is datetime:
+		return value.strftime("%A, %d %B %Y, %X")
+	else:
+		return str(value)
+
 #TO-C
 def tree2xml(root,esc=False):
 	"""
@@ -82,14 +94,10 @@ def tree2xml(root,esc=False):
 	def rec(node):
 		nodetype=type(node)
 		if nodetype in [Object,List]:
-			tag=node._name
-			content=node._value
-			attrs=node.__dict__#.copy()
-			try:
-				attrs.pop("_value")
-				attrs.pop("_doFn")
-			except:
-				pass
+			pattern,values=node.toXML()
+			values=tuple(map(serialize,values))
+			tab.append(pattern%values)
+			return
 		elif nodetype is tuple:
 			tag=node[0]
 			attrs=node[1]
