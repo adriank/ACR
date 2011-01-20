@@ -24,8 +24,6 @@ from ACR.utils.xmlextras import escapeQuotes,unescapeQuotes
 from ACR import acconfig
 from email.Utils import formatdate
 
-#D=False
-
 #SLOW!!!
 def computePOST(env):
 	post=None
