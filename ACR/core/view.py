@@ -234,14 +234,19 @@ class View(object):
 					ret.insert(0, o)
 					ret.pop(parentPos)
 				else:
-					print before
-					ret.insert(findAction(ret,before),o)
+					try:
+						ret.insert(findAction(ret,before),o)
+					except:
+						pass
 			elif after:
 				if after=='*':
 					ret.append(o)
 					ret.pop(parentPos)
 				else:
-					ret.insert(findAction(ret,after)+1,o)
+					try:
+						ret.insert(findAction(ret,after)+1,o)
+					except:
+						pass
 			else:
 				if parentPos:
 					ret.pop(parentPos)
