@@ -1,5 +1,21 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+# Asyncode Runtime - XML framework allowing developing internet
+# applications without using programming languages.
+# Copyright (C) 2008-2010  Adrian Kalbarczyk
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the version 3 of GNU General Public License as published by
+# the Free Software Foundation.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 HINTS:
  - object atributes are fastest (even faster than dict!)
@@ -47,8 +63,11 @@ class Object(Generation):
 		except:
 			return super(Object,self).__getattr__(name)
 
-	def __getitem__(self,name):
-		return filter(lambda x: x[0]==name,self._value)[0][1]
+	def __getitem__(self,name,default=None):
+		try:
+			return filter(lambda x: x[0]==name,self._value)[0][1]
+		except:
+			return default
 
 	def toXML(self):
 		"""
@@ -82,7 +101,6 @@ class Object(Generation):
 			return self._value
 		return "'"+self._name+"'"
 
-	#def __
 
 class List(Generation):
 	_name="list"
@@ -100,6 +118,12 @@ class List(Generation):
 			values.extend(vals)
 		s.append(END_TAG)
 		return ("".join(),values)
+
+	def __getattr__(self, name):
+		try:
+			return List.__dict__[name]
+		except:
+			return super(List,self).__getattr__(name)
 
 	def __str__(self):
 		if type(self._value) is str:
