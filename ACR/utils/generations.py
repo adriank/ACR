@@ -117,7 +117,7 @@ class List(Generation):
 			s.append(pattern)
 			values.extend(vals)
 		s.append(self.END_TAG)
-		return ("".join(),values)
+		return ("".join(s),values)
 
 	def __getattr__(self, name):
 		try:
