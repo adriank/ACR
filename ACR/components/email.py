@@ -18,13 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR import acconfig
-from ACR.utils import mail,replaceVars,replaceVars
+from ACR.utils import mail,replaceVars,prepareVars,List,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 from ACR.components import *
-#from ACR.utils.xmlextras import dom2tree
 from ACR.errors import *
 import os
 import re
-from ACR.utils import List,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 
 EMPTY_OBJECT=Object()
 
@@ -65,7 +63,10 @@ class Email(Component):
 			conf["params"]["Subject"]
 		except KeyError:
 			raise Error("SubjectNotSpecified", "'Subject' should be specified")
-		conf['content']="".join(conf['content'])
+		params=conf["params"]
+		for i in params:
+			params[i]=prepareVars(params[i])
+		conf['content']=prepareVars("".join(conf['content']))
 		return conf
 
 def getObject(config):

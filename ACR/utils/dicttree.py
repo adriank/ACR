@@ -5,20 +5,25 @@ from ACR.utils.generations import *
 
 def get(d,path,falseOnNotFound=True):
 	"""
-	Returns value from dict hierarchy.
+	Returns value from dict/object hierarchy.
 	input: dict, path which is a list eg ['an', 'example', 'path'],
-	returns: False or deepest dict found
+	returns: False or deepest dict/object found
 	"""
-	if isinstance(d, Generation):
-		d=d.__dict__
+	#if isinstance(d, Generation):
+	#	d=d.__dict__
 	try:
 		ret=d
 		i=0
 		for o in path:
-			if isinstance(ret, Generation):
-				ret=ret.__dict__
-			ret=ret[o]
-			i+=1
+			#if isinstance(ret, Generation):
+			#	ret=ret.__dict__
+			if o[0]=="@":
+				print ret.__getattr__(o[1:])
+				ret=getattr(ret, o[1:])
+				break
+			else:
+				ret=ret[o]
+				i+=1
 	except (AttributeError, KeyError, TypeError):
 		if falseOnNotFound:
 			return False

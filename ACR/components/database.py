@@ -130,11 +130,12 @@ class DataBase(Component):
 					nodes.append((fields[i],s))
 				first=False
 				ret.append(Object(nodes))
+			print ret[0]["email"]
 			if len(ret) is 1:
 				#row
 				return ret[0]
 				#if len(ret[2]) is 1:
-				#	#value
+					#value
 				#	return Object(ret[2][0][2][0])
 			else:
 				return List(ret)

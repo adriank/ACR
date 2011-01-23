@@ -8,8 +8,11 @@ HINTS:
 class Generation(object):
 	status="ok"
 	error=""
-	def __init__(self,value=None):
+	def __init__(self, value=None):
 		self.set(value)
+
+	def __getattr__(self, name):
+		return Generation.__dict__[name]
 
 	def set(self,value):
 		self._value=value
@@ -38,8 +41,14 @@ class Object(Generation):
 	def addAttrs(self,attrs):
 		self._value.extend(attrs)
 
-	def get(self,name):
-		return filter(lambda x: x[0]==name,self,_value)
+	def __getattr__(self, name):
+		try:
+			return Object.__dict__[name]
+		except:
+			return super(Object,self).__getattr__(name)
+
+	def __getitem__(self,name):
+		return filter(lambda x: x[0]==name,self._value)[0][1]
 
 	def toXML(self):
 		"""
@@ -71,7 +80,9 @@ class Object(Generation):
 	def __str__(self):
 		if type(self._value) is str:
 			return self._value
-		return u'un#printable'
+		return "'"+self._name+"'"
+
+	#def __
 
 class List(Generation):
 	_name="list"
@@ -93,4 +104,4 @@ class List(Generation):
 	def __str__(self):
 		if type(self._value) is str:
 			return self._value
-		return u'un#printable'
+		return "'"+self._name+"'"

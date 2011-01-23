@@ -10,7 +10,7 @@ from xml.dom.minidom import parseString
 #TODO export settings to /etc/ACR/config
 acconfig.ACRconf="/home/adrian/ACR/ACRconf.xml"
 #one app run
-acconfig.appDir="/home/adrian/projects/lz.objectml.info"
+acconfig.appDir="/home/adrian/projects/acsuite.objectml.info"
 #for multiple apps run - NotImplementedYet
 #globals.appsDir="/home/adrian/ACR/project/"
 host=""

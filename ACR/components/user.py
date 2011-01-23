@@ -27,8 +27,10 @@ from ACR.session.file import FileSession
 EMPTY_OBJECT=Object()
 
 class User(Component):
+	#defaults
 	ROLE="user"
 	APPROVED=False
+	MAIN=False
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
@@ -88,9 +90,9 @@ class User(Component):
 		VALUES
 			('%s', '%s');
 		INSERT into %s.emails
-			(email,_user,approval_key,approved)
+			(email,_user,approval_key,approved,main)
 		VALUES
-			('%s', (%s), %s, %s)"""%(
+			('%s', (%s), '%s', %s, %s)"""%(
 			acconfig.dbschema,
 			passwd,
 			role,
@@ -98,7 +100,8 @@ class User(Component):
 			email,
 			id,
 			key,
-			conf.get("approved",self.APPROVED)
+			conf.get("approved",self.APPROVED),
+			conf.get("approved",self.MAIN)
 		)
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
