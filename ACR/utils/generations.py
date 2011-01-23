@@ -110,13 +110,13 @@ class List(Generation):
 		#XXX dont know what to do with name
 		#if len(self._value) is 1:
 		#	return self._value[0].toXML()
-		s=[START_TAG]
+		s=[self.START_TAG]
 		values=[]
 		for i in self._value:
 			pattern,vals=i.toXML()
 			s.append(pattern)
 			values.extend(vals)
-		s.append(END_TAG)
+		s.append(self.END_TAG)
 		return ("".join(),values)
 
 	def __getattr__(self, name):
