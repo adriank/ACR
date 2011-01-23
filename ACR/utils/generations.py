@@ -59,10 +59,12 @@ class Object(Generation):
 		else:
 			s.append(">")
 			if type(self._value) is not list:
-				return ("%s",(self._value,))
-			for i in self._value:
-				s.append(self.ATTR_PATTERN%(i[0],"%s",i[0]))
-				values.append(i[1])
+				s.append("%s")
+				values.append(self._value)
+			else:
+				for i in self._value:
+					s.append(self.ATTR_PATTERN%(i[0],"%s",i[0]))
+					values.append(i[1])
 			s.append(self.END_TAG)
 		return ("".join(s),values)
 

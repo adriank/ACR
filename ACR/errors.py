@@ -16,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+class AppNotFound(Exception):
+	MESG="""Application config not found at %s!
+You should 
+	"""
+	def __init__(self,path):
+		super(AppNotFound, self).__init__(self.MESG%path)
+
 class Err(Exception):
 	def __init__(self, name, msg=""):
 		self.error=msg

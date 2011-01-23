@@ -31,9 +31,9 @@ class User(Component):
 	APPROVED=False
 	def login(self,acenv,conf):
 		D=acenv.doDebug
-		ret=Object()
 		email=replaceVars(acenv,conf["email"])
 		password=replaceVars(acenv,conf["password"])
+		ret=Object()
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(acconfig.dbschema,acconfig.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
@@ -90,7 +90,7 @@ class User(Component):
 		INSERT into %s.emails
 			(email,_user,approval_key,approved)
 		VALUES
-			('%s', (%s), %s)"""%(
+			('%s', (%s), %s, %s)"""%(
 			acconfig.dbschema,
 			passwd,
 			role,

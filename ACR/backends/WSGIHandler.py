@@ -25,7 +25,7 @@ from ACR.utils import HTTP
 from ACR.core.environment import Environment
 from ACR.core.application import Application
 from cStringIO import StringIO
-import cgi
+#import cgi
 #from guppy import hpy
 
 #logging.basicConfig()
@@ -33,7 +33,7 @@ import cgi
 #logStream=StringIO()
 #handler=logging.StreamHandler()#(sys.stdout)#(strm=logStream)
 #handler.setFormatter(logging.Formatter('<item origin="%(name)s.%(funcName)s" line="%(lineno)d" level="%(levelname)s" file="%(filename)s"><message>%(message)s</message></item>'))
-##log.addHandler(handler)
+#log.addHandler(handler)
 #logging.logThreads=0
 #logging.logProcesses=0
 #logging.logMultiprocessing=0
@@ -98,6 +98,6 @@ def application(env,start_response):
 
 try:
 	from paste.exceptions.errormiddleware import ErrorMiddleware
-	application = ErrorMiddleware(application, debug=True)
+	application=ErrorMiddleware(application, debug=True)
 except:
 	pass

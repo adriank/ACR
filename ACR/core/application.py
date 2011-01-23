@@ -43,6 +43,13 @@ class Application(object):
 	lang="en"
 	immutable=False
 	def __init__(self,appDir):
+		#if D: log.debug("Creating instance with appDir=%s",appDir)
+		try:
+			self.configPath=os.path.join(appDir, "config.xml")
+			self.timestamp=os.stat(self.configPath).st_mtime
+			config=xml2tree(self.configPath)
+		except (IOError,OSError):
+			raise AppNotFound(appDir)
 		self.immutable=False
 		#cache for component objects
 		self.COMPONENTS_CACHE={}
@@ -51,14 +58,6 @@ class Application(object):
 		self.lang="en"
 		self.langs=[]
 		self.viewsPath=os.path.join(appDir, "views")
-		#if D: log.debug("Creating instance with appDir=%s",appDir)
-		try:
-			self.configPath=os.path.join(appDir, "config.xml")
-			self.timestamp=os.stat(self.configPath).st_mtime
-			config=xml2tree(self.configPath)
-		except IOError:
-			#if D: log.critical("Application config not found!")
-			raise Exception("Application config not found at %s!"%(appDir+"\config.xml"))
 		self.appDir=appDir
 		self.config=config
 		try:
