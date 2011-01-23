@@ -53,7 +53,10 @@ def parseInputs(nodes):
 	postCount=0
 	for i in nodes:
 		attrs=i[1]
-		typ=typesMap.get(attrs.get("type","default"))()
+		try:
+			typ=typesMap.get(attrs.get("type","default"))()
+		except TypeError:
+			raise Error("WrongInputTypeName","Input type '%s' is not supported."%attrs.get("type","default"))
 		if attrs.has_key("default"):
 			typ.setDefault(make_tree(attrs["default"]))
 		ret.append({
