@@ -81,20 +81,25 @@ class View(object):
 		#	self.immutable=True
 		#	raise ViewNotFound("view '%s' not found"%(name))
 		ns={}
-		if not tree[1]:
+		attrs=tree[1]
+		if not attrs:
 			return
 		#parses "xmlns:" attributes and extracts namespaces
-		for i in tree[1]:
+		for i in attrs:
 			if i.startswith("xmlns:"):
 				key=i.split(":")[1]
-				value=tree[1][i].split("/").pop().lower()
+				value=attrs[i].split("/").pop().lower()
 				ns[key]=value
 		self.namespaces=ns
 		#checks whether view inherits from another view
 		try:
-			self.parent=app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,tree[1]["inherits"].split("/")))[0]
-		except:
+			print "attrs"
+			print attrs
+			self.parent=app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,attrs["inherits"].split("/")),True)[0]
+		except KeyError:
 			self.parent=None
+		except:
+			raise Error("ParentViewNotFound","View '%s' not found."%attrs["inherits"])
 		inputSchemas=[]
 		conditions=[]
 		actions=[]

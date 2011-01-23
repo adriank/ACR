@@ -116,14 +116,12 @@ class Application(object):
 		return o
 
 	#lazy view objects creation
-	def getView(self,URLpath):
+	def getView(self,URLpath,errorOnNotFound=False):
 		#TODO rewrite it:
-		# 1. View.isUpToDate - should check its super view and posibly update object internally
+		# 1. View.isUpToDate - should check its super view and posibly update object internally,
 		#    when view file is deleted, should raise error
-		# 2. here should be try to fileNotFound error which should refresh cache
+		# 2. here should be try to FileNotFound error which should refresh cache
 		# 3. then check for mistakes (eg. now some views are not cached)
-		#D=acenv.doDebug
-		#if D: acenv.info("Executing View at '%s'"%("/".join(URLpath)))
 		(o, i)=dicttree.get(self.views, URLpath, False)
 		if i==len(URLpath) and type(o) is dict and o.has_key("default"):
 			o=o["default"]
@@ -145,15 +143,15 @@ class Application(object):
 				break
 			viewPath=temp
 			viewName.append(inputs.pop(0))
-		#if D: acenv.debug("viewPath: %s"%(viewName))
-		#if D: acenv.debug("inputs: %s"%(inputs))
-		if inputs and os.path.exists(pjoin(viewPath,inputs[0])+".xml"):
+		if inputs and pexists(pjoin(viewPath,inputs[0])+".xml"):
 			viewName.append(inputs.pop(0))
-		elif not inputs and os.path.exists(viewPath+".xml"):
+		elif not inputs and pexists(viewPath+".xml"):
 			pass
-		elif not inputs and os.path.exists(pjoin(viewPath,"default.xml")):
+		elif not inputs and pexists(pjoin(viewPath,"default.xml")):
 			viewName.append("default")
 		else:
+			if errorOnNotFound:
+				raise ViewNotFound
 			viewName=["notFound"]
 		v=View(viewName, self)
 		dicttree.set(self.views, viewName, v)
@@ -222,7 +220,7 @@ class Application(object):
 			defaultLang=attrs["default"].strip()
 		except KeyError:
 			#make it log.warning and fall back to en
-			raise Exception("Misconfiguration of 'langs' setting in app configuration file.")
+			raise Error("LangNotDefined","Misconfiguration of 'langs' setting in app configuration file.")
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [defaultLang]+attrs.get("supported", "").split(",")))
 		self.lang=self.langs[0]
