@@ -231,9 +231,11 @@ def led(self, left):
 	self.id="(variable)"
 	self.first=left.value
 	self.second=""
-	while token.id in [".","(name)"]:
+	while token.id in [".","(name)","@"]:
 		if token.id=="(name)":
 			self.second+=token.value
+		elif token.id=="@":
+			self.second+="@"
 		else:
 			self.second+="."
 		advance()
