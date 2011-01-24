@@ -104,7 +104,7 @@ class Object(Generation):
 
 class List(Generation):
 	_name="list"
-	START_TAG="<list>"
+	START_TAG="<list"
 	END_TAG="</list>"
 	def toXML(self):
 		#XXX dont know what to do with name
@@ -117,6 +117,7 @@ class List(Generation):
 			if not i[0][0] is '_':
 				s.append(self.HTML_ATTR_PATTERN%(i[0],"%s"))
 				values.append(i[1])
+		s.append(">")
 		for i in self._value:
 			pattern,vals=i.toXML()
 			s.append(pattern)
