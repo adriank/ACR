@@ -148,10 +148,10 @@ symbol(")")
 
 @method(symbol("("))
 def nud(self):
-		# parenthesized form; replaced by tuple former below
-		expr=expression()
-		advance(")")
-		return expr
+	# parenthesized form; replaced by tuple former below
+	expr=expression()
+	advance(")")
+	return expr
 
 #symbol("else")
 
@@ -165,13 +165,27 @@ def nud(self):
 
 @method(symbol("."))
 def led(self, left):
-		if token.id != "(name)":
-			raise SyntaxError("Expected an attribute name.")
-		self.first=left
-		self.second=token
+	attr=False
+	if token.id=="@":
+		attr=True
 		advance()
-		return self
+	if token.id != "(name)":
+		raise SyntaxError("Expected an attribute name.")
+	self.first=left
+	if attr:
+		token.value="@"+token.value
+	self.second=token
+	advance()
+	return self
 
+@method(symbol("@"))
+def led(self, left):
+	if token.id != "(name)":
+		raise SyntaxError("Expected an attribute name.")
+	self.first=left
+	self.second=token
+	advance()
+	return self
 
 #symbol(":")
 #symbol("$")
@@ -388,26 +402,26 @@ def tokenize_python(program):
 
 def tokenize(program):
 		if isinstance(program, list):
-				source=program
+			source=program
 		else:
-				source=tokenize_python(program)
+			source=tokenize_python(program)
 		for id, value in source:
-				if id == "(literal)":
-						symbol=symbol_table[id]
-						s=symbol()
-						s.value=value
+			if id == "(literal)":
+				symbol=symbol_table[id]
+				s=symbol()
+				s.value=value
+			else:
+				# name or operator
+				symbol=symbol_table.get(value)
+				if symbol:
+					s=symbol()
+				elif id=="(name)":
+					symbol=symbol_table[id]
+					s=symbol()
+					s.value=value
 				else:
-						# name or operator
-						symbol=symbol_table.get(value)
-						if symbol:
-								s=symbol()
-						elif id == "(name)":
-								symbol=symbol_table[id]
-								s=symbol()
-								s.value=value
-						else:
-								raise SyntaxError("Unknown operator (%r)" % id)
-				yield s
+					raise SyntaxError("Unknown operator (%s)" % id)
+			yield s
 
 # parser engine
 def expression(rbp=0):
