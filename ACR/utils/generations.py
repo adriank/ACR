@@ -112,6 +112,11 @@ class List(Generation):
 		#	return self._value[0].toXML()
 		s=[self.START_TAG]
 		values=[]
+		attrs=self.__dict__
+		for i in attrs.iteritems():
+			if not i[0][0] is '_':
+				s.append(self.HTML_ATTR_PATTERN%(i[0],"%s"))
+				values.append(i[1])
 		for i in self._value:
 			pattern,vals=i.toXML()
 			s.append(pattern)
