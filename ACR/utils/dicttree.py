@@ -33,7 +33,6 @@ def get(d,path,falseOnNotFound=True):
 			#if isinstance(ret, Generation):
 			#	ret=ret.__dict__
 			if o[0]=="@":
-				print ret.__getattr__(o[1:])
 				ret=getattr(ret, o[1:])
 				break
 			else:

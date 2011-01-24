@@ -41,7 +41,13 @@ class FileSystem(Component):
 		showHidden=conf.get("showhidden",self.SHOW_HIDDEN)
 		onlyDirs=conf.get("onlydirs",self.ONLY_DIRS)
 		_filter=conf.get("filter")
-		all=os.listdir(fullpath)
+		try:
+			all=os.listdir(fullpath)
+		except OSError,e:
+			o=Object()
+			o.status="error"
+			o.error=e
+			return o
 		all.sort()
 		if _filter:
 			all=filter(lambda file: fnmatch.fnmatch(file, _filter),all)
