@@ -150,7 +150,7 @@ class FileSystem(Component):
 
 	def exists(self,acenv,conf):
 		o=Object()
-		o.exists=os.path.isfile(conf["fullpath"])
+		o.exists=os.path.exists(conf["fullpath"])
 		return o
 
 	def get(self,acenv,conf):
