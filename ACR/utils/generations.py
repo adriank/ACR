@@ -24,6 +24,8 @@ HINTS:
 class Generation(object):
 	status="ok"
 	error=""
+	HTML_ATTR_PATTERN=' %s="%s"'
+	ATTR_PATTERN="<%s>%s</%s>"
 	def __init__(self, value=None):
 		self.set(value)
 
@@ -48,8 +50,6 @@ class Object(Generation):
 	_name="object"
 	START_TAG="<object"
 	END_TAG="</object>"
-	HTML_ATTR_PATTERN=' %s="%s"'
-	ATTR_PATTERN="<%s>%s</%s>"
 	#RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
 	def add(self,name,value):
 		self._value.append((name,value))
