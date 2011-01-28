@@ -24,14 +24,14 @@ from xml.sax.saxutils import escape,unescape
 class Default(Component):
 	def generate(self, env,config):
 		D=env.doDebug
-		if D: env.debug("Starting default component generation with %s"%config)
+		if D: env.debug("START default component generation with %s"%config)
 		o=Object()
 		if config.has_key("output") and config["output"]:
 			o.set(replaceVars(env, config["string"],escape))
 		else:
 			o.set(replaceVars(env, config["string"]))
 			o._doFn=False
-		if D: env.debug("Returning %s"%o._value)
+		if D: env.debug("END default component generation with: '%s...'"%o._value[:20])
 		return o
 
 	def parseAction(self,config):
@@ -40,8 +40,11 @@ class Default(Component):
 			if type(elem) is tuple:
 				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
-				s.append(elem)
-		return {"string":prepareVars("".join(s)), "output":config.get("output",None)}
+				s.append(elem.strip())
+		return {
+			"string":prepareVars("".join(s).strip()),
+			"output":config.get("output",None)
+		}
 
 def getObject(config):
 	return Default(config)

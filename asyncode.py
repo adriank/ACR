@@ -27,7 +27,7 @@ if __name__ == "__main__":
 	acconfig.appsDir = args.appsDir
 	acconfig.ACRconf = args.ACRconf
 	acconfig.appDir = args.appDir
-	
+
 	httpd = WSGIServer((args.host, args.port), Handler)
 	httpd.set_app(standalone_server)
 	httpd.serve_forever()
