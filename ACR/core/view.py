@@ -93,8 +93,6 @@ class View(object):
 		self.namespaces=ns
 		#checks whether view inherits from another view
 		try:
-			print "attrs"
-			print attrs
 			self.parent=app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
@@ -264,11 +262,14 @@ class View(object):
 	def fillPosts(self,acenv):
 		D=acenv.doDebug
 		if D:
-			acenv.debug("START fillPosts")
+			acenv.debug("START View:fillPosts")
 		if not self.postSchemas or not len(self.postSchemas):
-			if D: acenv.debug("posts schema is empty. Returning 'True'.")
+			if D:
+				acenv.debug("posts schema is empty.")
+				acenv.debug("END View:fillPosts with: 'True'.")
 			return True
 		if D:acenv.debug("postSchemas is %s",self.postSchemas)
+		if D:acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts
 		if not list or len(list)<self.postCount:
 			#TODO normalize the Error messages!
@@ -280,9 +281,11 @@ class View(object):
 				typ=postSchemas[i]
 				typ.set(value)
 				acenv.requestStorage[i]=typ.get(acenv)
+			if D:acenv.debug("requestStorage is %s",acenv.requestStorage)
 		except Error,e:
 			if e.name=="NotValidValue":
 				raise Error("NotValidValue", "Value of %s is invalid"%(i))
+		if D:acenv.debug("END View:fillPosts")
 
 	def fillInputs(self,acenv):
 		D=acenv.doDebug
@@ -303,10 +306,11 @@ class View(object):
 			acenv.requestStorage[i["name"]]=typ.get(acenv)
 		if D:
 			acenv.debug("RS is: %s",acenv.requestStorage)
-			acenv.debug("END fillInputs")
+			acenv.debug("END View:fillInputs")
 
 	def generate(self,acenv):
 		D=acenv.doDebug
+		if D: acenv.debug("START View.generate of view: %s",self.name)
 		try:
 			self.inputSchemas
 		except:# inputs is undefined
@@ -317,12 +321,8 @@ class View(object):
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
 		acenv.requestStorage["__lang__"]=acenv.lang
-		#print "rs"
-		#print acenv.requestStorage
-		#print "actions"
-		#print self.actions
 		for action in self.actions:
-			if D: acenv.info("define name='%s'",action["name"])
+			if D: acenv.info("defining name='%s'",action["name"])
 			if action["condition"] and not action["condition"].execute(acenv):
 				#print "condition not meet %s"%(str(action["condition"].tree))
 				#print action["name"]
@@ -337,9 +337,6 @@ class View(object):
 			component=self.app.getComponent(action["component"])
 			#object or list
 			generation=component.generate(acenv,action["config"])
-			##print "generation"
-			##print generation._value
-			##print acenv.requestStorage
 			if not generation:
 				raise Error("ComponentError","Component did not return proper value. Please contact component author.")
 			if not action["name"]:

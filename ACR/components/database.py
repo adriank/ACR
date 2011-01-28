@@ -101,9 +101,7 @@ class DataBase(Component):
 
 	def query(self,env,conf):
 		D=env.doDebug
-		if D:
-			env.info("Component: 'DB'")
-			env.debug("start with actionConf=%s",conf)
+		if D: env.debug("START DB:query with: conf='%s'",conf)
 		query=replaceVars(env,conf["query"],self.none2null)
 		if D: env.debug("replaceVars returned '%s'",query)
 		if True or D:
@@ -111,7 +109,7 @@ class DataBase(Component):
 		result=self.CONNECTIONS[conf.get("server","default")].query(query)
 		if True or D:
 			env.dbg["dbtimer"]+=time.time()-t
-		if D: env.debug("'query' returned %s",result)
+		if D: env.debug("database returned %s",result)
 		if result and len(result["rows"]):
 			if D: env.debug("Creating list of ordered dicts.")
 			#TODO get relations keys and return them as attributes
@@ -132,13 +130,16 @@ class DataBase(Component):
 				ret.append(Object(nodes))
 			if len(ret) is 1:
 				#row
+				if D:env.debug("END DB:query with one row: %s",ret[0])
 				return ret[0]
 				#if len(ret[2]) is 1:
 					#value
 				#	return Object(ret[2][0][2][0])
 			else:
+				if D:env.debug("END DB:query with multiple rows: %s",ret)
 				return List(ret)
 		else:
+			if D:env.debug("END DB:query with no rows.")
 			return EMPTY_OBJECT
 		return ret
 

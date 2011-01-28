@@ -160,6 +160,7 @@ class Application(object):
 	#will be generator
 	def generate(self,acenv):
 		D=acenv.doDebug
+		if D: acenv.info("START")
 		if True: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
@@ -209,6 +210,7 @@ class Application(object):
 		x=s.serialize(acenv)
 		if True or D:
 			print "Serializer took %s"%(round((time.time()-t)*1000,5))
+		if D: acenv.info("END")
 		return x
 
 	def transform(self,acenv):

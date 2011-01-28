@@ -22,7 +22,7 @@ from ACR.utils.generations import Object,List
 from ACR.errors import Error
 import re
 
-class Type(object):
+class Default(object):
 	def __init__(self,value=None,default=None,config=None):
 		if default:
 			self.default=self.setDefault(default)
@@ -63,10 +63,13 @@ class Type(object):
 	def _prepareValue(self,value):
 		return Object(value)
 
-class XML(Type):
+	def __repr__(self):
+		return type(self).__name__+"Type"
+
+class XML(Default):
 	pass
 
-class Text(Type):
+class Text(Default):
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
@@ -75,7 +78,7 @@ class Text(Type):
 	def _prepareValue(self,value):
 		return Object(unescapeQuotes(value.strip()))
 
-class Number(Type):
+class Number(Default):
 	def validate(self,value,config=None):
 		if not value.isdigit():
 			raise Error("NotNumber", "Should be number, but is %s",value)
@@ -84,7 +87,7 @@ class Number(Type):
 	def _prepareValue(self,value):
 		return Object(int(value))
 
-class Email(Type):
+class Email(Default):
 	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
 	def validate(self,value,config=None):
 		if not type(value) is str:
@@ -94,7 +97,7 @@ class Email(Type):
 			raise Error("NotValidEmailAddress", "Suplied value is not a valid e-mail address")
 		return True
 
-class Empty(Type):
+class Empty(Default):
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
@@ -103,7 +106,7 @@ class Empty(Type):
 		else:
 			raise Error("NotEmptyString", "Should be an empty string")
 
-class NonEmpty(Type):
+class NonEmpty(Default):
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
@@ -114,7 +117,7 @@ class NonEmpty(Type):
 		else:
 			raise Error("EmptyString", "Should not be an empty string")
 
-class HEXColor(Type):
+class HEXColor(Default):
 	COLOR_RE=re.compile("^([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})$")
 	def validate(self,value,config=None):
 		if not type(value) is str:
@@ -125,7 +128,7 @@ class HEXColor(Type):
 
 #COMPLEX TYPES
 
-class List(Type):
+class List(Default):
 	RE_DELIMITER=re.compile("\s*,\s*")
 	def validate(self,value,config=None):
 		if not type(value) is str:
@@ -141,7 +144,7 @@ class CSV(List):
 
 # file type
 
-class File(Type):
+class File(Default):
 	def set(self,value):
 		self.value=self._prepareValue(value)
 

@@ -21,16 +21,23 @@ RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
 
 def getStorage(env,s):
 	D=env.doDebug
-	if D: env.debug("Executed with s=%s",s)
+	if D:
+		env.debug("START getStorage with s= '%s'",s)
 	s=s.lower()
 	if s=="session" or s=="ss":
 		if not env.sessionStorage:
+			if D: env.debug("END getStorage with: session do not exists")
 			return False
+		if D: env.debug("END getStorage with: session storage")
 		return env.sessionStorage.data
 	#elif s=="app" or s=="as":
 	#	return
+	#TODO cookie storage
+	#elif s=="cookie" or s=="cs":
+	#	return
 	elif s=="global" or s=="gs":
 		return {}
+	if D: env.debug("END getStorage with: request storage")
 	return env.requestStorage
 
 def replaceVars(env,l,fn=None):
@@ -38,17 +45,21 @@ def replaceVars(env,l,fn=None):
 	l - output of prepareVars
 	fn - function that will be executed on each string
 	"""
+	D=env.doDebug
+	if D: env.debug("START replaceVars with: path='%s' and fn='%s'", l, fn)
 	try:
 		l.__iter__
 	except:
 		return l
 	ret=[]
 	for i in l:
+		if D: env.debug("computing %s",i)
 		if type(i) is tuple:
 			storage=getStorage(env,i[0])
 			v=dicttree.get(storage,i[1])
 			doFN=True
 			if type(v) is Object:
+				if D: env.debug("Object found")
 				try:
 					doFN=v._doFn
 				except:
@@ -57,15 +68,21 @@ def replaceVars(env,l,fn=None):
 			if type(v) is not List:
 				v=str(v)
 				if fn and doFN:
+					if D: env.debug("executing function on value")
 					v=fn(v)
+			if D: env.debug("adding '%s' to the end of string",v)
 			ret.append(v)
 		else:
+			if D: env.debug("adding '%s' to the end of string",i)
 			ret.append(i)
 	if len(ret) is 1:
+		if D: env.debug("END replaceVars with: %s",ret[0])
 		return ret[0]
 	try:
+		if D: env.debug("END replaceVars with: %s","".join(ret))
 		return "".join(ret)
 	except TypeError,e:
+		if D: env.error("END replaceVars with TypeError: %s",ret)
 		return ret
 
 def prepareVars(s):
@@ -103,9 +120,9 @@ def generateID(secret=None):
 
 from ACR.utils import types
 typesMap={
-	"default":types.Type,
+	"default":types.Default,
 	"text":types.Text,
-	"xml":types.Type,
+	"xml":types.Default,
 	"email":types.Email,
 	"number":types.Number,
 	"empty":types.Empty,

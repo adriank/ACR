@@ -17,28 +17,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils.interpreter import execute,make_tree
+from ACR.utils.interpreter import make_tree
 from ACR.components import Component
 from ACR.utils.generations import Object
 
 class Interpreter(Component):
 	def generate(self, acenv, conf):
 		D=acenv.doDebug
-		if D: acenv.debug("Executing expression '%s'", (conf["expression"]))
+		if D: acenv.debug("START Interpreter with: '%s'", conf["expression"].tree)
 		try:
-			o=Object(execute(conf["expression"]))
-		except:
-			if D: acenv.warning("Execution failed with error: %s", (str(e)))
+			o=Object(conf["expression"].execute(acenv))
+		except Exception,e:
+			if D: acenv.error("Execution failed with error: %s", str(e))
 			o=Object()
 			o.status="error"
 			o.error="ExecutionFailed"
+		else:
+			if D: acenv.debug("END Interpreter with: '%s'", o._value)
 		return o
 
 	def parseAction(self, config):
-		if config["command"] not in ["execute"]:
+		if config["command"] not in ["execute","exec"]:
 			raise Exception("Bad command %s" % config["command"])
 		return {
-			"expression":make_tree("".join(config["content"]).strip().split("\n"))
+			"expression":make_tree("".join(config["content"]).strip())
 			#"command":config["command"]
 		}
 

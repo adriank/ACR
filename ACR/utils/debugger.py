@@ -8,6 +8,7 @@ class Debugger(object):
 	_debugStr=None
 	dbgfn=None
 	level=60
+	CUT_AFTER=120
 	CRITICAL=50
 	ERROR=40
 	WARNING=30
@@ -51,9 +52,16 @@ class Debugger(object):
 			self.dbgfn("CRITICAL", s)
 
 	def consolelog(self, lvl, s):
+		def f(x):
+			s=str(x).replace("\n","").replace("\t","")
+			if len(s)>self.CUT_AFTER:
+				return s[:self.CUT_AFTER]+"..."
+			else:
+				return x
 		if len(s)>1:
-			self._debugStr.append((lvl, s[0] % s[1:]))
-			print lvl, s[0] % s[1:]
+			v=tuple(map(f ,s[1:]))
+			self._debugStr.append((lvl, s[0] %v))
+			print lvl, s[0] % v
 		else:
 			self._debugStr.append((lvl, s[0]))
-			print lvl, s[0]
+			print lvl, f(s[0])

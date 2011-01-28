@@ -2,10 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from ACR.utils.interpreter import *
+from ACR.utils.generations import *
 import readline
 
 class FakeEnv(object):
-	requestStorage={}
+	x=Object([("a",1),("b",2)])
+	x.par=3
+	requestStorage={
+		"x":x
+	}
 	doDebug=False
 
 fakeEnv=FakeEnv()

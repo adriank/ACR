@@ -23,7 +23,7 @@ HINTS:
 """
 class Generation(object):
 	status="ok"
-	error=""
+	error=None
 	HTML_ATTR_PATTERN=' %s="%s"'
 	ATTR_PATTERN="<%s>%s</%s>"
 	def __init__(self, value=None):
