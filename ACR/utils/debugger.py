@@ -8,7 +8,7 @@ class Debugger(object):
 	_debugStr=None
 	dbgfn=None
 	level=60
-	CUT_AFTER=120
+	CUT_AFTER=12011
 	CRITICAL=50
 	ERROR=40
 	WARNING=30

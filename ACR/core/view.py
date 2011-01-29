@@ -272,19 +272,19 @@ class View(object):
 		if D:acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts
 		if not list or len(list)<self.postCount:
-			#TODO normalize the Error messages!
-			raise Error("Not enough post fields")
+			raise Error("notEnoughPostFields","Not enough post fields")
 		postSchemas=self.postSchemas
 		try:
 			for i in postSchemas:
 				value=list.get(i)
 				typ=postSchemas[i]
-				typ.set(value)
-				acenv.requestStorage[i]=typ.get(acenv)
-			if D:acenv.debug("requestStorage is %s",acenv.requestStorage)
+				acenv.requestStorage[i]=typ.get(acenv,value)
 		except Error,e:
 			if e.name=="NotValidValue":
 				raise Error("NotValidValue", "Value of %s is invalid"%(i))
+			else:
+				raise e
+		if D:acenv.debug("requestStorage is %s",acenv.requestStorage)
 		if D:acenv.debug("END View:fillPosts")
 
 	def fillInputs(self,acenv):
@@ -299,6 +299,8 @@ class View(object):
 		if D: acenv.debug("inputs are: %s",list)
 		for i in inputSchemas:
 			typ=i["type"]
+			#TODO change to:
+			#acenv.requestStorage[i["name"]]=typ.get(acenv,list.pop(0))
 			try:
 				typ.set(list.pop(0))
 			except:

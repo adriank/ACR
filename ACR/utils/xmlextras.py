@@ -166,7 +166,7 @@ class Reader(handler.ContentHandler):
 
 	def characters(self,data):
 		if len(data.strip())>0:
-			self.path[-1][2].append(data.encode("utf-8"))
+			self.path[-1][2].append(data.encode("utf-8").replace("\t",""))
 		elif self.newlines and len(data)==1 and "\n" in data[0]:
 			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files

@@ -44,14 +44,22 @@ class Default(object):
 		self.default=default
 
 	def get(self,acenv=None,value=None):
+		D=acenv.doDebug
+		if D:
+			acenv.debug("START Type.get")
+			#acenv.debug("self.value is '%s'",self.value)
 		if value:
+			if D: acenv.debug("END Type.get value was set, returning with: '%s'",value)
 			return self._prepareValue(value)
 		try:
+			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
 			return self.value
 		except:
 			if self.default:
+				if D: acenv.debug("END Type.get with self.default: '%s'",self.default.execute(acenv))
 				return self.default.execute(acenv)
 			else:
+				if D: acenv.debug("END Type.get with error ValueNotVaild")
 				raise Error("ValueNotVaild")
 
 	def reset(self):

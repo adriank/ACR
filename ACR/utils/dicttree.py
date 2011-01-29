@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.#@marcin: docstrings
 from ACR.utils.generations import *
 
-def get(d,path,falseOnNotFound=True):
+def get(d,path,falseOnNotFound=True,acenv=False):
 	"""
 	Returns value from dict/object hierarchy.
 	input: dict, path which is a list eg ['an', 'example', 'path'],
@@ -26,6 +26,8 @@ def get(d,path,falseOnNotFound=True):
 	"""
 	#if isinstance(d, Generation):
 	#	d=d.__dict__
+	D=acenv and acenv.doDebug
+	if D: acenv.debug("START dicttree.get with: \n\tdict='%s'\n\tpath='%s'\n\tfalseOnNotFound=%s",d,path,falseOnNotFound)
 	try:
 		ret=d
 		i=0

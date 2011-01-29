@@ -33,7 +33,7 @@ class symbol_base(object):
 					return True
 				elif val==["false","f"]:
 					return False
-				elif val in ["none","null"]:
+				elif val in ["none","null","n"]:
 					return None
 				return (self.id[1:-1], self.value)
 			elif self.id == "(literal)":

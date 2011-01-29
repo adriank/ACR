@@ -53,10 +53,10 @@ def replaceVars(env,l,fn=None):
 		return l
 	ret=[]
 	for i in l:
-		if D: env.debug("computing %s",i)
 		if type(i) is tuple:
+			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
-			v=dicttree.get(storage,i[1])
+			v=dicttree.get(storage,i[1],acenv=env)
 			doFN=True
 			if type(v) is Object:
 				if D: env.debug("Object found")
