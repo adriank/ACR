@@ -105,7 +105,6 @@ def tree2xml(root,esc=False):
 		tab.append("<"+tag)
 		#FIXIT!!!! str() changes ó into "\xc3\xb3". Do it on "%s"%()
 		if attrs and len(attrs)>0:
-			print attrs
 			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(attrs)[1:-1]))
 		nodes=[]
 		if not content:

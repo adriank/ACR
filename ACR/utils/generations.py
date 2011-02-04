@@ -32,6 +32,12 @@ class Generation(object):
 	def __getattr__(self, name):
 		return Generation.__dict__[name]
 
+	def __eq__(self, snd):
+		print "ddd"
+		if type(self._value) is str:
+			return self._value == snd._value
+		return self._value is snd._value
+
 	def set(self,value):
 		self._value=value
 
