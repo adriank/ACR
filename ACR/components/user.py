@@ -103,8 +103,10 @@ class User(Component):
 			conf.get("approved",self.APPROVED),
 			conf.get("approved",self.MAIN)
 		)
+		print "Ddd"
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
+		print acenv.requestStorage
 		return EMPTY_OBJECT
 
 	def generate(self,acenv,conf):

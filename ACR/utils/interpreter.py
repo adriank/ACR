@@ -495,7 +495,7 @@ class Tree(object):
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
-				if type(fst) is str or type(fst) is Object:
+				if type(fst) is str or type(snd) is str  or type(fst) is Object:
 					if D: acenv.debug("doing string comparison '%s'=='%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
