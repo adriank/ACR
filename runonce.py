@@ -10,7 +10,7 @@ from xml.dom.minidom import parseString
 #TODO export settings to /etc/ACR/config
 acconfig.ACRconf="/home/adrian/ACR/ACRconf.xml"
 #one app run
-acconfig.appDir="/home/adrian/projects/acsuite.objectml.info"
+acconfig.appDir="/home/adrian/projects/suite.x.acimg.eu"
 #for multiple apps run - NotImplementedYet
 #globals.appsDir="/home/adrian/ACR/project/"
 host=""
@@ -23,3 +23,4 @@ try:
 except:
 	print "Usage ./run.py path"
 CGIHandler().run(application)
+print

@@ -44,7 +44,7 @@ class Default(object):
 		self.default=default
 
 	def get(self,acenv=None,value=None):
-		D=acenv.doDebug
+		D=acenv and acenv.doDebug
 		if D:
 			acenv.debug("START Type.get")
 			#acenv.debug("self.value is '%s'",self.value)

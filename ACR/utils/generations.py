@@ -55,7 +55,12 @@ class Object(Generation):
 		self._value.append((name,value))
 
 	def addAttrs(self,attrs):
-		self._value.extend(attrs)
+		if not self._value:
+			self._value=[]
+		if type(attrs) is dict:
+			self._value.extend(attrs.iteritems())
+		else:
+			self._value.extend(attrs)
 
 	def __getattr__(self, name):
 		try:
@@ -94,7 +99,10 @@ class Object(Generation):
 					s.append(self.ATTR_PATTERN%(i[0],"%s",i[0]))
 					values.append(i[1])
 			s.append(self.END_TAG)
-		return ("".join(s),values)
+		ret="".join(s)
+		if type(ret) is unicode:
+			ret=ret.encode("utf-8")
+		return (ret,values)
 
 	def __str__(self):
 		if type(self._value) is str:
