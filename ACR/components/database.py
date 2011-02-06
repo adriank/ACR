@@ -128,7 +128,7 @@ class DataBase(Component):
 					nodes.append((fields[i],s))
 				first=False
 				ret.append(Object(nodes))
-			if len(ret) is 1:
+			if not conf["return"]=="list" and len(ret) is 1:
 				#row
 				if D:env.debug("END DB:query with one row: %s",ret[0])
 				return ret[0]
@@ -153,7 +153,7 @@ class DataBase(Component):
 		return {
 			"query":prepareVars(query.strip()),
 			"server":params.get("server", "default"),
-			"return":params.get("get","table"),
+			"return":params.get("return"),
 			"command":conf["command"],
 			#TODO change it to re.strip
 			"cdata":map(str.strip,params.get("cdata","").split(","))

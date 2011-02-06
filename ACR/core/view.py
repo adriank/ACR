@@ -154,6 +154,8 @@ class View(object):
 		ret=[]
 		for i in a:
 			attrs=i[1]
+			if not attrs:
+				attrs={"name":"unnamedCondition"}
 			ret.append({
 				"name":attrs.get("name"),
 				"value":make_tree(attrs.get("value") or "".join(i[2]).strip())
@@ -162,8 +164,8 @@ class View(object):
 
 	def checkConditions(self, acenv):
 		for i in self.conditions:
-			if i["value"] and not execute(acenv, i["value"]):
-				return False
+			if i["value"] and not i["value"].execute(acenv):
+				raise Error("ConditionNotSatisfied", "Condition %s is not satisfied."%i["name"])
 		return True
 
 	#def importAction(self,action):
@@ -323,6 +325,7 @@ class View(object):
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
 		acenv.requestStorage["__lang__"]=acenv.lang
+		self.checkConditions(acenv)
 		for action in self.actions:
 			if D: acenv.info("defining name='%s'",action["name"])
 			if action["condition"] and not action["condition"].execute(acenv):
@@ -352,7 +355,6 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-
 		try:
 			acenv.output["format"]=self.output["format"]
 		except:

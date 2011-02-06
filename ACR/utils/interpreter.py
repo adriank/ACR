@@ -11,7 +11,7 @@
 
 import sys
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree
+from ACR.utils import getStorage, dicttree,Object
 
 symbol_table={}
 
@@ -453,8 +453,17 @@ class Tree(object):
 	def __init__(self,tree):
 		self.tree=tree
 
+	def __str__(self):
+		return "TreeObject(%s)"%str(self.tree)
+
+	def __repr__(self):
+		return self.__str__()
+
 	def execute(self,acenv):
+		D=acenv.doDebug
+		if D: acenv.debug("START Tree.execute")
 		def exe(node):
+			if D: acenv.debug("executing node '%s'", node)
 			if type(node) in [str,int,float] or node in [True,False,None]:
 				return node
 			op=node[0]
@@ -483,9 +492,11 @@ class Tree(object):
 			elif op=="not in":
 				return exe(node[1]) not in exe(node[2])
 			elif op=="is" or op=="is not":
+				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
-				if type(fst) is str or type(snd) is str:
+				if type(fst) is str or type(snd) is str  or type(fst) is Object:
+					if D: acenv.debug("doing string comparison '%s'=='%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
 					ret=fst is snd
@@ -504,7 +515,7 @@ class Tree(object):
 			elif op=="(variable)":
 				storage=getStorage(acenv,node[1])
 				#if D: acenv.debug("%s is %s",node[2],var)
-				return dicttree.get(storage,node[2].split('.'))
+				return dicttree.get(storage,node[2].split('.'),acenv=acenv)
 			elif op=="[":
 				if len(node) is 2:  # list
 					return map(exe,node[1])
@@ -517,7 +528,8 @@ class Tree(object):
 						return first[second]
 
 		D=acenv.doDebug
-		if D: acenv.debug(str(self.tree))
 		if type(self.tree) is not tuple:
 			return self.tree
-		return exe(self.tree)
+		ret=exe(self.tree)
+		if D: acenv.debug("END Tree.execute with: '%s'", ret)
+		return ret

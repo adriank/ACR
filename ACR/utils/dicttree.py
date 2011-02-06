@@ -41,9 +41,11 @@ def get(d,path,falseOnNotFound=True,acenv=False):
 				ret=ret[o]
 				i+=1
 	except (AttributeError, KeyError, TypeError):
+		if D: acenv.debug("END dicttree.get with: ValueNotFound.")
 		if falseOnNotFound:
 			return False
 		return (ret,i)
+	if D: acenv.debug("END dicttree.get with: returning '%s'.", ret)
 	if falseOnNotFound:
 		return ret
 	return (ret, i)

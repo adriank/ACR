@@ -27,7 +27,7 @@ from ACR.utils.generations import Object,List
 import re
 from datetime import datetime
 
-RE_ATTR=re.compile("'([^']+)': '([^']*)',*")
+RE_ATTR=re.compile("'([^']+)': '?([^',]*)'?,*")
 unescapeDict={"&apos;":"'","&quot;":"\""}
 escapeDict={"'":"&apos;","\"":"&quot;"}
 
