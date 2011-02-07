@@ -348,13 +348,14 @@ class View(object):
 					continue
 			if action["type"]==DEFINE:
 				if D: acenv.info("Executing action=%s",action)
-				generation.name=action["name"]
-				generation.view=self.name
+				#generation.name=action["name"]
+				#generation.view=self.name
 				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
+		print acenv.generations
 		try:
 			acenv.output["format"]=self.output["format"]
 		except:

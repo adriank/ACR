@@ -118,16 +118,17 @@ class DataBase(Component):
 			fields=result["fields"]
 			cdata=conf["cdata"]
 			for row in result["rows"]:
-				nodes=[]
+				r={}
 				#TODO optimize returning row and value
 				for i in xrange(len(row)):
 					if type(row[i]) is str and fields[i] in cdata:
 						s="<![CDATA["+row[i].replace("]]>","]]>]]&gt;<![CDATA[")+"]]>"
 					else:
 						s=row[i]
-					nodes.append((fields[i],s))
+					r[fields[i]]=s
+					#nodes.append((fields[i],s))
 				first=False
-				ret.append(Object(nodes))
+				ret.append(r)
 			if not conf["return"]=="list" and len(ret) is 1:
 				#row
 				if D:env.debug("END DB:query with one row: %s",ret[0])
@@ -137,10 +138,10 @@ class DataBase(Component):
 				#	return Object(ret[2][0][2][0])
 			else:
 				if D:env.debug("END DB:query with multiple rows: %s",ret)
-				return List(ret)
+				return ret
 		else:
 			if D:env.debug("END DB:query with no rows.")
-			return EMPTY_OBJECT
+			return {}
 		return ret
 
 	#parses one action config which is passed to object

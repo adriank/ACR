@@ -38,10 +38,11 @@ class Mongo(Component):
 		self.DEFAULT_COLL=config.get("defaultcoll")
 
 	def insert(self,acenv,config):
+		D=acenv.doDebug
 		params=config["params"]
 		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
 		coll.insert(json.loads(replaceVars(acenv,config["content"])))
-		return EMPTY_OBJECT
+		return {}
 
 	def find(self,acenv,config):
 		params=config["params"]
