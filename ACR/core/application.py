@@ -174,25 +174,19 @@ class Application(object):
 			view, acenv.inputs=self.getView(acenv.URLpath)
 			view.generate(acenv)
 		except Error,e:
-			#print "Error"
 			acenv.generations={
-				"error":("object",{"name":"GlobalError","status":"error","error":e.name},e.error)
+				"error":{"name":"GlobalError","@error":e.name,"message":e.error}
 			}
 			try:
 				acenv.output["xsltfile"]=view.output.get("xsltfile")
 			except:
 				pass
-		#this is little faster than Object
-		langs=[]
-		for i in acenv.langs:
-			langs.append((i,None,None))
-		acenv.generations["acf:lang"]=("object",{"name":"acf:lang","current":acenv.lang},langs)
-		acenv.generations["acf:domain"]=("object",{"name":"acf:appDetails","domain":acenv.domain,"config":acenv.outputConfig},None)
-		#temporary error handling
+		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
+		acenv.generations["acr:appDetails"]={"@domain":acenv.domain,"@config":acenv.outputConfig}
 		if acenv.sessionStorage:
 			acenv.info("Session exists")
 			sess=acenv.sessionStorage.data
-			acenv.generations["acf:user"]=("object",{"ID":str(sess["ID"]),"name":"acf:user","email":sess["email"],"role":sess["role"]},None)
+			acenv.generations["acr:user"]={"@ID":sess["ID"],"@email":sess["email"],"@role":sess["role"]}
 			acenv.sessionStorage.save()
 		try:
 			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"]))
@@ -212,9 +206,6 @@ class Application(object):
 			print "Serializer took %s"%(round((time.time()-t)*1000,5))
 		if D: acenv.info("END")
 		return x
-
-	def transform(self,acenv):
-		self.getXML(acenv)
 
 	def computeLangs(self):
 		attrs=self.config.get("/lang")[0][1]

@@ -86,60 +86,72 @@ def serialize(value,doEscape=False):
 #TO-C
 def tree2xml(root,esc=False):
 	"""
-	Converts xml tree to a xml.
-	input: xml tree
+	Converts dict/list tree to a xml.
+	input: (dict|list) a tree root/a fragment (list of dicts)
 	returns: xml tree parsed to a xml
 	"""
 	#TODO move parts of it to Generation object
-	def rec(node):
+	def rec(node,name=None):
+		print "rec"
+		print node,name
+		attrs={}
 		nodetype=type(node)
-		if nodetype in [Object,List]:
-			pattern,values=node.toXML()
-			values=tuple(map(serialize,values))
-			tab.append(pattern%values)
+		if nodetype is dict:
+			tag="object"
+			if not name:
+				name=node.pop("name")
+			for i in node.keys():
+				if i[0]=='@':
+					attrs[i[1:]]=node.pop(i)
+		elif nodetype is list:
+			tag="list"
+		else:
+			print node
 			return
-		elif nodetype is tuple:
-			tag=node[0]
-			attrs=node[1]
-			content=node[2]
+		if name:
+			attrs["name"]=name
 		tab.append("<"+tag)
-		#FIXIT!!!! str() changes ó into "\xc3\xb3". Do it on "%s"%()
 		if attrs and len(attrs)>0:
-			tab.append(" "+RE_ATTR.sub(r'\1="\2"', str(attrs)[1:-1]))
+			for i in attrs.iteritems():
+				tab.append(" %s=\"%s\""%i)
 		nodes=[]
-		if not content:
+		if not node:
 			tab.append("/>")
 		else:
 			tab.append(">")
-			typ=type(content)
-			if typ is str:
-				if esc:
-					content=escape(content)
-				tab.append(content)
-			#TODO this is probably wrong
-			else:
-				for i in content:
-					typei=type(i)
-					if typei is str:
-						sI=i
-						if esc:
-							sI=escape(sI)
-						tab.append(sI)
-					elif typei is datetime:
-						tab.append(i.strftime("%A, %d %B %Y, %X"))
-					elif typei in [tuple,Object,List,list]:
-						rec(i)
-					else:
-						sI=str(i)
-						if esc:
-							sI=escape(sI)
-						tab.append(sI)
+			for i in node.iteritems():
+				typ=type(i[1])
+				if typ is str:
+					if esc:
+						content=escape(i[1])
+					tab.append(content)
+			##TODO this is probably wrong
+			#else:
+			#	for i in content:
+			#		typei=type(i)
+			#		if typei is str:
+			#			sI=i
+			#			if esc:
+			#				sI=escape(sI)
+			#			tab.append(sI)
+			#		elif typei is datetime:
+			#			tab.append(i.strftime("%A, %d %B %Y, %X"))
+			#		elif typei in [tuple,Object,List,list]:
+			#			rec(i)
+			#		else:
+			#			sI=str(i)
+			#			if esc:
+			#				sI=escape(sI)
+			#			tab.append(sI)
 			#	else:
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
 	#if D: log.info("Generating XML")
-	tab=[]
-	rec(root)
+	if type(root) is dict:
+		tab=["<list>"]
+		for i in root.iteritems():
+			rec(i[1],i[0])
+		tab.append("</list>")
 	return "".join(tab)
 
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower

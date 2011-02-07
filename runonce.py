@@ -16,13 +16,12 @@ if __name__=="__main__":
 		HTTP_ACCEPT='application/json'
 	)
 	args = parser.parse_args()
-print args
 acconfig.appDir=args.appDir
 host=""
 port=9999
 os.environ["HTTP_ACCEPT"]=args.HTTP_ACCEPT
 try:
-	os.environ["PATH_INFO"]=sys.argv[1]
+	os.environ["PATH_INFO"]=args.PATH
 except:
 	print "Usage ./run.py path"
 CGIHandler().run(application)

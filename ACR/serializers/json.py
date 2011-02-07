@@ -1,21 +1,11 @@
 #!/usr/bin/env python
 
-try:
-	import cjson as json
-except:
-	try:
-		import simplejson as json
-	except:
-		try:
-			import json
-		except:
-			json=None
-
-def serialize(structure,params):
-	#if D: log.info("Generating JSON")
-	if not json:
-		return "ERROR: JSON serializer not found"
-	try:
-		return json.dumps(acenv.tree)
-	except:
-		raise Exception("simplejson module not installed. Can't output JSON.")
+from ACR.utils import json_compat
+from pymongo.json_util import default
+def serialize(acenv):
+	if not json_compat:
+		return "ERROR: JSON serializer not installed"
+	#try:
+	return json_compat.dumps(acenv.generations,default=default, indent=4)
+	#except:
+	#	raise Exception("simplejson module not installed. Can't output JSON.")

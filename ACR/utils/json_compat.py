@@ -6,14 +6,14 @@ try:
 	#TODO unify cjson API with simplejson/json
 except:
 	try:
-		import simplejson as json
+		import json
 	except:
 		try:
-			import json
+			import simplejson as json
 		except:
 			raise Error("JSONNotFound")
 
-def loads(s):
+def loads(s,object_hook=None):
 	def tostr(dct):
 		d={}
 		for key in dct.keys():
@@ -24,7 +24,7 @@ def loads(s):
 			d[str(key)]=v
 		return d
 
-	return json.loads(s, object_hook=tostr)
+	return json.loads(s, object_hook=object_hook or tostr)
 
 load=json.load
 dumps=json.dumps

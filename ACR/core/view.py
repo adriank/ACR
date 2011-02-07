@@ -318,7 +318,7 @@ class View(object):
 		try:
 			self.inputSchemas
 		except:# inputs is undefined
-			acenv.generations.append(("object",{"type":"view","name":self.name},None))
+			acenv.generations.append({"type":"view","name":self.name})
 			self.transform(acenv)
 			return
 		#if D: acenv.debug("Executing with env=%s",acenv)
@@ -329,8 +329,6 @@ class View(object):
 		for action in self.actions:
 			if D: acenv.info("defining name='%s'",action["name"])
 			if action["condition"] and not action["condition"].execute(acenv):
-				#print "condition not meet %s"%(str(action["condition"].tree))
-				#print action["name"]
 				if D: acenv.warning("Condition is not meet")
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")
@@ -342,8 +340,8 @@ class View(object):
 			component=self.app.getComponent(action["component"])
 			#object or list
 			generation=component.generate(acenv,action["config"])
-			if not generation:
-				raise Error("ComponentError","Component did not return proper value. Please contact component author.")
+			#if not generation:
+			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
 			if not action["name"]:
 					continue
 			if action["type"]==DEFINE:
@@ -355,7 +353,6 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-		print acenv.generations
 		try:
 			acenv.output["format"]=self.output["format"]
 		except:
