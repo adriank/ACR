@@ -38,11 +38,11 @@ class Default(Component):
 
 	def parseAction(self,config):
 		s=[]
-		#for elem in config["content"]:
-		#	if type(elem) is tuple:
-		#		s.append(tree2xml(elem,True))
-		#	elif type(elem) is str:
-		#		s.append(elem.strip())
+		for elem in config["content"]:
+			if type(elem) is tuple:
+				s.append(tree2xml(elem,True))
+			elif type(elem) is str:
+				s.append(elem.strip())
 		return {
 			"string":prepareVars("".join(s).strip()),
 			"output":config.get("output",None)

@@ -90,7 +90,6 @@ def tree2xml(root,esc=False):
 	input: (dict|list) a tree root/a fragment (list of dicts)
 	returns: xml tree parsed to a xml
 	"""
-	#TODO move parts of it to Generation object
 	def rec(node,name=None):
 		print "rec"
 		print node,name
@@ -105,8 +104,14 @@ def tree2xml(root,esc=False):
 					attrs[i[1:]]=node.pop(i)
 		elif nodetype is list:
 			tag="list"
+		elif nodetype is tuple:
+			tag=node[0]
+			attrs=node[1]
+			node=node[2]
+		elif nodetype is str:
+			tab.append(node)
+			return
 		else:
-			print node
 			return
 		if name:
 			attrs["name"]=name
@@ -119,12 +124,16 @@ def tree2xml(root,esc=False):
 			tab.append("/>")
 		else:
 			tab.append(">")
-			for i in node.iteritems():
-				typ=type(i[1])
-				if typ is str:
-					if esc:
-						content=escape(i[1])
-					tab.append(content)
+			if type(node) is dict:
+				for i in node.iteritems():
+					typ=type(i[1])
+					if typ is str:
+						if esc:
+							content=escape(i[1])
+						tab.append(content)
+			if type(node) is list:
+				for i in node:
+					rec(i)
 			##TODO this is probably wrong
 			#else:
 			#	for i in content:
@@ -147,11 +156,19 @@ def tree2xml(root,esc=False):
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
 	#if D: log.info("Generating XML")
+	print root
 	if type(root) is dict:
 		tab=["<list>"]
 		for i in root.iteritems():
 			rec(i[1],i[0])
 		tab.append("</list>")
+	elif type(root) is list:
+		tab=[]
+		for i in root:
+			rec(i)
+	elif type(root) is tuple:
+		tab=[]
+		rec(root)
 	return "".join(tab)
 
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
