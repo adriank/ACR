@@ -48,6 +48,7 @@ class Mongo(Component):
 		params=config["params"]
 		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("prototype", config["content"]))
+		print prototype
 		ret=list(coll.find(json.loads(prototype), params.get("fields")))
 		if ret:
 			if len(ret) is 1:

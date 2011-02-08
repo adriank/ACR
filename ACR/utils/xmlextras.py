@@ -95,10 +95,14 @@ def tree2xml(root,esc=False):
 		print node,name
 		attrs={}
 		nodetype=type(node)
+		print nodetype
 		if nodetype is dict:
 			tag="object"
 			if not name:
-				name=node.pop("name")
+				try:
+					name=node.pop("name")
+				except:
+					pass
 			for i in node.keys():
 				if i[0]=='@':
 					attrs[i[1:]]=node.pop(i)
@@ -108,8 +112,11 @@ def tree2xml(root,esc=False):
 			tag=node[0]
 			attrs=node[1]
 			node=node[2]
-		elif nodetype is str:
-			tab.append(node)
+		elif nodetype in [str,unicode]:
+			if name:
+				tab.append("<%s>%s</%s>"%(name,node,name))
+			else:
+				tab.append(node)
 			return
 		else:
 			return
@@ -124,13 +131,16 @@ def tree2xml(root,esc=False):
 			tab.append("/>")
 		else:
 			tab.append(">")
+			print node
 			if type(node) is dict:
 				for i in node.iteritems():
 					typ=type(i[1])
 					if typ is str:
 						if esc:
 							content=escape(i[1])
-						tab.append(content)
+					else:
+						rec(i[1],i[0])
+						#tab.append(content)
 			if type(node) is list:
 				for i in node:
 					rec(i)
@@ -169,7 +179,10 @@ def tree2xml(root,esc=False):
 	elif type(root) is tuple:
 		tab=[]
 		rec(root)
-	return "".join(tab)
+	ret="".join(tab)
+	if type(ret) is unicode:
+		ret=ret.encode("utf-8")
+	return ret
 
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
 #TODO whitespaces checkup and W3C spec verification of whitespace handling in XML and (X)HTML.
