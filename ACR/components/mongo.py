@@ -22,6 +22,7 @@ from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 import pymongo
 import json
+import time
 
 EMPTY_OBJECT=Object()
 
@@ -41,15 +42,26 @@ class Mongo(Component):
 		D=acenv.doDebug
 		params=config["params"]
 		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
-		coll.insert(json.loads(replaceVars(acenv,config["content"])))
-		return {}
+		id=coll.insert(json.loads(replaceVars(acenv,config["content"])))
+		ret={"@id":id}
+		#leaving space for debugging and profiling info
+		return ret
 
 	def find(self,acenv,config):
 		params=config["params"]
 		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("prototype", config["content"]))
-		print prototype
-		ret=list(coll.find(json.loads(prototype), params.get("fields")))
+		t=time.time()
+		p={"spec":json.loads(prototype)}
+		if params.has_key("fields"):
+			p["fields"]=params["fields"]
+		if params.has_key("skip"):
+			p["skip"]=int(params["skip"])
+		if params.has_key("limit"):
+			p["limit"]=int(params["limit"])
+		ret=list(coll.find(**p))
+		if True or D:
+			acenv.dbg["dbtimer"]+=time.time()-t
 		if ret:
 			if len(ret) is 1:
 				return ret[0]

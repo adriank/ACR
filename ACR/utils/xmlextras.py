@@ -143,7 +143,7 @@ def tree2xml(root,esc=False):
 						#tab.append(content)
 			if type(node) is list:
 				for i in node:
-					rec(i)
+					rec(i,name)
 			##TODO this is probably wrong
 			#else:
 			#	for i in content:
