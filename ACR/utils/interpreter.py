@@ -2,7 +2,7 @@
 
 # code from http://effbot.org/zone/simple-top-down-parsing.htm
 # licence of original code was public domain
-# relicenced to GPL v3 by Asyncode Ltd. and:
+# relicenced to AGPL v3 by Asyncode Ltd. and:
 # - specialized to work with ACR,
 # - added interpreter,
 # - optimized
@@ -14,7 +14,7 @@ from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree,Object
 
 symbol_table={}
-
+#TODO optimization ('-',1) -> -1
 class symbol_base(object):
 		id=None
 		value=None
@@ -137,7 +137,7 @@ infix(">", 60); infix(">=", 60)
 infix("+", 110); infix("-", 110)
 infix("*", 120); infix("/", 120); infix("//", 120)
 #infix("%", 120)
-prefix("-", 130); prefix("+", 130); prefix("~", 130)
+prefix("-", 130); prefix("+", 130); #prefix("~", 130)
 #infix_r("**", 140)
 symbol(".", 150); symbol("[", 150); symbol("(", 150)
 # additional behaviour
@@ -485,6 +485,14 @@ class Tree(object):
 				return exe(node[1]) * exe(node[2])
 			elif op=="/":
 				return exe(node[1]) / exe(node[2])
+			elif op==">":
+				return exe(node[1]) > exe(node[2])
+			elif op=="<":
+				return exe(node[1]) < exe(node[2])
+			elif op==">=":
+				return exe(node[1]) >= exe(node[2])
+			elif op=="<=":
+				return exe(node[1]) <= exe(node[2])
 			elif op=="not":
 				return not exe(node[1])
 			elif op=="in":
