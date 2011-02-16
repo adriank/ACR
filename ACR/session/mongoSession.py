@@ -25,13 +25,13 @@ import pymongo
 import time
 
 class MongoSession(Session):
-	def __init__(self, acenv, id=None):
+	def __init__(self, acenv, ID=None):
 		self.env=acenv
 		D=acenv.doDebug
 		if D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",id)
 		#TODO check if dir exists and raise error when not
 		self.sessCollection=acenv.app.storage[acenv.app.DB_NAME].session
-		super(MongoSession, self).__init__(acenv,id)
+		super(MongoSession, self).__init__(acenv,ID)
 
 	def save(self):
 		self.env.info("Saving session")
@@ -46,10 +46,10 @@ class MongoSession(Session):
 		self.sessCollection.save(self.data)
 
 	def load(self):
-		self.data=self.sessCollection.findone({"_id":pymongo.objectid.ObjectId(self.ID)})
+		self.data=list(self.sessCollection.find({"_id":self.ID}))[0]
 
 	def delete(self):
-		self.sessCollection.remove({"_id":pymongo.objectid.ObjectId(self.ID)})
+		self.sessCollection.remove({"_id":self.ID})
 		self.delCookie=True
 
 	def exists(self,id):

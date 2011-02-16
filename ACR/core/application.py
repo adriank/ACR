@@ -21,7 +21,7 @@
 
 from ACR.utils.xmlextras import *
 from ACR.utils import dicttree, json_compat
-from ACR.session.file import FileSession
+from ACR.session.mongoSession import MongoSession
 from ACR.core.view import View
 from ACR.errors import *
 from ACR import components,serializers
@@ -169,7 +169,7 @@ class Application(object):
 			if D:acenv.info("Session cookie found")
 			sessID=acenv.cookies[prefix]
 			try:
-				acenv.session=MongoSession(acenv,sessID)
+				acenv.sessionStorage=MongoSession(acenv,sessID)
 			except:
 				sessID=None
 		try:
