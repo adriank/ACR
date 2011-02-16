@@ -29,6 +29,7 @@ from ACR.components import *
 from ACR.acconfig import MIMEmapper
 import time,os
 import locale
+import pymongo
 
 pjoin=os.path.join
 pexists=os.path.exists
@@ -44,8 +45,8 @@ class Application(object):
 	immutable=False
 	def __init__(self,appDir):
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
+		self.configPath=os.path.join(appDir, "config.xml")
 		try:
-			self.configPath=os.path.join(appDir, "config.xml")
 			self.timestamp=os.stat(self.configPath).st_mtime
 			config=xml2tree(self.configPath)
 		except (IOError,OSError):
@@ -54,6 +55,7 @@ class Application(object):
 		#cache for component objects
 		self.COMPONENTS_CACHE={}
 		self.DEFAULT_DB=None
+		self.storage=pymongo.Connection()
 		self.views={}
 		self.lang="en"
 		self.langs=[]
@@ -68,6 +70,7 @@ class Application(object):
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
 		self.domain="".join(config.get("/domain/text()",["localhost"]))
+		self.DB_NAME=self.domain.replace(".","_").replace("http://","").replace("/","")
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
@@ -84,7 +87,6 @@ class Application(object):
 		#engineConf=config.get("/engine")[0]
 		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACR")+"_"
-		self.sessionDir="".join(config.get("/sessiondir/text()"))
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])
 			self.getComponent(component[1]["name"],component[2])
@@ -167,7 +169,7 @@ class Application(object):
 			if D:acenv.info("Session cookie found")
 			sessID=acenv.cookies[prefix]
 			try:
-				acenv.sessionStorage=FileSession(acenv,sessID)
+				acenv.session=MongoSession(acenv,sessID)
 			except:
 				sessID=None
 		try:

@@ -22,7 +22,7 @@ from ACR.utils import replaceVars,generateID
 from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
-from ACR.session.file import FileSession
+from ACR.session.mongoSession import MongoSession
 
 EMPTY_OBJECT=Object()
 
@@ -48,7 +48,7 @@ class User(Component):
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
 			if not acenv.sessionStorage:
-				acenv.sessionStorage=FileSession(acenv)
+				acenv.sessionStorage=MongoSession(acenv)
 			if D: acenv.info("Setting ID=%s, email=%s and role=%s to session",result['id'],email,result['role'])
 			acenv.sessionStorage["ID"]=result['id']
 			acenv.sessionStorage["email"]=email
@@ -68,7 +68,7 @@ class User(Component):
 			acenv.sessionStorage.delete()
 		except:
 			pass
-		return EMPTY_OBJECT
+		return {"@status":"ok"}
 
 	#TODO test and debug!
 	def register(self,acenv,conf):
@@ -80,9 +80,7 @@ class User(Component):
 		key=generateID()
 		#returns False if email is not registered yet
 		if acenv.app.getDBConn().query(sql)["rows"][0][0]:
-			o=Object()
-			o.error="EmailAdressAllreadySubscribed"
-			return o
+			return {"@error":"EmailAdressAllreadySubscribed"}
 		#XXX implement psycopg escaping!!!
 		id="SELECT currval('%s.users_id_seq')"%(acconfig.dbschema)
 		sql="""INSERT into %s.users

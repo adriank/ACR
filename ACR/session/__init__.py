@@ -37,18 +37,14 @@ MAX_SESSION_KEY = 18446744073709551616L
 
 #try changing object to dict
 class Session(object):
-	def __init__(self,acenv, id=None):
-		#log.debug("Created session object with id=%s",id)
+	def __init__(self, acenv, ID=None):
+		#log.debug("Created session object with ID=%s",ID)
 		self.modified=False
 		self.delCookie=False
 		self.data={}
-		self.id=id or False
-		if self.id:
-			try:
-				self.load()
-			except IOError, e:
-				self.deleteCookie()
-				raise e
+		self.ID=ID or False
+		if self.ID:
+			self.load()
 		else:
 			self.create(acenv)
 
@@ -102,16 +98,10 @@ class Session(object):
 		except:
 			return {}
 
-	def exists(self, session_key):
-		"""
-		Returns True if the given session_key already exists.
-		"""
-		raise NotImplementedError
-
 	def create(self,acenv):
 		#log.debug("executed, function with no parameters")
-		self.id=self.generateID()
-		HTTP.setCookie(acenv,{"name":"SESS", "value":self.id, "path":"/"})
+		self.ID=self.generateID()
+		HTTP.setCookie(acenv,{"name":"SESS", "value":self.ID, "path":"/"})
 
 	def deleteCookie(self,acenv):
 		#log.info("Deleting session cookie")
@@ -139,5 +129,11 @@ class Session(object):
 	def load(self):
 		"""
 		Loads the session data and returns a dictionary.
+		"""
+		raise NotImplementedError
+
+	def exists(self, session_key):
+		"""
+		Returns True if the given session_key already exists.
 		"""
 		raise NotImplementedError

@@ -34,7 +34,7 @@ class Mongo(Component):
 			config={}
 		server=config.get("server",self.SERVER)
 		port=config.get("port",self.PORT)
-		self.conn=pymongo.Connection(server,port)
+		self.conn=pymongo.Connection()
 		self.DEFAULT_DB=config.get("defaultdb")
 		self.DEFAULT_COLL=config.get("defaultcoll")
 
@@ -51,7 +51,6 @@ class Mongo(Component):
 		params=config["params"]
 		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("prototype", config["content"]))
-		t=time.time()
 		p={"spec":json.loads(prototype)}
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
@@ -59,6 +58,11 @@ class Mongo(Component):
 			p["skip"]=int(params["skip"])
 		if params.has_key("limit"):
 			p["limit"]=int(params["limit"])
+		q={"_id" : pymongo.objectid.ObjectId("4d4f04a9ba060531ef000000")}
+		t=time.time()
+		x=list(coll.find(q))
+		print round((time.time()-t)*1000,5)
+		print x
 		ret=list(coll.find(**p))
 		if True or D:
 			acenv.dbg["dbtimer"]+=time.time()-t

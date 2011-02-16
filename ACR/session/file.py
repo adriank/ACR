@@ -81,6 +81,8 @@ class FileSession(Session):
 	def load(self):
 		#log.info("Loading session from file.")
 		#log.debug("Executing - function w/o parameters")
+		import time
+		t=time.time()
 		session_data = {}
 		try:
 			session_file = open(self._key_to_file(), "rb")
@@ -98,8 +100,11 @@ class FileSession(Session):
 				session_file.close()
 		except IOError,e:
 			#log.warning("Session file not found.")
+			self.deleteCookie()
 			raise e
 		#log.info("Session data set to %s",session_data)
+		print "file"
+		print round((time.time()-t)*1000,5)
 		self.data=session_data
 
 	def delete(self):

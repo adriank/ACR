@@ -91,11 +91,11 @@ def tree2xml(root,esc=False):
 	returns: xml tree parsed to a xml
 	"""
 	def rec(node,name=None):
-		print "rec"
-		print node,name
+		#print "rec"
+		#print node,name
 		attrs={}
 		nodetype=type(node)
-		print nodetype
+		#print nodetype
 		if nodetype is dict:
 			tag="object"
 			if not name:
@@ -114,7 +114,7 @@ def tree2xml(root,esc=False):
 			node=node[2]
 		elif nodetype in [str,unicode]:
 			if name:
-				tab.append("<%s>%s</%s>"%(name,node,name))
+				tab.append('<object name="%s">%s</object>'%(name,node))
 			else:
 				tab.append(node)
 			return
@@ -131,7 +131,7 @@ def tree2xml(root,esc=False):
 			tab.append("/>")
 		else:
 			tab.append(">")
-			print node
+			#print node
 			if type(node) is dict:
 				for i in node.iteritems():
 					typ=type(i[1])
@@ -143,7 +143,10 @@ def tree2xml(root,esc=False):
 						#tab.append(content)
 			if type(node) is list:
 				for i in node:
-					rec(i,name)
+					if type(i) in [str,unicode]:
+						tab.append("<%s>%s</%s>"%(name,i,name))
+					else:
+						rec(i)
 			##TODO this is probably wrong
 			#else:
 			#	for i in content:
