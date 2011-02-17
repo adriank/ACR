@@ -24,7 +24,20 @@ from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
 from ACR.session.mongoSession import MongoSession
 
-EMPTY_OBJECT=Object()
+"""
+	Users are stored in the Mongo:
+	- email is required for now and acts as unique key until other login types will be implemented (uniquenes is handled here because Mongo does not support null - null is a value so only one object without email can exist),
+	- password is md5 of password; currently passing md5 string directly from UA is not supported
+	- role is for handling simple role-based privilege system,
+	- privileges is a list of names of privileges granted to user,
+	- approval_key is key that user need to authorize his e-mail address (anty-spamm strategy and ensuring that user owns address)
+
+--- Possible extensions ---
+
+	- handling md5 passwords directly from UA instead of hashing it here,
+	- login via OpenID
+	- OAuth
+"""
 
 class User(Component):
 	#defaults
@@ -70,42 +83,20 @@ class User(Component):
 			pass
 		return {"@status":"ok"}
 
-	#TODO test and debug!
 	def register(self,acenv,conf):
+		usersColl=acenv.app.storage.users
 		email=replaceVars(acenv,conf["email"])
-		password=replaceVars(acenv,conf["password"])
-		role=replaceVars(acenv,conf.get("role",self.ROLE))
-		sql="select exists(select * from %s.emails where email='%s')"%(acconfig.dbschema,email)
-		passwd=md5_constructor(password).hexdigest()
-		key=generateID()
-		#returns False if email is not registered yet
-		if acenv.app.getDBConn().query(sql)["rows"][0][0]:
+		if list(usersColl.find({"email":email})):
 			return {"@error":"EmailAdressAllreadySubscribed"}
-		#XXX implement psycopg escaping!!!
-		id="SELECT currval('%s.users_id_seq')"%(acconfig.dbschema)
-		sql="""INSERT into %s.users
-			(password,role)
-		VALUES
-			('%s', '%s');
-		INSERT into %s.emails
-			(email,_user,approval_key,approved,main)
-		VALUES
-			('%s', (%s), '%s', %s, %s)"""%(
-			acconfig.dbschema,
-			passwd,
-			role,
-			acconfig.dbschema,
-			email,
-			id,
-			key,
-			conf.get("approved",self.APPROVED),
-			conf.get("approved",self.MAIN)
-		)
-		print "Ddd"
-		result=acenv.app.getDBConn().query(sql)
-		acenv.requestStorage["approval_key"]=key
-		print acenv.requestStorage
-		return EMPTY_OBJECT
+		d={
+			"email":email,
+			"password":md5_constructor(replaceVars(acenv,conf["password"])).hexdigest(),
+			"role":replaceVars(acenv,conf.get("role",self.ROLE)),
+			"approval_key":generateID(),
+			"privileges":[]
+		}
+		id=usersColl.save(d)
+		return {"@status":"ok","@id":id}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)

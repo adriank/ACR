@@ -143,8 +143,11 @@ def tree2xml(root,esc=False):
 						#tab.append(content)
 			if type(node) is list:
 				for i in node:
-					if type(i) in [str,unicode]:
-						tab.append("<%s>%s</%s>"%(name,i,name))
+					if type(i) in [str,unicode] and i.strip():
+						if name:
+							tab.append("<%s>%s</%s>"%(name,i,name))
+						else:
+							tab.append(i)
 					else:
 						rec(i)
 			##TODO this is probably wrong
@@ -169,7 +172,7 @@ def tree2xml(root,esc=False):
 			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
 			tab.append("</"+tag+">")
 	#if D: log.info("Generating XML")
-	print root
+	#print root
 	if type(root) is dict:
 		tab=["<list>"]
 		for i in root.iteritems():

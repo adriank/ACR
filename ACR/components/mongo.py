@@ -41,7 +41,8 @@ class Mongo(Component):
 	def insert(self,acenv,config):
 		D=acenv.doDebug
 		params=config["params"]
-		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
+		#coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
+		coll=acenv.storage[params.get("coll",self.DEFAULT_COLL)]
 		id=coll.insert(json.loads(replaceVars(acenv,config["content"])))
 		ret={"@id":id}
 		#leaving space for debugging and profiling info
@@ -49,7 +50,9 @@ class Mongo(Component):
 
 	def find(self,acenv,config):
 		params=config["params"]
-		coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
+		print params.get("coll",self.DEFAULT_COLL)
+		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+		print coll
 		prototype=replaceVars(acenv,params.get("prototype", config["content"]))
 		p={"spec":json.loads(prototype)}
 		if params.has_key("fields"):
@@ -71,7 +74,7 @@ class Mongo(Component):
 				return ret[0]
 			return ret
 		else:
-			return {}
+			return {"@status":"nodata"}
 
 	def generate(self, acenv,config):
 		return self.__getattribute__(config["command"].split(":").pop())(acenv,config)

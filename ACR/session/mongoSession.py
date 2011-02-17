@@ -24,29 +24,32 @@ from ACR.errors import Error
 import pymongo
 import time
 
+"""
+	Session is stored in Mongo as object where:
+	-
+"""
+
 class MongoSession(Session):
 	def __init__(self, acenv, ID=None):
 		self.env=acenv
-		D=acenv.doDebug
-		if D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",id)
+		self.D=acenv.doDebug
+		if self.D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",ID)
 		#TODO check if dir exists and raise error when not
-		self.sessCollection=acenv.app.storage[acenv.app.DB_NAME].session
+		self.sessCollection=acenv.app.storage.session
 		super(MongoSession, self).__init__(acenv,ID)
 
 	def save(self):
 		self.env.info("Saving session")
-		if not self.modified:
-			self.env.info("Session is not modified")
-			return
-		self.env.info("Session is modified")
 		if self.delCookie:
 			self.deleteCookie()
-		self.data["_id"]=self.ID
+		if not self.data.has_key("_id"):
+			self.data["_id"]=self.ID
 		self["last_login"]=time.time()
 		self.sessCollection.save(self.data)
 
 	def load(self):
 		self.data=list(self.sessCollection.find({"_id":self.ID}))[0]
+		if self.D: self.env.debug("Loaded session: %s",self.data)
 
 	def delete(self):
 		self.sessCollection.remove({"_id":self.ID})

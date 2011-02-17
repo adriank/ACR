@@ -38,6 +38,7 @@ MAX_SESSION_KEY = 18446744073709551616L
 #try changing object to dict
 class Session(object):
 	def __init__(self, acenv, ID=None):
+		if self.D: acenv.info("START Session.__init__ with id=%s",ID)
 		#log.debug("Created session object with ID=%s",ID)
 		self.modified=False
 		self.delCookie=False

@@ -55,7 +55,6 @@ class Application(object):
 		#cache for component objects
 		self.COMPONENTS_CACHE={}
 		self.DEFAULT_DB=None
-		self.storage=pymongo.Connection()
 		self.views={}
 		self.lang="en"
 		self.langs=[]
@@ -70,7 +69,9 @@ class Application(object):
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
 		self.domain="".join(config.get("/domain/text()",["localhost"]))
-		self.DB_NAME=self.domain.replace(".","_").replace("http://","").replace("/","")
+		#TODO this is ugly
+		self.DB_NAME=self.domain.split(":")[1].replace(".","_").replace("http://","").replace("/","")
+		self.storage=pymongo.Connection()[self.DB_NAME]
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
