@@ -90,12 +90,29 @@ def tree2xml(root,esc=False):
 	input: (dict|list) a tree root/a fragment (list of dicts)
 	returns: xml tree parsed to a xml
 	"""
+	def tuplerec(node):
+		if type(node) is not tuple:
+			node=str(node)
+		if type(node) is str:
+			s=node.strip()
+			if s:
+				tab.append(s)
+			return
+		tab.append("<"+node[0])
+		if node[1]:
+			for i in node[1].iteritems():
+				tab.append(" %s=\"%s\""%i)
+		if node[2]:
+			tab.append(">")
+			for i in node[2]:
+				tuplerec(i)
+			tab.append("</"+node[0]+">")
+		else:
+			tab.append("/>")
+
 	def rec(node,name=None):
-		#print "rec"
-		#print node,name
 		attrs={}
 		nodetype=type(node)
-		#print nodetype
 		if nodetype is dict:
 			tag="object"
 			if not name:
@@ -108,17 +125,13 @@ def tree2xml(root,esc=False):
 					attrs[i[1:]]=node.pop(i)
 		elif nodetype is list:
 			tag="list"
-		elif nodetype is tuple:
-			tag=node[0]
-			attrs=node[1]
-			node=node[2]
-		elif nodetype in [str,unicode]:
+		else:
+			if nodetype not in [str,unicode]:
+				node=str(node)
 			if name:
-				tab.append('<object name="%s">%s</object>'%(name,node))
+				tab.append('<%s>%s</%s>'%(name,node,name))
 			else:
 				tab.append(node)
-			return
-		else:
 			return
 		if name:
 			attrs["name"]=name
@@ -143,48 +156,31 @@ def tree2xml(root,esc=False):
 						#tab.append(content)
 			if type(node) is list:
 				for i in node:
-					if type(i) in [str,unicode] and i.strip():
-						if name:
-							tab.append("<%s>%s</%s>"%(name,i,name))
-						else:
-							tab.append(i)
-					else:
+					if type(i) in (dict,list):
 						rec(i)
-			##TODO this is probably wrong
-			#else:
-			#	for i in content:
-			#		typei=type(i)
-			#		if typei is str:
-			#			sI=i
-			#			if esc:
-			#				sI=escape(sI)
-			#			tab.append(sI)
-			#		elif typei is datetime:
-			#			tab.append(i.strftime("%A, %d %B %Y, %X"))
-			#		elif typei in [tuple,Object,List,list]:
-			#			rec(i)
-			#		else:
-			#			sI=str(i)
-			#			if esc:
-			#				sI=escape(sI)
-			#			tab.append(sI)
-			#	else:
-			#		raise "type of "+str([i])+" is"+str(type(i))+"\n"+str(root)
+					else:
+						tab.append("<object name=\"%s\">%s</object>"%(name,i))
 			tab.append("</"+tag+">")
 	#if D: log.info("Generating XML")
-	#print root
 	if type(root) is dict:
 		tab=["<list>"]
+		#this is an exception. We want to have <object/>'s with name in root subnodes.
 		for i in root.iteritems():
-			rec(i[1],i[0])
+			if type(i[1]) is str:
+				tab.append('<object name="%s">%s</object>'%i)
+			else:
+				rec(i[1],i[0])
 		tab.append("</list>")
 	elif type(root) is list:
 		tab=[]
-		for i in root:
-			rec(i)
+		rec(root)
 	elif type(root) is tuple:
 		tab=[]
-		rec(root)
+		tuplerec(root)
+	#XXX delete it!!!
+	for i in range(len(tab)):
+		if type(tab[i]) is unicode:
+			tab[i]=tab[i].encode("utf-8")
 	ret="".join(tab)
 	if type(ret) is unicode:
 		ret=ret.encode("utf-8")

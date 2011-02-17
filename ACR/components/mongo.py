@@ -23,8 +23,7 @@ from xml.sax.saxutils import escape,unescape
 import pymongo
 import json
 import time
-
-EMPTY_OBJECT=Object()
+from pymongo.json_util import object_hook
 
 class Mongo(Component):
 	SERVER='localhost'
@@ -38,22 +37,30 @@ class Mongo(Component):
 		self.DEFAULT_DB=config.get("defaultdb")
 		self.DEFAULT_COLL=config.get("defaultcoll")
 
+	def update(self,acenv,config):
+		D=acenv.doDebug
+		params=config["params"]
+		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+		where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
+		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		print where
+		print o
+		coll.update(where,o)
+
 	def insert(self,acenv,config):
 		D=acenv.doDebug
 		params=config["params"]
-		#coll=self.conn[params.get("db",self.DEFAULT_DB)][params.get("coll",self.DEFAULT_COLL)]
-		coll=acenv.storage[params.get("coll",self.DEFAULT_COLL)]
+		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		id=coll.insert(json.loads(replaceVars(acenv,config["content"])))
+		if D:acenv.debug("inserted:\n%s",replaceVars(acenv,config["content"]))
 		ret={"@id":id}
 		#leaving space for debugging and profiling info
 		return ret
 
 	def find(self,acenv,config):
 		params=config["params"]
-		print params.get("coll",self.DEFAULT_COLL)
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		print coll
-		prototype=replaceVars(acenv,params.get("prototype", config["content"]))
+		prototype=replaceVars(acenv,params.get("where", config["content"]))
 		p={"spec":json.loads(prototype)}
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
@@ -63,10 +70,8 @@ class Mongo(Component):
 			p["limit"]=int(params["limit"])
 		q={"_id" : pymongo.objectid.ObjectId("4d4f04a9ba060531ef000000")}
 		t=time.time()
-		x=list(coll.find(q))
-		print round((time.time()-t)*1000,5)
-		print x
 		ret=list(coll.find(**p))
+		#print round((time.time()-t)*1000,5)
 		if True or D:
 			acenv.dbg["dbtimer"]+=time.time()-t
 		if ret:
@@ -85,14 +90,16 @@ class Mongo(Component):
 		pars=config["params"]
 		for elem in config["content"]:
 			if type(elem) is tuple:
-				if elem[0]=="prototype":
-					pars["prototype"]="".join(elem[2])
+				if elem[0]=="where":
+					pars["where"]=prepareVars("".join(elem[2]))
 				elif elem[0]=="field":
 					fields[elem[1]["name"]]=int(elem[1]["show"])
 				else:
 					pars[elem[0]]=(elem[1],elem[2])
 			elif type(elem) is str:
 				s.append(elem.strip())
+		if not pars.has_key("coll"):
+			raise Error("no coll parameter specified")
 		if fields:
 			pars["fields"]=fields
 		return {

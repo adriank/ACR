@@ -49,6 +49,7 @@ class MongoSession(Session):
 
 	def load(self):
 		self.data=list(self.sessCollection.find({"_id":self.ID}))[0]
+		self.data["ID"]=str(self.data.pop("_id"))
 		if self.D: self.env.debug("Loaded session: %s",self.data)
 
 	def delete(self):
