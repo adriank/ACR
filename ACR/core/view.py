@@ -228,11 +228,11 @@ class View(object):
 				#"command":cmd,#command name
 				"name":attrs.get("name",None),
 				"component":componentName,
-				"condition":make_tree(attrs.get("condition")),
 				"default":make_tree(attrs.get("default")),
 				"config":self.app.getComponent(componentName).parseAction(self.parseAction(action)),
 			}
-
+			if attrs.has_key("condition"):
+				o["condition"]=make_tree(attrs["condition"])
 			# positions the action in the list of actions
 			before=attrs.get("before")
 			after=attrs.get("after")
@@ -328,7 +328,7 @@ class View(object):
 		self.checkConditions(acenv)
 		for action in self.actions:
 			if D: acenv.info("defining name='%s'",action["name"])
-			if action["condition"] and not action["condition"].execute(acenv):
+			if action.has_key("condition") and not action["condition"].execute(acenv):
 				if D: acenv.warning("Condition is not meet")
 				if action["type"]==SET:
 					if D: acenv.warning("Set condition is not meet.")

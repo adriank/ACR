@@ -26,8 +26,6 @@ class Default(object):
 	def __init__(self,value=None,default=None,config=None):
 		if default:
 			self.default=self.setDefault(default)
-		else:
-			self.default=None
 		if value:
 			self.set(value,config)
 
@@ -45,9 +43,7 @@ class Default(object):
 
 	def get(self,acenv=None,value=None):
 		D=acenv and acenv.doDebug
-		if D:
-			acenv.debug("START Type.get")
-			#acenv.debug("self.value is '%s'",self.value)
+		if D:acenv.debug("START Type.get")
 		if value:
 			if D: acenv.debug("END Type.get value was set, returning with: '%s'",value)
 			return self._prepareValue(value)
@@ -55,12 +51,12 @@ class Default(object):
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
 			return self.value
 		except:
-			if self.default:
+			if self.__init__.has_key("default"):
 				if D: acenv.debug("END Type.get with self.default: '%s'",self.default.execute(acenv))
 				return self.default.execute(acenv)
 			else:
 				if D: acenv.debug("END Type.get with error ValueNotVaild")
-				raise Error("ValueNotVaild")
+				raise Error("NotValidValue")
 
 	def reset(self):
 		self._value=None

@@ -2,7 +2,7 @@
 from ACR.utils.xmlextras import tree2xml
 
 def serialize(env):
-	xml=tree2xml(env.generations)
+	xml=tree2xml(env.generations,True)
 	xslt=""
 	if env.output["xsltfile"]:
 		xslt="""<?xml-stylesheet type="text/xsl" href="%sxslt/%s"?>\n"""%(env.domain,env.output["xsltfile"])

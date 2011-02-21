@@ -34,7 +34,7 @@ class Mongo(Component):
 		server=config.get("server",self.SERVER)
 		port=config.get("port",self.PORT)
 		self.conn=pymongo.Connection()
-		self.DEFAULT_DB=config.get("defaultdb")
+		#self.DEFAULT_DB=config.get("defaultdb")
 		self.DEFAULT_COLL=config.get("defaultcoll")
 
 	def update(self,acenv,config):
@@ -43,16 +43,19 @@ class Mongo(Component):
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
 		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
-		print where
-		print o
+		#print where
+		#print o
 		coll.update(where,o)
 
 	def insert(self,acenv,config):
 		D=acenv.doDebug
+		if D: acenv.debug("START Mongo.insert with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		id=coll.insert(json.loads(replaceVars(acenv,config["content"])))
-		if D:acenv.debug("inserted:\n%s",replaceVars(acenv,config["content"]))
+		o=json.loads(replaceVars(acenv,config["content"]))
+		if D: acenv.debug("doing %s",coll.insert)
+		id=coll.insert(o)
+		if D:acenv.debug("inserted:\n%s",o)
 		ret={"@id":id}
 		#leaving space for debugging and profiling info
 		return ret
@@ -93,7 +96,7 @@ class Mongo(Component):
 				if elem[0]=="where":
 					pars["where"]=prepareVars("".join(elem[2]))
 				elif elem[0]=="field":
-					fields[elem[1]["name"]]=int(elem[1]["show"])
+					fields[elem[1]["name"]]=bool(elem[1]["show"])
 				else:
 					pars[elem[0]]=(elem[1],elem[2])
 			elif type(elem) is str:

@@ -178,7 +178,11 @@ class Application(object):
 			view.generate(acenv)
 		except Error,e:
 			acenv.generations={
-				"error":{"name":"GlobalError","@error":e.name,"message":e.error}
+				"error":{
+					"@name":"GlobalError",
+					"@error":e.name,
+					"@message":e.message
+				}
 			}
 			try:
 				acenv.output["xsltfile"]=view.output.get("xsltfile")
@@ -215,7 +219,6 @@ class Application(object):
 		try:
 			defaultLang=attrs["default"].strip()
 		except KeyError:
-			#make it log.warning and fall back to en
 			raise Error("LangNotDefined","Misconfiguration of 'langs' setting in app configuration file.")
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [defaultLang]+attrs.get("supported", "").split(",")))
