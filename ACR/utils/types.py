@@ -51,7 +51,7 @@ class Default(object):
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
 			return self.value
 		except:
-			if self.__init__.has_key("default"):
+			if self.__dict__.has_key("default"):
 				if D: acenv.debug("END Type.get with self.default: '%s'",self.default.execute(acenv))
 				return self.default.execute(acenv)
 			else:

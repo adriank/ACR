@@ -223,14 +223,16 @@ class View(object):
 			attrs=action[1]
 			ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
 			componentName=self.namespaces.get(ns,"default")
+			print componentName
 			o={
 				"type":typ,#DEFINE or SET
 				#"command":cmd,#command name
 				"name":attrs.get("name",None),
 				"component":componentName,
-				"default":make_tree(attrs.get("default")),
 				"config":self.app.getComponent(componentName).parseAction(self.parseAction(action)),
 			}
+			if attrs.has_key("default"):
+				o["default"]=make_tree(attrs["default"])
 			if attrs.has_key("condition"):
 				o["condition"]=make_tree(attrs["condition"])
 			# positions the action in the list of actions

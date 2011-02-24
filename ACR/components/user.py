@@ -88,15 +88,16 @@ class User(Component):
 		email=replaceVars(acenv,conf["email"])
 		if list(usersColl.find({"email":email})):
 			return {"@error":"EmailAdressAllreadySubscribed"}
+		key=generateID()
 		d={
 			"email":email,
 			"password":md5_constructor(replaceVars(acenv,conf["password"])).hexdigest(),
 			"role":replaceVars(acenv,conf.get("role",self.ROLE)),
-			"approval_key":generateID(),
+			"approval_key":key,
 			"privileges":[]
 		}
 		id=usersColl.save(d)
-		return {"@status":"ok","@id":id}
+		return {"@status":"ok","@id":id,"approval_key":key}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
