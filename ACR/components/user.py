@@ -47,34 +47,30 @@ class User(Component):
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
-		password=replaceVars(acenv,conf["password"])
-		ret=Object()
-		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(acconfig.dbschema,acconfig.dbschema,email)
+		usersColl=acenv.app.storage.users
 		try:
-			result=acenv.app.getDBConn().query(sql)
-			result=dict(zip(result["fields"], result["rows"][0]))
+			user=list(usersColl.find({"email":email}))[0]
 		except IndexError:
 			if D: acenv.error("Account not found")
-			ret.status="error"
-			ret.error="AccountNotFound"
-			return ret
-		if result['password']==md5_constructor(password).hexdigest():
+			return {
+				"@status":"error",
+				"@error":"AccountNotFound"
+			}
+		password=replaceVars(acenv,conf["password"])
+		if user['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
 			if not acenv.sessionStorage:
 				acenv.sessionStorage=MongoSession(acenv)
-			if D: acenv.info("Setting ID=%s, email=%s and role=%s to session",result['id'],email,result['role'])
-			acenv.sessionStorage["ID"]=result['id']
-			acenv.sessionStorage["email"]=email
-			acenv.sessionStorage["role"]=result['role']
-			#is it necessary?
-			acenv.sessionStorage["loggedIn"]=True
-			#acenv.session["fake"]=False
-			return ret
+			if D: acenv.info("Setting session as:\n	%s",user)
+			user["ID"]=str(user.pop("_id"))
+			acenv.sessionStorage.data=user
+			return {"@status":"ok"}
 		else:
 			if D: acenv.error("Password is not correct")
-			ret.status="error"
-			ret.error="WrongPassword"
-			return ret
+			return {
+				"@status":"error",
+				"@error":"WrongPassword"
+			}
 
 	def logout(self,acenv,conf):
 		try:

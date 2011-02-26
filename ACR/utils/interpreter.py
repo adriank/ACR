@@ -13,6 +13,9 @@ import sys
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree,Object
 
+class ProgrammingError(Exception):
+	pass
+
 symbol_table={}
 #TODO optimization ('-',1) -> -1
 class symbol_base(object):
@@ -58,19 +61,28 @@ class symbol_base(object):
 				if type(i) is str:
 					ret.append(i)
 				elif type(i) in [dict,tuple,list]:
+					t=[]
 					for j in i:
-						ret.append(j.getTree())
-					return (self.id, ret[1:])
+						try:
+							t.append(j.getTree())
+						except:
+							t.append(j)
+					if self.id=="(":
+						return (self.id,ret[1],len(t) is 1 and t[0] or t)
+					if self.id=="[":
+						return ret[1:]
+					ret.append(t)
+					#return (self.id,ret[1:])
 				else:
 					ret.append(i.getTree())
 			return tuple(ret)
 
-		#def __repr__(self):
-		#		if self.id == "(name)" or self.id == "(literal)":
-		#				return "(%s %s)" % (self.id[1:-1], self.value)
-		#		out=[self.id, self.first, self.second, self.third]
-		#		out=map(str, filter(None, out))
-		#		return "(" + " ".join(out) + ")"
+		def __repr__(self):
+			if self.id == "(name)" or self.id == "(literal)":
+				return "(%s %s)" % (self.id[1:-1], self.value)
+			out=[self.id, self.first, self.second, self.third]
+			out=map(str, filter(None, out))
+			return "(" + " ".join(out) + ")"
 
 def symbol(id, bp=0):
 		try:
@@ -166,10 +178,13 @@ def nud(self):
 @method(symbol("."))
 def led(self, left):
 	attr=False
+	if token.id==".":
+		self.id=".."
+		advance()
 	if token.id=="@":
 		attr=True
 		advance()
-	if token.id != "(name)":
+	if token.id not in ["(name)","*"]:
 		raise SyntaxError("Expected an attribute name.")
 	self.first=left
 	if attr:
@@ -178,14 +193,14 @@ def led(self, left):
 	advance()
 	return self
 
-@method(symbol("@"))
-def led(self, left):
-	if token.id != "(name)":
-		raise SyntaxError("Expected an attribute name.")
-	self.first=left
-	self.second=token
-	advance()
-	return self
+#@method(symbol("@"))
+#def led(self, left):
+#	if token.id != "(name)":
+#		raise SyntaxError("Expected an attribute name.")
+#	self.first=left
+#	self.second=token
+#	advance()
+#	return self
 
 #symbol(":")
 #symbol("$")
@@ -230,15 +245,16 @@ def led(self, left):
 	advance(':')
 	self.id="(variable)"
 	self.first=left.value
-	self.second=""
+	path=""
 	while token.id in [".","(name)","@"]:
 		if token.id=="(name)":
-			self.second+=token.value
+			path+=token.value
 		elif token.id=="@":
-			self.second+="@"
+			path+="@"
 		else:
-			self.second+="."
+			path+="."
 		advance()
+	self.second=path.split(".")
 	return self
 
 symbol("]")
@@ -257,15 +273,16 @@ def led(self, left):
 		self.first=left
 		self.second=[]
 		if token.id != ")":
-				while 1:
-						self.second.append(expression())
-						if token.id != ",":
-								break
-						advance(",")
+			while 1:
+				self.second.append(expression())
+				if token.id != ",":
+					break
+				advance(",")
 		advance(")")
 		return self
 
-#symbol(":"); symbol("=")
+#symbol(":");
+symbol("=")
 
 #@method(symbol("lambda"))
 #def nud(self):
@@ -327,22 +344,22 @@ def led(self, left):
 
 @method(symbol("("))
 def nud(self):
-		self.first=[]
-		comma=False
-		if token.id != ")":
-				while 1:
-						if token.id == ")":
-								break
-						self.first.append(expression())
-						if token.id != ",":
-								break
-						comma=True
-						advance(",")
-		advance(")")
-		if not self.first or comma:
-				return self # tuple
-		else:
-				return self.first[0]
+	self.first=[]
+	comma=False
+	if token.id != ")":
+		while 1:
+			if token.id == ")":
+				break
+			self.first.append(expression())
+			if token.id != ",":
+				break
+			comma=True
+			advance(",")
+	advance(")")
+	if not self.first or comma:
+		return self # tuple
+	else:
+		return self.first[0]
 
 symbol("]")
 
@@ -350,13 +367,13 @@ symbol("]")
 def nud(self):
 		self.first=[]
 		if token.id != "]":
-				while 1:
-						if token.id == "]":
-								break
-						self.first.append(expression())
-						if token.id != ",":
-								break
-						advance(",")
+			while 1:
+				if token.id == "]":
+					break
+				self.first.append(expression())
+				#if token.id != ",":
+				#	break
+				advance(",")
 		advance("]")
 		return self
 
@@ -384,7 +401,7 @@ type_map={
 	tokenizer.STRING: "(literal)",
 	tokenizer.OP: "(operator)",
 	tokenizer.NAME: "(name)",
-	tokenizer.ERRORTOKEN: "(operator)" # this is strange, '$ ' is recognized in python tokenizer as error token!
+	tokenizer.ERRORTOKEN: "(operator)" # '$ ' is recognized in python tokenizer as error token!
 }
 
 # python tokenizer
@@ -440,7 +457,8 @@ def expression(rbp=0):
 def make_tree(expr):
 	if type(expr) is not str:
 		return Tree(expr)
-	elif not len(expr.strip()):
+	expr=expr.strip()
+	if not len(expr):
 		return Tree(True)
 	global token, next
 	next=tokenize(expr).next
@@ -519,9 +537,10 @@ class Tree(object):
 				else:
 					evaluatePath()
 			elif op=="(variable)":
+				print node
 				storage=getStorage(acenv,node[1])
 				#if D: acenv.debug("%s is %s",node[2],var)
-				return dicttree.get(storage,node[2].split('.'),acenv=acenv)
+				return dicttree.get(storage,node[2],acenv=acenv)
 			elif op=="[":
 				if len(node) is 2:  # list
 					return map(exe,node[1])
@@ -532,6 +551,24 @@ class Tree(object):
 						return first[int(second)]
 					else:
 						return first[second]
+			elif op=="(":
+				""" The built-in functions """
+				fnName=node[1][1]
+				print "fff"
+				print node[1]
+				args=node[2]
+				if fnName=="sum":
+					if type(second) in [int,float]:
+						return second
+					return sum(map(lambda x:type(x) is int and x or exe(x), second))
+				if fnName=="findObjectById":
+					args=map(lambda e:exe(e),args)
+					id=type(second) is str and second or exe(second)
+					dicttree.find({"_id":id})
+					print id
+				else:
+					raise ProgrammingError("Function '"+fnName+"' does not exist.")
+				print node[1][1]
 
 		D=acenv.doDebug
 		if type(self.tree) is not tuple:

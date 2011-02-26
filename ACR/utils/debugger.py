@@ -53,6 +53,8 @@ class Debugger(object):
 
 	def consolelog(self, lvl, s):
 		def f(x):
+			if type(x) is unicode:
+				x=x.encode("utf8")
 			s=str(x).replace("\n","").replace("\t","")
 			if len(s)>self.CUT_AFTER:
 				return s[:self.CUT_AFTER]+"..."

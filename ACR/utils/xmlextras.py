@@ -166,7 +166,7 @@ def tree2xml(root,esc=False):
 					else:
 						i=str(i)
 						if esc: i=escape(i)
-						tab.append("<object name=\"%s\">%s</object>"%(name,i))
+						tab.append("<item>%s</item>"%i)
 			tab.append("</"+tag+">")
 
 	#if D: log.info("Generating XML")

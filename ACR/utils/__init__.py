@@ -66,6 +66,8 @@ def replaceVars(env,l,fn=None):
 					pass
 				v=v._value
 			if type(v) is not List:
+				if type(v) is unicode:
+					v=v.encode("utf8")
 				v=str(v)
 				if fn and doFN:
 					if D: env.debug("executing function on value")

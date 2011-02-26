@@ -6,10 +6,21 @@ from ACR.utils.generations import *
 import readline
 
 class FakeEnv(object):
-	x=Object([("a",1),("b",2)])
-	x.par=3
 	requestStorage={
-		"x":x
+		"test":{
+			"_id":"1",
+			"o":{
+				"_id":"2"
+			},
+			"l":[
+				{
+					"_id":"3"
+				},
+				{
+					"_id":"4"
+				}
+			]
+		}
 	}
 	doDebug=False
 
@@ -22,13 +33,13 @@ print """AC Runtime BLSL Expression interactive shell
 debug=True
 try:
 	while True:
-		try:
+		#try:
 			tree=make_tree(raw_input(">>> "))
 			if debug:
 				print tree.tree
 			print tree.execute(fakeEnv)
-		except Exception,e:
-			print e
+		#except Exception,e:
+		#	print e
 except KeyboardInterrupt:
 	pass
 #new line at the end forces command prompt to apear at left
