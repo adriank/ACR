@@ -19,70 +19,70 @@ class ProgrammingError(Exception):
 symbol_table={}
 #TODO optimization ('-',1) -> -1
 class symbol_base(object):
-		id=None
-		value=None
-		first=second=third=None
+	id=None
+	value=None
+	first=second=third=None
 
-		def nud(self):
-				raise SyntaxError("Syntax error (%r)." % self.id)
+	def nud(self):
+		raise SyntaxError("Syntax error (%r)." % self.id)
 
-		def led(self, left):
-				raise SyntaxError("Unknown operator (%r)." % self.id)
+	def led(self, left):
+		raise SyntaxError("Unknown operator (%r)." % self.id)
 
-		def getTree(self):
-			if self.id == "(name)":
-				val=self.value.lower()
-				if val in ["true","t"]:
+	def getTree(self):
+		if self.id == "(name)":
+			val=self.value.lower()
+			if val in ["true","t"]:
+				return True
+			elif val==["false","f"]:
+				return False
+			elif val in ["none","null","n"]:
+				return None
+			return (self.id[1:-1], self.value)
+		elif self.id == "(literal)":
+			fstLetter=self.value[0]
+			if fstLetter is "'":
+				return self.value[1:-1]
+			elif fstLetter.isdigit():
+				try:
+					return int(self.value)
+				except:
+					return float(self.value)
+			else:
+				if self.value=="True":
 					return True
-				elif val==["false","f"]:
+				elif self.value=="False":
 					return False
-				elif val in ["none","null","n"]:
+				elif self.value=="None":
 					return None
-				return (self.id[1:-1], self.value)
-			elif self.id == "(literal)":
-				fstLetter=self.value[0]
-				if fstLetter is "'":
-					return self.value[1:-1]
-				elif fstLetter.isdigit():
+		out=[self.id, self.first, self.second, self.third]
+		ret=[]
+		for i in filter(None, out):
+			if type(i) is str:
+				ret.append(i)
+			elif type(i) in [dict,tuple,list]:
+				t=[]
+				for j in i:
 					try:
-						return int(self.value)
+						t.append(j.getTree())
 					except:
-						return float(self.value)
-				else:
-					if self.value=="True":
-						return True
-					elif self.value=="False":
-						return False
-					elif self.value=="None":
-						return None
-			out=[self.id, self.first, self.second, self.third]
-			ret=[]
-			for i in filter(None, out):
-				if type(i) is str:
-					ret.append(i)
-				elif type(i) in [dict,tuple,list]:
-					t=[]
-					for j in i:
-						try:
-							t.append(j.getTree())
-						except:
-							t.append(j)
-					if self.id=="(":
-						return (self.id,ret[1],len(t) is 1 and t[0] or t)
-					if self.id=="[":
-						return ret[1:]
-					ret.append(t)
-					#return (self.id,ret[1:])
-				else:
-					ret.append(i.getTree())
-			return tuple(ret)
+						t.append(j)
+				if self.id=="(":
+					return (self.id,ret[1],len(t) is 1 and t[0] or t)
+				if self.id=="[":
+					return ret[1:]
+				ret.append(t)
+				#return (self.id,ret[1:])
+			else:
+				ret.append(i.getTree())
+		return tuple(ret)
 
-		def __repr__(self):
-			if self.id == "(name)" or self.id == "(literal)":
-				return "(%s %s)" % (self.id[1:-1], self.value)
-			out=[self.id, self.first, self.second, self.third]
-			out=map(str, filter(None, out))
-			return "(" + " ".join(out) + ")"
+	def __repr__(self):
+		if self.id == "(name)" or self.id == "(literal)":
+			return "(%s %s)" % (self.id[1:-1], self.value)
+		out=[self.id, self.first, self.second, self.third]
+		out=map(str, filter(None, out))
+		return "(" + " ".join(out) + ")"
 
 def symbol(id, bp=0):
 		try:
@@ -479,6 +479,10 @@ class Tree(object):
 		D=acenv.doDebug
 		if D: acenv.debug("START Tree.execute")
 		def exe(node):
+			"""
+				node[0] - operator name
+				node[1:] - params
+			"""
 			if D: acenv.debug("executing node '%s'", node)
 			if type(node) in [str,int,float] or node in [True,False,None]:
 				return node
@@ -542,15 +546,26 @@ class Tree(object):
 				#if D: acenv.debug("%s is %s",node[2],var)
 				return dicttree.get(storage,node[2],acenv=acenv)
 			elif op=="[":
-				if len(node) is 2:  # list
+				if len(node) is 2: # list
 					return map(exe,node[1])
-				if len(node) is 3:  # operator []
+				if len(node) is 3: # operator []
 					first=exe(node[1])
+					s=node[2]
+					if s[0]=="is":
+						nodeList=[]
+						for i in first:
+							print i[s[1]]
+							print s[2]
+							a=exe((s[0],i[s[1]],s[2]))
+							if a:
+								nodeList.append(i)
+						return nodeList
 					second=exe(node[2])
 					if type(first) in [list,tuple,str]:
 						return first[int(second)]
 					else:
 						return first[second]
+				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="(":
 				""" The built-in functions """
 				fnName=node[1][1]
