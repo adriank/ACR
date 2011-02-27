@@ -541,7 +541,6 @@ class Tree(object):
 				else:
 					evaluatePath()
 			elif op=="(variable)":
-				print node
 				storage=getStorage(acenv,node[1])
 				#if D: acenv.debug("%s is %s",node[2],var)
 				return dicttree.get(storage,node[2],acenv=acenv)
@@ -554,10 +553,7 @@ class Tree(object):
 					if s[0]=="is":
 						nodeList=[]
 						for i in first:
-							print i[s[1]]
-							print s[2]
-							a=exe((s[0],i[s[1]],s[2]))
-							if a:
+							if exe((s[0],i[s[1]],s[2])):
 								nodeList.append(i)
 						return nodeList
 					second=exe(node[2])
