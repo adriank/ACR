@@ -233,30 +233,17 @@ def led(self, left):
 
 # handling variables; e.g storage::a.b.c
 # default storage is request storage
-symbol(":",150)
-@method(symbol(":"))
-def led(self, left):
+symbol("$",160)
+@method(symbol("$"))
+def nud(self):
 	global token
-	if type(left.value) is str:
-		if left.value.lower() not in ["ss","rs","session","request"]:
-			raise SyntaxError("Wrong storage name '"+left.value+"'.")
+	self.id="(storage)"
+	if token.id==".":
+		self.first="rs"
 	else:
-		raise SyntaxError("Storage name is not a name.")
-	advance(':')
-	self.id="(variable)"
-	self.first=left.value
-	path=""
-	while token.id in [".","(name)","@"]:
-		if token.id=="(name)":
-			path+=token.value
-		elif token.id=="@":
-			path+="@"
-		else:
-			path+="."
+		self.first=token.value
 		advance()
-	self.second=path.split(".")
 	return self
-
 symbol("]")
 
 @method(symbol("["))
