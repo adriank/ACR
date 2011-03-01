@@ -248,25 +248,25 @@ symbol("]")
 
 @method(symbol("["))
 def led(self, left):
-		self.first=left
-		self.second=expression()
-		advance("]")
-		return self
+	self.first=left
+	self.second=expression()
+	advance("]")
+	return self
 
 symbol(")"); symbol(",")
 
 @method(symbol("("))
 def led(self, left):
-		self.first=left
-		self.second=[]
-		if token.id != ")":
-			while 1:
-				self.second.append(expression())
-				if token.id != ",":
-					break
-				advance(",")
-		advance(")")
-		return self
+	self.first=left
+	self.second=[]
+	if token.id != ")":
+		while 1:
+			self.second.append(expression())
+			if token.id != ",":
+				break
+			advance(",")
+	advance(")")
+	return self
 
 #symbol(":");
 symbol("=")
@@ -312,22 +312,22 @@ constant("False")
 
 @method(symbol("not"))
 def led(self, left):
-		if token.id != "in":
-				raise SyntaxError("Invalid syntax")
-		advance()
-		self.id="not in"
-		self.first=left
-		self.second=expression(60)
-		return self
+	if token.id != "in":
+		raise SyntaxError("Invalid syntax")
+	advance()
+	self.id="not in"
+	self.first=left
+	self.second=expression(60)
+	return self
 
 @method(symbol("is"))
 def led(self, left):
-		if token.id == "not":
-				advance()
-				self.id="is not"
-		self.first=left
-		self.second=expression(60)
-		return self
+	if token.id == "not":
+		advance()
+		self.id="is not"
+	self.first=left
+	self.second=expression(60)
+	return self
 
 @method(symbol("("))
 def nud(self):
@@ -352,17 +352,17 @@ symbol("]")
 
 @method(symbol("["))
 def nud(self):
-		self.first=[]
-		if token.id != "]":
-			while 1:
-				if token.id == "]":
-					break
-				self.first.append(expression())
-				#if token.id != ",":
-				#	break
-				advance(",")
-		advance("]")
-		return self
+	self.first=[]
+	if token.id != "]":
+		while 1:
+			if token.id == "]":
+				break
+			self.first.append(expression())
+			#if token.id != ",":
+			#	break
+			advance(",")
+	advance("]")
+	return self
 
 #symbol("}")
 #
@@ -407,27 +407,27 @@ def tokenize_python(program):
 	yield "(end)", "(end)"
 
 def tokenize(program):
-		if isinstance(program, list):
-			source=program
+	if isinstance(program, list):
+		source=program
+	else:
+		source=tokenize_python(program)
+	for id, value in source:
+		if id == "(literal)":
+			symbol=symbol_table[id]
+			s=symbol()
+			s.value=value
 		else:
-			source=tokenize_python(program)
-		for id, value in source:
-			if id == "(literal)":
+			# name or operator
+			symbol=symbol_table.get(value)
+			if symbol:
+				s=symbol()
+			elif id=="(name)":
 				symbol=symbol_table[id]
 				s=symbol()
 				s.value=value
 			else:
-				# name or operator
-				symbol=symbol_table.get(value)
-				if symbol:
-					s=symbol()
-				elif id=="(name)":
-					symbol=symbol_table[id]
-					s=symbol()
-					s.value=value
-				else:
-					raise SyntaxError("Unknown operator (%s)" % id)
-			yield s
+				raise SyntaxError("Unknown operator (%s)" % id)
+		yield s
 
 # parser engine
 def expression(rbp=0):
@@ -436,9 +436,9 @@ def expression(rbp=0):
 	token=next()
 	left=t.nud()
 	while rbp < token.lbp:
-			t=token
-			token=next()
-			left=t.led(left)
+		t=token
+		token=next()
+		left=t.led(left)
 	return left
 
 def make_tree(expr):
@@ -527,10 +527,17 @@ class Tree(object):
 					return int(node[1])
 				else:
 					evaluatePath()
-			elif op=="(variable)":
-				storage=getStorage(acenv,node[1])
-				#if D: acenv.debug("%s is %s",node[2],var)
-				return dicttree.get(storage,node[2],acenv=acenv)
+			elif op=="(storage)":
+				return getStorage(acenv,node[1])
+			elif op=="name":
+				return node[1]
+			elif op==".":
+				return exe(node[1])[exe(node[2])]
+			elif op=="..":
+				ret=[]
+				for i in dicttree.flatten(exe(node[1])):
+					ret.append(exe((node[2][0],i,node[2][2])))
+				return ret
 			elif op=="[":
 				if len(node) is 2: # list
 					return map(exe,node[1])

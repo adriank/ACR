@@ -62,3 +62,7 @@ def set(d, path, o):
 			d[key]={}
 		d=d[key]
 	d[path[-1]]=o
+
+def flatten(d):
+	for i in zip(d):
+		
