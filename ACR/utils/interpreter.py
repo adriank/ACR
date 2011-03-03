@@ -58,9 +58,11 @@ class symbol_base(object):
 		out=[self.id, self.first, self.second, self.third]
 		ret=[]
 		for i in filter(None, out):
+			print i
 			if type(i) is str:
 				ret.append(i)
 			elif type(i) in [dict,tuple,list]:
+				print "list"
 				t=[]
 				for j in i:
 					try:
@@ -70,7 +72,7 @@ class symbol_base(object):
 				if self.id=="(":
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
 				if self.id=="[":
-					return ret[1:]
+					return t
 				ret.append(t)
 				#return (self.id,ret[1:])
 			else:
@@ -536,12 +538,14 @@ class Tree(object):
 				return node[1]
 			elif op==".":
 				fst=exe(node[1])
+				snd=exe(node[2])
 				if type(fst) is list:
 					ret=[]
+					ret_append=ret.append
 					for i in fst:
-						ret.append(i[exe(node[2])])
+						ret_append(i[snd])
 					return ret
-				return fst[exe(node[2])]
+				return fst[snd]
 			elif op=="..":
 				first=dicttree.flatten(exe(node[1]))
 				if node[2][0]=="*":
@@ -555,9 +559,10 @@ class Tree(object):
 						pass
 				return ret
 			elif op=="[":
-				if len(node) is 2: # list
+				len_node=len(node)
+				if len_node is 2: # list
 					return map(exe,node[1])
-				if len(node) is 3: # operator []
+				if len_node is 3: # operator []
 					first=exe(node[1])
 					s=node[2]
 					if s[0] in SELECTOR_OPS:
@@ -592,16 +597,12 @@ class Tree(object):
 					return str(args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
+			else:
+				return node
 
 		D=acenv.doDebug
 		if type(self.tree) is not tuple:
 			return self.tree
-		import time
-		t=time.clock()
 		ret=exe(self.tree)
-		t2=time.clock()
-		print t
-		print t2
-		print t2-t
 		if D: acenv.debug("END Tree.execute with: '%s'", ret)
 		return ret
