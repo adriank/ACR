@@ -34,9 +34,9 @@ class symbol_base(object):
 			val=self.value.lower()
 			if val in ["true","t"]:
 				return True
-			elif val==["false","f"]:
+			elif val in ["false","f"]:
 				return False
-			elif val in ["none","null","n"]:
+			elif val in ["none","null","n","nil"]:
 				return None
 			return (self.id[1:-1], self.value)
 		elif self.id == "(literal)":
@@ -358,8 +358,8 @@ def nud(self):
 			if token.id == "]":
 				break
 			self.first.append(expression())
-			#if token.id != ",":
-			#	break
+			if token.id not in SELECTOR_OPS+[","]:
+				break
 			advance(",")
 	advance("]")
 	return self
@@ -584,6 +584,12 @@ class Tree(object):
 					if type(args) in [int,float]:
 						return args
 					return sum(map(lambda x:type(x) in [int,float] and x or exe(x), args))
+				if fnName=="int":
+					return int(args)
+				if fnName=="float":
+					return float(args)
+				if fnName=="str":
+					return str(args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 
