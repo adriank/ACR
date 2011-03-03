@@ -211,10 +211,7 @@ class View(object):
 			else:
 				return len(actions)
 
-		if self.parent:
-			ret=self.parent.actions[:]
-		else:
-			ret=[]
+		ret=self.parent and self.parent.actions[:] or []
 		for action in actions:
 			#if i[0]=="import":
 			#	self.importAction(i[0])
@@ -223,7 +220,6 @@ class View(object):
 			attrs=action[1]
 			ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
 			componentName=self.namespaces.get(ns,"default")
-			print componentName
 			o={
 				"type":typ,#DEFINE or SET
 				#"command":cmd,#command name
@@ -365,7 +361,7 @@ class View(object):
 			pass
 
 	def isUpToDate(self):
-		return self.timestamp >= os.stat(self.path).st_mtime
+		return self.parent.isUpToDate() and self.timestamp >= os.stat(self.path).st_mtime
 
 	def __setattr__(self, name, val):
 		if name!="immutable" and self.immutable:

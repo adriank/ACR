@@ -102,37 +102,37 @@ def symbol(id, bp=0):
 # helpers
 
 def infix(id, bp):
-		def led(self, left):
-				self.first=left
-				self.second=expression(bp)
-				return self
-		symbol(id, bp).led=led
+	def led(self, left):
+		self.first=left
+		self.second=expression(bp)
+		return self
+	symbol(id, bp).led=led
 
 def infix_r(id, bp):
-		def led(self, left):
-				self.first=left
-				self.second=expression(bp-1)
-				return self
-		symbol(id, bp).led=led
+	def led(self, left):
+		self.first=left
+		self.second=expression(bp-1)
+		return self
+	symbol(id, bp).led=led
 
 def prefix(id, bp):
-		def nud(self):
-				self.first=expression(bp)
-				return self
-		symbol(id).nud=nud
+	def nud(self):
+		self.first=expression(bp)
+		return self
+	symbol(id).nud=nud
 
 def advance(id=None):
-		global token
-		if id and token.id != id:
-				raise SyntaxError("Expected %r" % id)
-		token=next()
+	global token
+	if id and token.id != id:
+		raise SyntaxError("Expected %r" % id)
+	token=next()
 
 def method(s):
-		# decorator
-		assert issubclass(s, symbol_base)
-		def bind(fn):
-				setattr(s, fn.__name__, fn) #
-		return bind
+	# decorator
+	assert issubclass(s, symbol_base)
+	def bind(fn):
+		setattr(s, fn.__name__, fn) #
+	return bind
 
 # python expression syntax
 
@@ -452,6 +452,8 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
+SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in"]
+
 class Tree(object):
 	def __init__(self,tree):
 		self.tree=tree
@@ -484,6 +486,7 @@ class Tree(object):
 				else:
 					return exe(node[1])
 			elif op=="-":
+				#TODO move -N to tree builder!
 				if len(node)>2:
 					return exe(node[1]) - exe(node[2])
 				else:
@@ -532,11 +535,24 @@ class Tree(object):
 			elif op=="name":
 				return node[1]
 			elif op==".":
-				return exe(node[1])[exe(node[2])]
+				fst=exe(node[1])
+				if type(fst) is list:
+					ret=[]
+					for i in fst:
+						ret.append(i[exe(node[2])])
+					return ret
+				return fst[exe(node[2])]
 			elif op=="..":
+				first=dicttree.flatten(exe(node[1]))
+				if node[2][0]=="*":
+					return first
 				ret=[]
-				for i in dicttree.flatten(exe(node[1])):
-					ret.append(exe((node[2][0],i,node[2][2])))
+				second=exe(node[2])
+				for i in first:
+					try:
+						ret.append(i[second])
+					except:
+						pass
 				return ret
 			elif op=="[":
 				if len(node) is 2: # list
@@ -544,11 +560,15 @@ class Tree(object):
 				if len(node) is 3: # operator []
 					first=exe(node[1])
 					s=node[2]
-					if s[0]=="is":
+					if s[0] in SELECTOR_OPS:
 						nodeList=[]
+						nodeList_append=nodeList.append
 						for i in first:
-							if exe((s[0],i[s[1]],s[2])):
-								nodeList.append(i)
+							try:
+								if exe((s[0],i[s[1]],s[2])):
+									nodeList_append(i)
+							except:
+								pass
 						return nodeList
 					second=exe(node[2])
 					if type(first) in [list,tuple,str]:
@@ -559,25 +579,23 @@ class Tree(object):
 			elif op=="(":
 				""" The built-in functions """
 				fnName=node[1][1]
-				print "fff"
-				print node[1]
-				args=node[2]
+				args=exe(node[2])
 				if fnName=="sum":
-					if type(second) in [int,float]:
-						return second
-					return sum(map(lambda x:type(x) is int and x or exe(x), second))
-				if fnName=="findObjectById":
-					args=map(lambda e:exe(e),args)
-					id=type(second) is str and second or exe(second)
-					dicttree.find({"_id":id})
-					print id
+					if type(args) in [int,float]:
+						return args
+					return sum(map(lambda x:type(x) in [int,float] and x or exe(x), args))
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
-				print node[1][1]
 
 		D=acenv.doDebug
 		if type(self.tree) is not tuple:
 			return self.tree
+		import time
+		t=time.clock()
 		ret=exe(self.tree)
+		t2=time.clock()
+		print t
+		print t2
+		print t2-t
 		if D: acenv.debug("END Tree.execute with: '%s'", ret)
 		return ret

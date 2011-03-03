@@ -16,7 +16,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.#@marcin: docstrings
-from ACR.utils.generations import *
 
 def get(d,path,falseOnNotFound=True,acenv=False):
 	"""
@@ -32,8 +31,6 @@ def get(d,path,falseOnNotFound=True,acenv=False):
 		ret=d
 		i=0
 		for o in path:
-			#if isinstance(ret, Generation):
-			#	ret=ret.__dict__
 			if o[0]=="@":
 				ret=getattr(ret, o[1:])
 				break
@@ -63,6 +60,16 @@ def set(d, path, o):
 		d=d[key]
 	d[path[-1]]=o
 
-def flatten(d):
-	for i in zip(d):
-		
+def flatten(fragment):
+	def rec(frg):
+		dtype=type(frg)
+		if dtype is list:
+			for i in frg:
+				rec(i)
+		elif dtype is dict:
+			ret.append(frg)
+			for i in frg.iteritems():
+				rec(i[1])
+	ret=[]
+	rec(fragment)
+	return ret
