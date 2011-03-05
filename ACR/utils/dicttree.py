@@ -60,7 +60,8 @@ def set(d, path, o):
 		d=d[key]
 	d[path[-1]]=o
 
-def flatten(fragment):
+#TODO implement limit function
+def flatten(fragment,limit=False):
 	def rec(frg):
 		dtype=type(frg)
 		if dtype is list:

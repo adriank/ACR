@@ -66,7 +66,10 @@ class Email(Component):
 		params=conf["params"]
 		for i in params:
 			params[i]=prepareVars(params[i])
-		conf['content']=prepareVars("".join(conf['content']))
+		try:
+			conf['content']=prepareVars("".join(conf['content']))
+		except:
+			raise Error("StringExpected", "Please use CDATA mail content.")
 		return conf
 
 def getObject(config):

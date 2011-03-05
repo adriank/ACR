@@ -361,7 +361,7 @@ class View(object):
 			pass
 
 	def isUpToDate(self):
-		return self.parent.isUpToDate() and self.timestamp >= os.stat(self.path).st_mtime
+		return (self.parent and self.parent.isUpToDate() or True) and self.timestamp >= os.stat(self.path).st_mtime
 
 	def __setattr__(self, name, val):
 		if name!="immutable" and self.immutable:
