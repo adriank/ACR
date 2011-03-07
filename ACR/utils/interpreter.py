@@ -56,6 +56,7 @@ class symbol_base(object):
 					return False
 				elif self.value=="None":
 					return None
+		#XXX this is crap - don't know where I've got this from
 		out=[self.id, self.first, self.second, self.third]
 		ret=[]
 		ret_append=ret.append
@@ -65,6 +66,11 @@ class symbol_base(object):
 			elif type(i) in [dict,tuple,list]:
 				t=[]
 				t_append=t.append
+				if self.id is "{":
+					ret={}
+					for j in self.first.iteritems():
+						ret[j[0].getTree()]=j[1].getTree()
+					return ret
 				for j in i:
 					try:
 						t_append(j.getTree())
@@ -275,7 +281,7 @@ def led(self, left):
 	advance(")")
 	return self
 
-#symbol(":");
+symbol(":");
 symbol("=")
 
 #@method(symbol("lambda"))
@@ -372,23 +378,23 @@ def nud(self):
 	advance("]")
 	return self
 
-#symbol("}")
-#
-#@method(symbol("{"))
-#def nud(self):
-#		self.first=[]
-#		if token.id != "}":
-#				while 1:
-#						if token.id == "}":
-#								break
-#						self.first.append(expression())
-#						advance(":")
-#						self.first.append(expression())
-#						if token.id != ",":
-#								break
-#						advance(",")
-#		advance("}")
-#		return self
+symbol("}")
+
+@method(symbol("{"))
+def nud(self):
+	self.first={}
+	if token.id != "}":
+		while 1:
+			if token.id == "}":
+				break
+			key=expression()
+			advance(":")
+			self.first[key]=expression()
+			if token.id != ",":
+				break
+			advance(",")
+	advance("}")
+	return self
 
 import tokenize as tokenizer
 type_map={
@@ -461,6 +467,7 @@ def make_tree(expr):
 	return Tree(expression().getTree())
 
 SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
+NUM_TYPES=[int,float,long]
 
 class Tree(object):
 	def __init__(self,tree):
@@ -481,8 +488,16 @@ class Tree(object):
 				node[1:] - params
 			"""
 			if D: acenv.debug("executing node '%s'", node)
-			if type(node) in [str,int,float] or node in [True,False,None]:
+			type_node=type(node)
+			if type_node in [str,int,float] or node in [True,False,None]:
 				return node
+			elif type_node is list:
+				return map(exe,node)
+			elif type_node is dict:
+				ret={}
+				for i in node.iteritems():
+					ret[exe(i[0])]=exe(i[1])
+				return ret
 			op=node[0]
 			if op=="or":
 				return exe(node[1]) or exe(node[2])
@@ -567,8 +582,6 @@ class Tree(object):
 					except:
 						pass
 				return ret
-			elif type(node) is list:
-				return map(exe,node)
 			elif op=="[":
 				len_node=len(node)
 				if len_node is 2: # list
@@ -597,22 +610,32 @@ class Tree(object):
 				fnName=node[1][1]
 				args=exe(node[2])
 				if fnName=="sum":
-					if type(args) in [int,float]:
+					if type(args) in NUM_TYPES:
 						return args
-					return sum(map(lambda x:type(x) in [int,float] and x or exe(x), args))
-				if fnName=="int":
+					return sum(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="max":
+					if type(args) in NUM_TYPES:
+						return args
+					return max(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="min":
+					if type(args) in NUM_TYPES:
+						return args
+					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="int":
 					return int(args)
-				if fnName=="float":
+				elif fnName=="float":
 					return float(args)
-				if fnName=="str":
+				elif fnName=="str":
 					return str(args)
+				elif fnName=="type":
+					return type(args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:
 				return node
 
 		D=acenv.doDebug
-		if type(self.tree) not in [tuple,list]:
+		if type(self.tree) not in [tuple,list,dict]:
 			return self.tree
 		ret=exe(self.tree)
 		if D: acenv.debug("END Tree.execute with: '%s'", ret)
