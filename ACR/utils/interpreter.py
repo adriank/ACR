@@ -543,9 +543,15 @@ class Tree(object):
 					ret=[]
 					ret_append=ret.append
 					for i in fst:
-						ret_append(i[snd])
+						try:
+							ret_append(i[snd])
+						except:
+							pass
 					return ret
-				return fst[snd]
+				try:
+					return fst[snd]
+				except:
+					return None
 			elif op=="..":
 				first=dicttree.flatten(exe(node[1]))
 				if node[2][0]=="*":

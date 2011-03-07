@@ -223,7 +223,10 @@ class Application(object):
 		#["","aaa"," dd   "]->["aaa","ddd"]
 		self.langs=filter(len, map(str.strip, [defaultLang]+attrs.get("supported", "").split(",")))
 		self.lang=self.langs[0]
-		locale.setlocale(locale.LC_ALL, locale.normalize(self.lang+".UTF8"))
+		try:
+			locale.setlocale(locale.LC_ALL, locale.normalize(self.lang+".UTF8"))
+		except:
+			locale.setlocale(locale.LC_ALL)
 
 	def __str__(self):
 		return str(self.__dict__)
