@@ -8,10 +8,10 @@
 # - optimized
 
 # !!!NOT THREAD SAFE!!!
-
+#TODO thread safety!
 import sys
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree,Object
+from ACR.utils import getStorage, dicttree
 
 class ProgrammingError(Exception):
 	pass
@@ -19,6 +19,8 @@ class ProgrammingError(Exception):
 symbol_table={}
 
 #TODO optimization ('-',1) -> -1
+#TODO optimization operators should be numbers
+
 class symbol_base(object):
 	id=None
 	value=None
@@ -56,7 +58,7 @@ class symbol_base(object):
 					return False
 				elif self.value=="None":
 					return None
-		#XXX this is crap - don't know where I've got this from
+		#XXX this is crap - don't know where I've took this from
 		out=[self.id, self.first, self.second, self.third]
 		ret=[]
 		ret_append=ret.append
@@ -80,7 +82,7 @@ class symbol_base(object):
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
 				if self.id=="[":
 					return t
-				ret_append(t)
+				#ret_append(t)
 				#return (self.id,ret[1:])
 			else:
 				ret_append(i.getTree())
@@ -385,7 +387,7 @@ class Tree(object):
 			"""
 			if D: acenv.debug("executing node '%s'", node)
 			type_node=type(node)
-			if type_node in [str,int,float] or node in [True,False,None]:
+			if node is None or type_node in [str,int,float,long,bool]:
 				return node
 			elif type_node is list:
 				return map(exe,node)
