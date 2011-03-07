@@ -14,7 +14,9 @@ class FakeEnv(object):
 			},
 			"l":[
 				{
-					"_id":3
+					"_id":3,
+					"aaa":"ddd",
+					"false":2
 				},
 				{
 					"_id":4

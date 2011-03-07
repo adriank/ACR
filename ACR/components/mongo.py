@@ -21,6 +21,7 @@ from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 import pymongo
+from bson import objectid
 import json
 import time
 from pymongo.json_util import object_hook
@@ -71,7 +72,7 @@ class Mongo(Component):
 			p["skip"]=int(params["skip"])
 		if params.has_key("limit"):
 			p["limit"]=int(params["limit"])
-		q={"_id" : pymongo.objectid.ObjectId("4d4f04a9ba060531ef000000")}
+		q={"_id" : objectid.ObjectId("4d4f04a9ba060531ef000000")}
 		t=time.time()
 		ret=list(coll.find(**p))
 		#print round((time.time()-t)*1000,5)

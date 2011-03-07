@@ -17,6 +17,7 @@ class ProgrammingError(Exception):
 	pass
 
 symbol_table={}
+
 #TODO optimization ('-',1) -> -1
 class symbol_base(object):
 	id=None
@@ -55,28 +56,34 @@ class symbol_base(object):
 					return False
 				elif self.value=="None":
 					return None
+		#XXX this is crap - don't know where I've got this from
 		out=[self.id, self.first, self.second, self.third]
 		ret=[]
+		ret_append=ret.append
 		for i in filter(None, out):
-			print i
 			if type(i) is str:
-				ret.append(i)
+				ret_append(i)
 			elif type(i) in [dict,tuple,list]:
-				print "list"
 				t=[]
+				t_append=t.append
+				if self.id is "{":
+					ret={}
+					for j in self.first.iteritems():
+						ret[j[0].getTree()]=j[1].getTree()
+					return ret
 				for j in i:
 					try:
-						t.append(j.getTree())
+						t_append(j.getTree())
 					except:
-						t.append(j)
+						t_append(j)
 				if self.id=="(":
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
 				if self.id=="[":
 					return t
-				ret.append(t)
+				ret_append(t)
 				#return (self.id,ret[1:])
 			else:
-				ret.append(i.getTree())
+				ret_append(i.getTree())
 		return tuple(ret)
 
 	def __repr__(self):
@@ -87,19 +94,19 @@ class symbol_base(object):
 		return "(" + " ".join(out) + ")"
 
 def symbol(id, bp=0):
-		try:
-				s=symbol_table[id]
-		except KeyError:
-				class s(symbol_base):
-						pass
-				s.__name__="symbol-" + id # for debugging
-				s.id=id
-				s.value=None
-				s.lbp=bp
-				symbol_table[id]=s
-		else:
-				s.lbp=max(bp, s.lbp)
-		return s
+	try:
+		s=symbol_table[id]
+	except KeyError:
+		class s(symbol_base):
+			pass
+		s.__name__="symbol-" + id # for debugging
+		s.id=id
+		s.value=None
+		s.lbp=bp
+		symbol_table[id]=s
+	else:
+		s.lbp=max(bp, s.lbp)
+	return s
 
 # helpers
 
@@ -136,10 +143,6 @@ def method(s):
 		setattr(s, fn.__name__, fn) #
 	return bind
 
-# python expression syntax
-
-#symbol("lambda", 20)
-#symbol("if", 20); symbol("else") # ternary form
 infix_r("or", 30); infix_r("and", 40); prefix("not", 50)
 infix("in", 60); infix("not", 60) # not in
 infix("is", 60);
@@ -160,23 +163,6 @@ symbol("(literal)").nud=lambda self: self
 symbol("(end)")
 symbol(")")
 
-@method(symbol("("))
-def nud(self):
-	# parenthesized form; replaced by tuple former below
-	expr=expression()
-	advance(")")
-	return expr
-
-#symbol("else")
-
-#@method(symbol("if"))
-#def led(self, left):
-#		self.first=left
-#		self.second=expression()
-#		advance("else")
-#		self.third=expression()
-#		return self
-
 @method(symbol("."))
 def led(self, left):
 	attr=False
@@ -195,45 +181,7 @@ def led(self, left):
 	advance()
 	return self
 
-#@method(symbol("@"))
-#def led(self, left):
-#	if token.id != "(name)":
-#		raise SyntaxError("Expected an attribute name.")
-#	self.first=left
-#	self.second=token
-#	advance()
-#	return self
-
-#symbol(":")
-#symbol("$")
-#symbol("}")
-#@method(symbol("{"))
-#def nud(self):
-#	global token
-#	advance("$")
-#	t=token # storage name or variable name
-#	token=next()
-#	if token.id == ':': #there is a storage name
-#		advance(':')
-#		advance(':')
-#		if t.value.lower() not in ["ss","rs","session","request"]:   #
-#			raise SyntaxError("Wrong storage name '"+t.value+"'.")
-#		self.first=t.value
-#		self.second=""
-#	else: #there is not a storage name
-#		self.first="rs"
-#		self.second=t.value
-#	self.id="(variable)"
-#	while token.id in [".","(name)"]:
-#		if token.id=="(name)":
-#			self.second+=token.value
-#		else:
-#			self.second+="."
-#		advance()
-#	advance("}")
-#	return self
-
-# handling variables; e.g storage::a.b.c
+# handling storages; e.g $.a.b.c or $ss.a.b.c
 # default storage is request storage
 symbol("$",160)
 @method(symbol("$"))
@@ -257,45 +205,24 @@ def led(self, left):
 
 symbol(")"); symbol(",")
 
+#this is for built-in functions
 @method(symbol("("))
 def led(self, left):
 	self.first=left
 	self.second=[]
-	if token.id != ")":
+	token_id=token.id
+	if token_id != ")":
+		self_second_append=self.second.append
 		while 1:
-			self.second.append(expression())
-			if token.id != ",":
+			self_second_append(expression())
+			if token_id != ",":
 				break
 			advance(",")
 	advance(")")
 	return self
 
-#symbol(":");
+symbol(":");
 symbol("=")
-
-#@method(symbol("lambda"))
-#def nud(self):
-#		self.first=[]
-#		if token.id != ":":
-#				argument_list(self.first)
-#		advance(":")
-#		self.second=expression()
-#		return self
-
-#def argument_list(list):
-#		while 1:
-#				if token.id != "(name)":
-#						SyntaxError("Expected an argument name.")
-#				list.append(token)
-#				advance()
-#				if token.id == "=":
-#						advance()
-#						list.append(expression())
-#				else:
-#						list.append(None)
-#				if token.id != ",":
-#						break
-#				advance(",")
 
 # constants
 
@@ -331,25 +258,6 @@ def led(self, left):
 	self.second=expression(60)
 	return self
 
-@method(symbol("("))
-def nud(self):
-	self.first=[]
-	comma=False
-	if token.id != ")":
-		while 1:
-			if token.id == ")":
-				break
-			self.first.append(expression())
-			if token.id != ",":
-				break
-			comma=True
-			advance(",")
-	advance(")")
-	if not self.first or comma:
-		return self # tuple
-	else:
-		return self.first[0]
-
 symbol("]")
 
 @method(symbol("["))
@@ -366,23 +274,23 @@ def nud(self):
 	advance("]")
 	return self
 
-#symbol("}")
-#
-#@method(symbol("{"))
-#def nud(self):
-#		self.first=[]
-#		if token.id != "}":
-#				while 1:
-#						if token.id == "}":
-#								break
-#						self.first.append(expression())
-#						advance(":")
-#						self.first.append(expression())
-#						if token.id != ",":
-#								break
-#						advance(",")
-#		advance("}")
-#		return self
+symbol("}")
+
+@method(symbol("{"))
+def nud(self):
+	self.first={}
+	if token.id != "}":
+		while 1:
+			if token.id == "}":
+				break
+			key=expression()
+			advance(":")
+			self.first[key]=expression()
+			if token.id != ",":
+				break
+			advance(",")
+	advance("}")
+	return self
 
 import tokenize as tokenizer
 type_map={
@@ -428,7 +336,7 @@ def tokenize(program):
 				s=symbol()
 				s.value=value
 			else:
-				raise SyntaxError("Unknown operator (%s)" % id)
+				raise SyntaxError("Unknown operator '%s', '%s'" % (id,value))
 		yield s
 
 # parser engine
@@ -454,7 +362,8 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
-SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in"]
+SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
+NUM_TYPES=[int,float,long]
 
 class Tree(object):
 	def __init__(self,tree):
@@ -475,8 +384,16 @@ class Tree(object):
 				node[1:] - params
 			"""
 			if D: acenv.debug("executing node '%s'", node)
-			if type(node) in [str,int,float] or node in [True,False,None]:
+			type_node=type(node)
+			if type_node in [str,int,float] or node in [True,False,None]:
 				return node
+			elif type_node is list:
+				return map(exe,node)
+			elif type_node is dict:
+				ret={}
+				for i in node.iteritems():
+					ret[exe(i[0])]=exe(i[1])
+				return ret
 			op=node[0]
 			if op=="or":
 				return exe(node[1]) or exe(node[2])
@@ -544,14 +461,14 @@ class Tree(object):
 					ret_append=ret.append
 					for i in fst:
 						try:
-							ret_append(i[snd])
+							ret_append(i.get(snd))
 						except:
 							pass
 					return ret
 				try:
-					return fst[snd]
+					return fst.get(snd)
 				except:
-					return None
+					return fst
 			elif op=="..":
 				first=dicttree.flatten(exe(node[1]))
 				if node[2][0]=="*":
@@ -571,7 +488,7 @@ class Tree(object):
 				if len_node is 3: # operator []
 					first=exe(node[1])
 					s=node[2]
-					if s[0] in SELECTOR_OPS:
+					if type(s) is tuple and s[0] in SELECTOR_OPS:
 						nodeList=[]
 						nodeList_append=nodeList.append
 						for i in first:
@@ -592,22 +509,32 @@ class Tree(object):
 				fnName=node[1][1]
 				args=exe(node[2])
 				if fnName=="sum":
-					if type(args) in [int,float]:
+					if type(args) in NUM_TYPES:
 						return args
-					return sum(map(lambda x:type(x) in [int,float] and x or exe(x), args))
-				if fnName=="int":
+					return sum(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="max":
+					if type(args) in NUM_TYPES:
+						return args
+					return max(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="min":
+					if type(args) in NUM_TYPES:
+						return args
+					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="int":
 					return int(args)
-				if fnName=="float":
+				elif fnName=="float":
 					return float(args)
-				if fnName=="str":
+				elif fnName=="str":
 					return str(args)
+				elif fnName=="type":
+					return type(args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:
 				return node
 
 		D=acenv.doDebug
-		if type(self.tree) is not tuple:
+		if type(self.tree) not in [tuple,list,dict]:
 			return self.tree
 		ret=exe(self.tree)
 		if D: acenv.debug("END Tree.execute with: '%s'", ret)
