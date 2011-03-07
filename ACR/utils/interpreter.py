@@ -143,10 +143,6 @@ def method(s):
 		setattr(s, fn.__name__, fn) #
 	return bind
 
-# python expression syntax
-
-#symbol("lambda", 20)
-#symbol("if", 20); symbol("else") # ternary form
 infix_r("or", 30); infix_r("and", 40); prefix("not", 50)
 infix("in", 60); infix("not", 60) # not in
 infix("is", 60);
@@ -167,24 +163,6 @@ symbol("(literal)").nud=lambda self: self
 symbol("(end)")
 symbol(")")
 
-#this is for tuples
-#@method(symbol("("))
-#def nud(self):
-#	# parenthesized form; replaced by tuple former below
-#	expr=expression()
-#	advance(")")
-#	return expr
-
-#symbol("else")
-
-#@method(symbol("if"))
-#def led(self, left):
-#		self.first=left
-#		self.second=expression()
-#		advance("else")
-#		self.third=expression()
-#		return self
-
 @method(symbol("."))
 def led(self, left):
 	attr=False
@@ -203,45 +181,7 @@ def led(self, left):
 	advance()
 	return self
 
-#@method(symbol("@"))
-#def led(self, left):
-#	if token.id != "(name)":
-#		raise SyntaxError("Expected an attribute name.")
-#	self.first=left
-#	self.second=token
-#	advance()
-#	return self
-
-#infix(":",50)
-#symbol("$")
-#symbol("}")
-#@method(symbol("{"))
-#def nud(self):
-#	global token
-#	advance("$")
-#	t=token # storage name or variable name
-#	token=next()
-#	if token.id == ':': #there is a storage name
-#		advance(':')
-#		advance(':')
-#		if t.value.lower() not in ["ss","rs","session","request"]:   #
-#			raise SyntaxError("Wrong storage name '"+t.value+"'.")
-#		self.first=t.value
-#		self.second=""
-#	else: #there is not a storage name
-#		self.first="rs"
-#		self.second=t.value
-#	self.id="(variable)"
-#	while token.id in [".","(name)"]:
-#		if token.id=="(name)":
-#			self.second+=token.value
-#		else:
-#			self.second+="."
-#		advance()
-#	advance("}")
-#	return self
-
-# handling variables; e.g storage::a.b.c
+# handling storages; e.g $.a.b.c or $ss.a.b.c
 # default storage is request storage
 symbol("$",160)
 @method(symbol("$"))
@@ -284,30 +224,6 @@ def led(self, left):
 symbol(":");
 symbol("=")
 
-#@method(symbol("lambda"))
-#def nud(self):
-#		self.first=[]
-#		if token.id != ":":
-#				argument_list(self.first)
-#		advance(":")
-#		self.second=expression()
-#		return self
-
-#def argument_list(list):
-#		while 1:
-#				if token.id != "(name)":
-#						SyntaxError("Expected an argument name.")
-#				list.append(token)
-#				advance()
-#				if token.id == "=":
-#						advance()
-#						list.append(expression())
-#				else:
-#						list.append(None)
-#				if token.id != ",":
-#						break
-#				advance(",")
-
 # constants
 
 def constant(id):
@@ -341,26 +257,6 @@ def led(self, left):
 	self.first=left
 	self.second=expression(60)
 	return self
-
-#this is for tuples
-#@method(symbol("("))
-#def nud(self):
-#	self.first=[]
-#	comma=False
-#	if token.id != ")":
-#		while 1:
-#			if token.id == ")":
-#				break
-#			self.first.append(expression())
-#			if token.id != ",":
-#				break
-#			comma=True
-#			advance(",")
-#	advance(")")
-#	if not self.first or comma:
-#		return self # tuple
-#	else:
-#		return self.first[0]
 
 symbol("]")
 
