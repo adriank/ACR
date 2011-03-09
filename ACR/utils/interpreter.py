@@ -21,6 +21,10 @@ symbol_table={}
 #TODO optimization ('-',1) -> -1
 #TODO optimization operators should be numbers
 
+TRUE=["true","t"]
+FALSE=["false","f"]
+NONE=["none","null","n","nil"]
+
 class symbol_base(object):
 	id=None
 	value=None
@@ -35,11 +39,11 @@ class symbol_base(object):
 	def getTree(self):
 		if self.id == "(name)":
 			val=self.value.lower()
-			if val in ["true","t"]:
+			if val in TRUE:
 				return True
-			elif val in ["false","f"]:
+			elif val in FALSE:
 				return False
-			elif val in ["none","null","n","nil"]:
+			elif val in NONE:
 				return None
 			return (self.id[1:-1], self.value)
 		elif self.id == "(literal)":
@@ -62,10 +66,11 @@ class symbol_base(object):
 		out=[self.id, self.first, self.second, self.third]
 		ret=[]
 		ret_append=ret.append
+		L=[dict,tuple,list]
 		for i in filter(None, out):
 			if type(i) is str:
 				ret_append(i)
-			elif type(i) in [dict,tuple,list]:
+			elif type(i) in L:
 				t=[]
 				t_append=t.append
 				if self.id is "{":
@@ -78,9 +83,9 @@ class symbol_base(object):
 						t_append(j.getTree())
 					except:
 						t_append(j)
-				if self.id=="(":
+				if self.id is "(":
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
-				if self.id=="[":
+				if self.id is "[":
 					return t
 				#ret_append(t)
 				#return (self.id,ret[1:])
@@ -168,10 +173,10 @@ symbol(")")
 @method(symbol("."))
 def led(self, left):
 	attr=False
-	if token.id==".":
+	if token.id is ".":
 		self.id=".."
 		advance()
-	if token.id=="@":
+	if token.id is "@":
 		attr=True
 		advance()
 	if token.id not in ["(name)","*"]:
@@ -183,14 +188,14 @@ def led(self, left):
 	advance()
 	return self
 
-# handling storages; e.g $.a.b.c or $ss.a.b.c
-# default storage is request storage
+#handling storages; e.g $.a.b.c or $ss.a.b.c
+#default storage is request storage
 symbol("$",160)
 @method(symbol("$"))
 def nud(self):
 	global token
 	self.id="(storage)"
-	if token.id==".":
+	if token.id is ".":
 		self.first="rs"
 	else:
 		self.first=token.value
@@ -213,11 +218,11 @@ def led(self, left):
 	self.first=left
 	self.second=[]
 	token_id=token.id
-	if token_id != ")":
+	if token_id is not ")":
 		self_second_append=self.second.append
 		while 1:
 			self_second_append(expression())
-			if token_id != ",":
+			if token_id is not ",":
 				break
 			advance(",")
 	advance(")")
@@ -239,7 +244,7 @@ constant("None")
 constant("True")
 constant("False")
 
-# multitoken operators
+#multitoken operators
 
 @method(symbol("not"))
 def led(self, left):
@@ -265,9 +270,9 @@ symbol("]")
 @method(symbol("["))
 def nud(self):
 	self.first=[]
-	if token.id != "]":
+	if token.id is not "]":
 		while 1:
-			if token.id == "]":
+			if token.id is "]":
 				break
 			self.first.append(expression())
 			if token.id not in SELECTOR_OPS+[","]:
@@ -281,14 +286,14 @@ symbol("}")
 @method(symbol("{"))
 def nud(self):
 	self.first={}
-	if token.id != "}":
+	if token.id is not "}":
 		while 1:
-			if token.id == "}":
+			if token.id is "}":
 				break
 			key=expression()
 			advance(":")
 			self.first[key]=expression()
-			if token.id != ",":
+			if token.id is not ",":
 				break
 			advance(",")
 	advance("}")
@@ -296,11 +301,11 @@ def nud(self):
 
 import tokenize as tokenizer
 type_map={
-	tokenizer.NUMBER: "(literal)",
-	tokenizer.STRING: "(literal)",
-	tokenizer.OP: "(operator)",
-	tokenizer.NAME: "(name)",
-	tokenizer.ERRORTOKEN: "(operator)" # '$ ' is recognized in python tokenizer as error token!
+	tokenizer.NUMBER:"(literal)",
+	tokenizer.STRING:"(literal)",
+	tokenizer.OP:"(operator)",
+	tokenizer.NAME:"(name)",
+	tokenizer.ERRORTOKEN:"(operator)" #'$' is recognized in python tokenizer as error token!
 }
 
 # python tokenizer
@@ -434,7 +439,7 @@ class Tree(object):
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
-				if type(fst) is str or type(snd) is str  or type(fst) is Object:
+				if type(fst) is str or type(snd) is str:
 					if D: acenv.debug("doing string comparison '%s'=='%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
