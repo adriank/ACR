@@ -7,7 +7,7 @@ from ACR.errors import *
 from ACR.utils.hashcompat import md5_constructor
 from ACR.utils.xmlextras import escapeQuotes
 from ACR.utils import dicttree
-from ACR.utils.generations import Object,List
+#from ACR.utils.interpreter import make_tree
 from ACR import acconfig
 
 if hasattr(random, 'SystemRandom'):
@@ -58,20 +58,6 @@ def replaceVars(env,l,fn=None):
 			storage=getStorage(env,i[0])
 			v=dicttree.get(storage,i[1],acenv=env)
 			doFN=True
-			if type(v) is Object:
-				if D: env.debug("Object found")
-				try:
-					doFN=v._doFn
-				except:
-					pass
-				v=v._value
-			if type(v) is not List:
-				if type(v) is unicode:
-					v=v.encode("utf8")
-				v=str(v)
-				if fn and doFN:
-					if D: env.debug("executing function on value")
-					v=fn(v)
 			if D: env.debug("adding '%s' to the end of string",v)
 			ret.append(v)
 		else:

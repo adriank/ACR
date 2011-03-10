@@ -26,7 +26,7 @@ from ACR.utils.interpreter import make_tree
 from ACR.components import Object, List
 import os,re
 
-DEFINE="define"
+NODE="node"
 SET="set"
 COMMAND="command"
 INHERITS="inherits"
@@ -103,7 +103,7 @@ class View(object):
 		actions=[]
 		postSchemas=[]
 		output=[]
-		ACTIONS=[SET,DEFINE,IMPORT]
+		ACTIONS=[SET,NODE,IMPORT]
 		for node in tree[2]:
 			if type(node) is str:
 				continue
@@ -191,7 +191,7 @@ class View(object):
 			"params":params,
 			"content":action[2]
 		}
-		if action[0]==DEFINE:
+		if action[0]==NODE:
 			ret["output"]=True
 		return ret
 
@@ -221,7 +221,7 @@ class View(object):
 			ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
 			componentName=self.namespaces.get(ns,"default")
 			o={
-				"type":typ,#DEFINE or SET
+				"type":typ,#NODE or SET
 				#"command":cmd,#command name
 				"name":attrs.get("name",None),
 				"component":componentName,
@@ -315,7 +315,7 @@ class View(object):
 		if D: acenv.debug("START View.generate of view: %s",self.name)
 		try:
 			self.inputSchemas
-		except:# inputs is undefined
+		except:# inputs is unNODEd
 			acenv.generations.append({"type":"view","name":self.name})
 			self.transform(acenv)
 			return
@@ -342,7 +342,7 @@ class View(object):
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
 			if not action["name"]:
 					continue
-			if action["type"]==DEFINE:
+			if action["type"]==NODE:
 				if D: acenv.info("Executing action=%s",action)
 				#generation.name=action["name"]
 				#generation.view=self.name

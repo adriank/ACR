@@ -170,6 +170,8 @@ def tree2xml(root,esc=False):
 			tab.append("</"+tag+">")
 
 	#if D: log.info("Generating XML")
+	print root
+	print
 	if type(root) is dict:
 		tab=["<list>"]
 		#this is an exception. We want to have <object/>'s with name in root subnodes.
@@ -185,6 +187,8 @@ def tree2xml(root,esc=False):
 	elif type(root) is tuple:
 		tab=[]
 		tuplerec(root)
+	else:
+		tab=[root]
 	#XXX delete it!!!
 	for i in range(len(tab)):
 		if type(tab[i]) is unicode:
