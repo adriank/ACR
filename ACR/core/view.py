@@ -135,6 +135,7 @@ class View(object):
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
+		print self.output
 		# TODO check if it is correct
 		## output inheritance
 		#if self.parent and self.parent.outputFormat:
@@ -279,7 +280,7 @@ class View(object):
 				value=list.get(i)
 				typ=postSchemas[i]
 				acenv.requestStorage[i]=typ.get(acenv,value)
-		except Error,e:
+		except Error, e:
 			if e.name=="NotValidValue":
 				raise Error("NotValidValue", "Value of %s is invalid"%(i))
 			else:

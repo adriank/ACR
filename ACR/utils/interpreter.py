@@ -190,7 +190,7 @@ def led(self, left):
 
 #handling storages; e.g $.a.b.c or $ss.a.b.c
 #default storage is request storage
-symbol("$",160)
+symbol("$")
 @method(symbol("$"))
 def nud(self):
 	global token
@@ -328,15 +328,18 @@ def tokenize(program):
 	else:
 		source=tokenize_python(program)
 	for id, value in source:
-		if id == "(literal)":
+		if id=="(literal)":
 			symbol=symbol_table[id]
 			s=symbol()
 			s.value=value
+		elif value is " ":
+			continue
 		else:
 			# name or operator
 			symbol=symbol_table.get(value)
 			if symbol:
 				s=symbol()
+			#elif id==" ":
 			elif id=="(name)":
 				symbol=symbol_table[id]
 				s=symbol()
