@@ -217,12 +217,11 @@ symbol(")"); symbol(",")
 def led(self, left):
 	self.first=left
 	self.second=[]
-	token_id=token.id
-	if token_id is not ")":
+	if token.id is not ")":
 		self_second_append=self.second.append
 		while 1:
 			self_second_append(expression())
-			if token_id is not ",":
+			if token.id is not ",":
 				break
 			advance(",")
 	advance(")")
@@ -514,6 +513,7 @@ class Tree(object):
 			elif op=="(":
 				""" The built-in functions """
 				fnName=node[1][1]
+				raise Warning(fnName)
 				args=exe(node[2])
 				if fnName=="sum":
 					if type(args) in NUM_TYPES:
@@ -535,6 +535,8 @@ class Tree(object):
 					return str(args)
 				elif fnName=="type":
 					return type(args)
+				elif fnName=="round":
+					return round(*args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:
