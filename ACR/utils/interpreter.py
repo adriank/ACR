@@ -10,6 +10,7 @@
 # !!!NOT THREAD SAFE!!!
 #TODO thread safety!
 import sys
+import re
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree
 
@@ -210,25 +211,25 @@ def led(self, left):
 	advance("]")
 	return self
 
-symbol(")"); symbol(",")
+symbol(")")
+symbol(",")
 
 #this is for built-in functions
 @method(symbol("("))
 def led(self, left):
 	self.first=left
 	self.second=[]
-	token_id=token.id
-	if token_id is not ")":
+	if token.id is not ")":
 		self_second_append=self.second.append
 		while 1:
 			self_second_append(expression())
-			if token_id is not ",":
+			if token.id is not ",":
 				break
 			advance(",")
 	advance(")")
 	return self
 
-symbol(":");
+symbol(":")
 symbol("=")
 
 # constants
@@ -538,6 +539,8 @@ class Tree(object):
 					return str(args)
 				elif fnName=="type":
 					return type(args)
+				elif fnName=="replace":
+					return re.sub(args[1],args[2],args[0])
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

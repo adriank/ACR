@@ -23,7 +23,6 @@
 from xml.sax import make_parser, handler
 from xml.sax.saxutils import escape,unescape
 from ACR.errors import Error
-from ACR.utils.generations import Object,List
 import re
 from datetime import datetime
 
@@ -170,8 +169,6 @@ def tree2xml(root,esc=False):
 			tab.append("</"+tag+">")
 
 	#if D: log.info("Generating XML")
-	print root
-	print
 	if type(root) is dict:
 		tab=["<list>"]
 		#this is an exception. We want to have <object/>'s with name in root subnodes.
