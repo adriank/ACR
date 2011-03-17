@@ -294,7 +294,7 @@ class View(object):
 		inputSchemas=self.inputSchemas
 		if D: acenv.debug("inputSchemas are: %s",inputSchemas)
 		if not inputSchemas or not len(inputSchemas):
-			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
+			if D: acenv.debug("END View:fillInputs with: list of inputs is empty")
 			return True
 		list=acenv.inputs
 		if D: acenv.debug("inputs are: %s",list)

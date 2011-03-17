@@ -75,7 +75,7 @@ class Application(object):
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
-				"enabled":config.get("/debug[@enable]"),
+				"enabled":config.get("/debug[@enable]") in ["true","t"],
 				"level":config.get("/debug[@level]","error"),
 				"dbtimer":0,
 				"dbcounter":0

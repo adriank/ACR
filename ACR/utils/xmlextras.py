@@ -54,22 +54,6 @@ def unescapeQuotes(s):
 	"""
 	return unescape(s,unescapeDict)
 
-def str2obj(s):
-	"""
-	Converts string to an object.
-	input: string
-	returns: object which was converted or the same string's object representation as in input
-	"""
-	r=s.strip().lower()
-	if r=="true" or r=="t":
-		return True
-	elif r=="false" or r=="f":
-		return False
-	elif r=="none":
-		return None
-	#TODO is that correct?
-	return s
-
 def serialize(value,doEscape=False):
 	typev=type(value)
 	if typev is str:
@@ -93,9 +77,8 @@ def tree2xml(root,esc=False):
 		if type(node) is not tuple:
 			node=str(node)
 		if type(node) is str:
-			s=node.strip()
-			if s:
-				tab.append(s)
+			if node.strip():
+				tab.append(node)
 			return
 		tab.append("<"+node[0])
 		if node[1]:
@@ -128,7 +111,7 @@ def tree2xml(root,esc=False):
 			if nodetype not in [str,unicode]:
 				node=str(node)
 			if name:
-				if esc:node=escape(node)
+				if esc: node=escape(node)
 				tab.append('<%s>%s</%s>'%(name,node,name))
 			else:
 				tab.append(node)
@@ -193,6 +176,8 @@ def tree2xml(root,esc=False):
 	ret="".join(tab)
 	if type(ret) is unicode:
 		ret=ret.encode("utf-8")
+	print root
+	print ret
 	return ret
 
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
@@ -208,7 +193,7 @@ class Reader(handler.ContentHandler):
 		if len(a)>0:
 			attrs={}
 			for i in a.keys():
-				attrs[str(i)]=str2obj(a[i].strip().encode("utf-8"))
+				attrs[str(i)]=a[i].strip().encode("utf-8")
 		if not len(self.path):
 			self.root=ObjectTree([str(name).lower(),attrs,[]])
 			self.path.append(self.root)
