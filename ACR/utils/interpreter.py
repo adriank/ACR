@@ -49,7 +49,7 @@ class symbol_base(object):
 			return (self.id[1:-1], self.value)
 		elif self.id == "(literal)":
 			fstLetter=self.value[0]
-			if fstLetter is "'":
+			if fstLetter in ["'","\""]:
 				return self.value[1:-1]
 			elif fstLetter.isdigit():
 				try:
@@ -544,6 +544,7 @@ class Tree(object):
 				elif fnName=="type":
 					return type(args)
 				elif fnName=="replace":
+					print args
 					return re.sub(args[1],args[2],args[0])
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")

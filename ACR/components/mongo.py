@@ -42,10 +42,14 @@ class Mongo(Component):
 		D=acenv.doDebug
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
-		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
-		#print where
-		#print o
+		try:
+			where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
+		except TypeError,e:
+			raise Error("JSONError",replaceVars(acenv,params["where"]).replace('"',"'"))
+		try:
+			o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		except TypeError,e:
+			raise Error("JSONError",replaceVars(acenv,config["content"]))
 		coll.update(where,o)
 
 	def insert(self,acenv,config):
@@ -65,7 +69,10 @@ class Mongo(Component):
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("where", config["content"]))
-		p={"spec":json.loads(prototype,object_hook=object_hook)}
+		try:
+			p={"spec":json.loads(prototype,object_hook=object_hook)}
+		except TypeError,e:
+			raise Error("JSONError",e)
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
 		if params.has_key("skip"):

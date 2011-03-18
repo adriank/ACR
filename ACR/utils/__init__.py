@@ -70,7 +70,8 @@ def replaceVars(env,l,fn=None):
 		if D: env.debug("END replaceVars with: %s","".join(ret))
 		return "".join(ret)
 	except TypeError,e:
-		if D: env.error("END replaceVars with TypeError: %s",ret)
+		if D: env.error("END replaceVars with TypeError: %s; returning %s",e,ret)
+		print type(ret[3])
 		return ret
 
 def prepareVars(s):
