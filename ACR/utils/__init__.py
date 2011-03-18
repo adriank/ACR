@@ -106,6 +106,22 @@ def generateID(secret=None):
 	key=md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
 	return key
 
+
+def str2obj(s):
+	"""
+		Converts string to an object.
+		input: string
+		returns: object which was converted or the same string's object representation as in input
+	"""
+	r=s.strip().lower()
+	if r in ["true","t","y","yes"]:
+		return True
+	elif r in ["false","f","no"]:
+		return False
+	elif r in ["none","nil","null"]:
+		return None
+	return s
+
 from ACR.utils import types
 typesMap={
 	"default":types.Default,

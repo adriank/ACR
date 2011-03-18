@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils import replaceVars,prepareVars
+from ACR.utils import replaceVars,prepareVars, str2obj
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
@@ -24,7 +24,7 @@ import pymongo
 from bson import objectid
 import json
 import time
-from pymongo.json_util import object_hook
+from pymongo.json_util import object_hook, default
 
 class Mongo(Component):
 	SERVER='localhost'
@@ -53,7 +53,7 @@ class Mongo(Component):
 		if D: acenv.debug("START Mongo.insert with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		o=json.loads(replaceVars(acenv,config["content"]))
+		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.insert(o)
 		if D:acenv.debug("inserted:\n%s",o)
@@ -65,14 +65,13 @@ class Mongo(Component):
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("where", config["content"]))
-		p={"spec":json.loads(prototype)}
+		p={"spec":json.loads(prototype,object_hook=object_hook)}
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
 		if params.has_key("skip"):
 			p["skip"]=int(params["skip"])
 		if params.has_key("limit"):
 			p["limit"]=int(params["limit"])
-		q={"_id" : objectid.ObjectId("4d4f04a9ba060531ef000000")}
 		t=time.time()
 		ret=list(coll.find(**p))
 		#print round((time.time()-t)*1000,5)
@@ -97,7 +96,7 @@ class Mongo(Component):
 				if elem[0]=="where":
 					pars["where"]=prepareVars("".join(elem[2]))
 				elif elem[0]=="field":
-					fields[elem[1]["name"]]=bool(elem[1]["show"])
+					fields[elem[1]["name"]]=bool(str2obj(elem[1]["show"]))
 				else:
 					pars[elem[0]]=(elem[1],elem[2])
 			elif type(elem) is str:

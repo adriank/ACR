@@ -20,7 +20,7 @@
 #@marcin: views subdirs implementation
 
 from ACR.utils.xmlextras import *
-from ACR.utils import dicttree, json_compat
+from ACR.utils import dicttree, json_compat, str2obj
 from ACR.session.mongoSession import MongoSession
 from ACR.core.view import View
 from ACR.errors import *
@@ -75,13 +75,13 @@ class Application(object):
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
-				"enabled":config.get("/debug[@enable]") in ["true","t"],
+				"enabled":str2obj(config.get("/debug[@enable]")),
 				"level":config.get("/debug[@level]","error"),
 				"dbtimer":0,
 				"dbcounter":0
 			}
 		self.output={
-			"engine":config.get("/output[@engine]"),
+			#"engine":config.get("/output[@engine]"),
 			"xsltfile":config.get("/output[@xsltfile]"),
 			"format":config.get("/output[@format]","application/xml")
 		}

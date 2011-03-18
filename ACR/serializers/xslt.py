@@ -30,11 +30,5 @@ def transform(xml,xslt):
 	return ret
 
 def serialize(env):
-	fragments=[]
-	for i in env.generations.values():
-		fragments.append(tree2xml(i))
-	xslt=""
-	if env.output["xsltfile"]:
-		xslt="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
-	#TODO allow one-object output
-	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),os.path.join(env.app.appDir,"static/xslt",env.output["xsltfile"]))
+	xml=tree2xml(env.generations,True)
+	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%(xml),os.path.join(env.app.appDir,"static/xslt",env.output["xsltfile"]))
