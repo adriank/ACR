@@ -22,7 +22,6 @@ from ACR.components import *
 from ACR.errors import *
 from ACR.utils import replaceVars,HTTP
 
-
 class Headers(Component):
 	def setcookie(self,env,config):
 		#if config[1]["action"].lower()=="set":

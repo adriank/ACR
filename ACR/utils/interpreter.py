@@ -171,6 +171,7 @@ symbol("(literal)").nud=lambda self: self
 symbol("(end)")
 symbol(")")
 
+symbol("@")
 @method(symbol("."))
 def led(self, left):
 	attr=False
@@ -434,19 +435,22 @@ class Tree(object):
 			elif op=="<=":
 				return exe(node[1]) <= exe(node[2])
 			elif op=="not":
+				#if D: acenv.info("doing not '%s'",)
 				return not exe(node[1])
 			elif op=="in":
+				#if D: acenv.info("doing '%s' in '%s'",fst,snd)
 				return exe(node[1]) in exe(node[2])
 			elif op=="not in":
 				return exe(node[1]) not in exe(node[2])
-			elif op=="is" or op=="is not":
+			elif op in ["is","is not"]:
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
 				if type(fst) is str or type(snd) is str:
-					if D: acenv.debug("doing string comparison '%s'=='%s'",fst,snd)
+					if D: acenv.info("doing string comparison '%s'=='%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
+					if D: acenv.info("doing comparison '%s' is '%s'",fst,snd)
 					ret=fst is snd
 				if op=="is not":
 					return not ret

@@ -39,7 +39,7 @@ class MongoSession(Session):
 		super(MongoSession, self).__init__(acenv,ID)
 
 	def save(self):
-		self.env.info("Saving session")
+		if self.D: self.env.info("Saving session")
 		if self.delCookie:
 			self.deleteCookie()
 		if not self.data.has_key("_id"):

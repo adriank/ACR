@@ -129,13 +129,12 @@ class View(object):
 			self.output["format"]=output[0][1]["format"]
 		except: pass
 		try:
-			self.output["xsltfile"]=output[0][1]["xsltfile"]
+			self.output["xsltfile"]=output[0][1]["xsltfile"].lower() is "none"
 		except: pass
 		try:
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
-		print self.output
 		# TODO check if it is correct
 		## output inheritance
 		#if self.parent and self.parent.outputFormat:
@@ -235,6 +234,7 @@ class View(object):
 			# positions the action in the list of actions
 			before=attrs.get("before")
 			after=attrs.get("after")
+			#TODO this is nowhere near clearness. Need to write reference on inheritance regarding before/after and then implement it here
 			parentPos=findAction(ret,o["name"])
 			if before:
 				if before=='*':
@@ -256,6 +256,7 @@ class View(object):
 						pass
 			else:
 				if parentPos:
+					print "WARNING: action %s overwritten"%(o["name"])
 					ret.pop(parentPos)
 				ret.append(o)
 		return ret

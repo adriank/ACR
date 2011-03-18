@@ -123,7 +123,7 @@ def tree2xml(root,esc=False):
 		tab.append("<"+tag)
 		if attrs and len(attrs)>0:
 			for i in attrs.iteritems():
-				if esc:
+				if esc and type(i[1]) is str:
 					i=(i[0],escape(i[1]))
 				tab.append(" %s=\"%s\""%i)
 		nodes=[]
@@ -176,8 +176,6 @@ def tree2xml(root,esc=False):
 	ret="".join(tab)
 	if type(ret) is unicode:
 		ret=ret.encode("utf-8")
-	print root
-	print ret
 	return ret
 
 #TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
