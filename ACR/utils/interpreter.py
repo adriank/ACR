@@ -13,6 +13,7 @@ import sys
 import re
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree
+from ACR.utils.xmlextras import escape, unescape
 
 class ProgrammingError(Exception):
 	pass
@@ -545,6 +546,10 @@ class Tree(object):
 					return str(args)
 				elif fnName=="type":
 					return type(args)
+				elif fnName=="escape":
+					return escape(args)
+				elif fnName=="unescape":
+					return unescape(args)
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
 				else:

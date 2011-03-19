@@ -2,6 +2,7 @@
 from ACR.utils.xmlextras import tree2xml
 
 def serialize(env):
+	print "ddd"
 	xml=tree2xml(env.generations,True)
 	xslt=""
 	if env.output["xsltfile"]:
