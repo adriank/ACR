@@ -44,11 +44,12 @@ class Mongo(Component):
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		try:
 			where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
-		except TypeError,e:
+		except (TypeError,ValueError),e:
 			raise Error("JSONError",replaceVars(acenv,params["where"]).replace('"',"'"))
 		try:
+			print replaceVars(acenv,config["content"])
 			o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
-		except TypeError,e:
+		except (TypeError),e:
 			raise Error("JSONError",replaceVars(acenv,config["content"]))
 		coll.update(where,o)
 

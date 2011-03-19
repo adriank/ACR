@@ -181,7 +181,7 @@ def led(self, left):
 	if token.id is "@":
 		attr=True
 		advance()
-	if token.id not in ["(name)","*"]:
+	if token.id not in ["(name)","*" ]:
 		raise SyntaxError("Expected an attribute name.")
 	self.first=left
 	if attr:
@@ -515,7 +515,9 @@ class Tree(object):
 						return nodeList
 					second=exe(node[2])
 					if type(first) in [list,tuple,str]:
-						return first[int(second)]
+						if type(second) is int or second.isdigit():
+							return first[int(second)]
+						return filter(None,exe((".",first,second)))
 					else:
 						return first[second]
 				raise ProgrammingError("Wrong usage of '[' operator")
@@ -544,7 +546,6 @@ class Tree(object):
 				elif fnName=="type":
 					return type(args)
 				elif fnName=="replace":
-					print args
 					return re.sub(args[1],args[2],args[0])
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
