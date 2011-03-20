@@ -151,9 +151,6 @@ def tree2xml(root,esc=False):
 			tab.append("</"+tag+">")
 
 	#if D: log.info("Generating XML")
-	print
-	print root
-	print
 	if type(root) is dict:
 		tab=["<list>"]
 		#this is an exception. We want to have <object/>'s with name in root subnodes.

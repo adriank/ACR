@@ -520,7 +520,10 @@ class Tree(object):
 							return first[int(second)]
 						return filter(None,exe((".",first,second)))
 					else:
-						return first[second]
+						try:
+							return first[second]
+						except:
+							return None
 				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="(":
 				""" The built-in functions """
