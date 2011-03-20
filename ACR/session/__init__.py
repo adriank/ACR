@@ -43,6 +43,7 @@ class Session(object):
 		self.modified=False
 		self.delCookie=False
 		self.data={}
+		self.env=acenv
 		self.ID=ID or False
 		if self.ID:
 			self.load()
@@ -99,17 +100,17 @@ class Session(object):
 		except:
 			return {}
 
-	def create(self,acenv):
+	def create(self):
 		#log.debug("executed, function with no parameters")
 		self.ID=self.generateID()
-		HTTP.setCookie(acenv,{"name":"SESS", "value":self.ID, "path":"/"})
+		HTTP.setCookie(self.env,{"name":"SESS", "value":self.ID, "path":"/"})
 
-	def deleteCookie(self,acenv):
+	def deleteCookie(self):
 		#log.info("Deleting session cookie")
 		import time
 		t=time.time()-10000
 		log.debug("Session cookie deleted by setting date to %s",t)
-		HTTP.setCookie(acenv,{"name":"SESS", "value":"", "date":t})
+		HTTP.setCookie(self.env,{"name":"SESS", "value":"", "date":t})
 		return
 
 	def save(self, must_create=False):

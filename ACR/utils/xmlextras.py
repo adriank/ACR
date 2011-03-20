@@ -54,17 +54,15 @@ def unescapeQuotes(s):
 	"""
 	return unescape(s,unescapeDict)
 
-def serialize(value,doEscape=False):
-	typev=type(value)
-	if typev is str:
-		sI=value
-		#if doEscape:
-			#sI=escape(sI)
-		return sI
-	elif typev is datetime:
-		return value.strftime("%A, %d %B %Y, %X")
-	else:
-		return str(value)
+#def serialize(value,doEscape=False):
+#	typev=type(value)
+#	if typev is str:
+#		sI=value
+#		return sI
+#	elif typev is datetime:
+#		return value.strftime("%A, %d %B %Y, %X")
+#	else:
+#		return str(value)
 
 #TO-C
 def tree2xml(root,esc=False):
@@ -77,7 +75,9 @@ def tree2xml(root,esc=False):
 		if type(node) is not tuple:
 			node=str(node)
 		if type(node) is str:
-			if node.strip():
+			if not node.strip():
+				tab.append(" ")
+			else:
 				tab.append(node)
 			return
 		tab.append("<"+node[0])
@@ -200,12 +200,15 @@ class Reader(handler.ContentHandler):
 			self.path.append(l[2][-1])
 
 	def characters(self,data):
-		if len(data.strip())>0:
+		l=len(data.strip())
+		if l>0:
 			self.path[-1][2].append(data.encode("utf-8").replace("\t",""))
-		elif self.newlines and len(data)==1 and "\n" in data[0]:
+		elif self.newlines and len(data)==1 and data[0]=="\n":
 			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files
 		elif len(data)==1 and data[0] not in ["\t","\n"]:
+			self.path[-1][2].append(" ")
+		elif " " in data:
 			self.path[-1][2].append(" ")
 
 	def endElement(self,x):
