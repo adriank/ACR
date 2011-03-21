@@ -48,7 +48,7 @@ class Session(object):
 		if self.ID:
 			self.load()
 		else:
-			self.create(acenv)
+			self.create()
 
 	def __contains__(self, key):
 		return key in self.data

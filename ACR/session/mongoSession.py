@@ -31,7 +31,6 @@ import time
 
 class MongoSession(Session):
 	def __init__(self, acenv, ID=None):
-		self.env=acenv
 		self.D=acenv.doDebug
 		if self.D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",ID)
 		#TODO check if dir exists and raise error when not
