@@ -26,6 +26,8 @@ class Default(Component):
 		D=env.doDebug
 		if D: env.debug("START default:generation with %s", config)
 		ret=replaceVars(env, config["string"])
+		if type(ret) is list:
+			ret="".join(map(str,ret))
 		if D: env.debug("END default component generation with: '%s...'", ret)
 		return ret
 
