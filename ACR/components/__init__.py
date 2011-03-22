@@ -20,7 +20,6 @@
 from ACR import acconfig
 from ACR.errors import *
 import sys
-from ACR.utils.generations import *
 
 #dict of component modules
 MODULE_CACHE={}
@@ -49,8 +48,6 @@ class Component(object):
 
 	def generate(self,acenv, config):
 		return self.__getattribute__(config["command"])(acenv,config)
-	#def generate(self,env,conf):
-	#	raise AbstractClass()
 
 	def parseAction(self,root):
 		return root

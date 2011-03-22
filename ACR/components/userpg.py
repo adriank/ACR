@@ -54,7 +54,7 @@ class User(Component):
 			#is it necessary?
 			acenv.sessionStorage["loggedIn"]=True
 			#acenv.session["fake"]=False
-			return ret
+			return {"@status":"ok"}
 		else:
 			if D: acenv.error("Password is not correct")
 			return {
@@ -79,9 +79,9 @@ class User(Component):
 		key=generateID()
 		#returns False if email is not registered yet
 		if acenv.app.getDBConn().query(sql)["rows"][0][0]:
-			o=Object()
-			o.error="EmailAdressAllreadySubscribed"
-			return o
+			return {
+				"error":"EmailAdressAllreadySubscribed"
+			}
 		#XXX implement psycopg escaping!!!
 		id="SELECT currval('%s.users_id_seq')"%(acconfig.dbschema)
 		sql="""INSERT into %s.users
@@ -104,7 +104,7 @@ class User(Component):
 		)
 		result=acenv.app.getDBConn().query(sql)
 		acenv.requestStorage["approval_key"]=key
-		return EMPTY_OBJECT
+		return {"status":"ok"}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
