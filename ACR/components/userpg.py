@@ -24,8 +24,6 @@ from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
 from ACR.session.file import FileSession
 
-EMPTY_OBJECT=Object()
-
 class User(Component):
 	#defaults
 	ROLE="user"
@@ -35,16 +33,16 @@ class User(Component):
 		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
 		password=replaceVars(acenv,conf["password"])
-		ret=Object()
 		sql="select password,id,role from %s.users where id=(select _user from %s.emails where email='%s')"%(acconfig.dbschema,acconfig.dbschema,email)
 		try:
 			result=acenv.app.getDBConn().query(sql)
 			result=dict(zip(result["fields"], result["rows"][0]))
 		except IndexError:
 			if D: acenv.error("Account not found")
-			ret.status="error"
-			ret.error="AccountNotFound"
-			return ret
+			return {
+				"@status":"error",
+				"@error":"AccountNotFound"
+			}
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
 			if not acenv.sessionStorage:
@@ -59,16 +57,17 @@ class User(Component):
 			return ret
 		else:
 			if D: acenv.error("Password is not correct")
-			ret.status="error"
-			ret.error="WrongPassword"
-			return ret
+			return {
+				"@status":"error",
+				"@error":"WrongPassword"
+			}
 
 	def logout(self,acenv,conf):
 		try:
 			acenv.sessionStorage.delete()
 		except:
 			pass
-		return EMPTY_OBJECT
+		return {}
 
 	#TODO test and debug!
 	def register(self,acenv,conf):
