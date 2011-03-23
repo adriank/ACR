@@ -68,10 +68,17 @@ class Application(object):
 			raise Exception("Application name not set in configuration file!")
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
-		self.domain="".join(config.get("/domain/text()",["localhost"]))
+		self.domain="".join(config.get("/domain/text()", ["localhost"]))
 		#TODO this is ugly
 		self.DB_NAME=self.domain.split(":")[1].replace(".","_").replace("http://","").replace("/","")
-		self.storage=pymongo.Connection()[self.DB_NAME]
+		db_overwritten=config.get("/mongo[@db]")
+		if db_overwritten:
+			self.DB_NAME=db_overwritten
+		connopts={}
+		host=config.get("/mongo[@host]")
+		if host:
+			connopts["host"]=host
+		self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
 		debug=config.get("/debug")
 		if debug:
 			self.dbg={
