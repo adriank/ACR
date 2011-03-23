@@ -190,6 +190,7 @@ class Application(object):
 				pass
 		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
 		acenv.generations["acr:appDetails"]={"@domain":acenv.domain,"@config":acenv.outputConfig}
+		acenv.generations["acr:view"]={"@path":view.name}
 		if acenv.sessionStorage:
 			acenv.info("Session exists")
 			sess=acenv.sessionStorage.data

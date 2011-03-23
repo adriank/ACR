@@ -50,6 +50,7 @@ def computeMIME(mime,agent):
 			return "text/html"
 	elif "application/json" in mime and len(mime)==1:
 		return "application/json"
+	return mime[0]
 
 def application(env,start_response):
 	t=time.time()

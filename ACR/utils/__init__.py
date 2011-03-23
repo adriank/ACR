@@ -127,6 +127,7 @@ typesMap={
 	"default":types.Default,
 	"text":types.Text,
 	"xml":types.Default,
+	"html":types.Default,
 	"email":types.Email,
 	"number":types.Number,
 	"empty":types.Empty,

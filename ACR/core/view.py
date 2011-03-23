@@ -23,7 +23,6 @@ from ACR import components
 from ACR.errors import *
 from ACR.utils import getStorage,prepareVars,typesMap
 from ACR.utils.interpreter import make_tree
-from ACR.components import Object, List
 import os,re
 
 NODE="node"
@@ -70,7 +69,7 @@ class View(object):
 		#All "static" computations should be here. Don't do it inside handle!
 		#setting immutable because of setter
 		self.immutable=False
-		self.name="/".join(name)
+		self.name=".".join(name)
 		self.app=app
 		self.path=os.path.join(app.viewsPath,*name)+".xml"
 		#try:
@@ -338,7 +337,6 @@ class View(object):
 						getStorage(acenv,ns or "rs")[name]=default.execute(acenv)
 				continue
 			component=self.app.getComponent(action["component"])
-			#object or list
 			generation=component.generate(acenv,action["config"])
 			#if not generation:
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
