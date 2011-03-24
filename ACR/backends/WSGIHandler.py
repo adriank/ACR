@@ -92,7 +92,7 @@ def application(env,start_response):
 	start_response(status, headers)
 	if not acenv.doRedirect:
 		response.append(output)
-	if D: print round((time.time()-t)*1000,2)
+	print round((time.time()-t)*1000,2)
 	#h = hpy()
 	##print h.heap()
 	return response
