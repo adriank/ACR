@@ -13,19 +13,19 @@ except:
 		except:
 			raise Error("JSONNotFound")
 
-def loads(s,object_hook=None):
-	def tostr(dct):
-		d={}
-		for key in dct.keys():
-			if type(dct[key]) is unicode:
-				v=str(dct[key])
-			else:
-				v=dct[key]
-			d[str(key)]=v
-		return d
+#def loads(s,object_hook=None):
+	#def tostr(dct):
+	#	d={}
+	#	for key in dct.keys():
+	#		if type(dct[key]) is unicode:
+	#			v=str(dct[key])
+	#		else:
+	#			v=dct[key]
+	#		d[str(key)]=v
+	#	return d
 
-	return json.loads(s, object_hook=object_hook or tostr)
-
+	#return json.loads(s, object_hook=object_hook)
+loads=json.loads
 load=json.load
 dumps=json.dumps
 dump=json.dump
