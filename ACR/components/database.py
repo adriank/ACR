@@ -27,7 +27,6 @@ import locale
 
 #re.I is case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
-EMPTY_OBJECT=Object()
 
 class DataBase(Component):
 	def __init__(self,config):
@@ -97,7 +96,7 @@ class DataBase(Component):
 		ret=[]
 		for i in result["rows"]:
 			ret.append(i[0])
-		return List(ret)
+		return ret
 
 	def query(self,env,conf):
 		D=env.doDebug

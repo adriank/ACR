@@ -6,6 +6,6 @@ def serialize(acenv):
 	if not json_compat:
 		return "ERROR: JSON serializer not installed"
 	#try:
-	return json_compat.dumps(acenv.generations,default=default, indent=4)
+	return json_compat.dumps(acenv.generations,default=default)
 	#except:
 	#	raise Exception("simplejson module not installed. Can't output JSON.")
