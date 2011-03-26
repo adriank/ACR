@@ -10,7 +10,7 @@ except:
 	raise Error("libxsltError","libxslt not installed")
 
 XSLTCache={}
-
+name="ObjectML+libxslt"
 def transform(xml,xslt):
 	try:
 		doc=libxml2.parseDoc(xml)

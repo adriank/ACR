@@ -66,6 +66,7 @@ class Mongo(Component):
 		return ret
 
 	def find(self,acenv,config):
+		P=acenv.doProfiling
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("where", config["content"]))
@@ -79,11 +80,11 @@ class Mongo(Component):
 			p["skip"]=int(params["skip"])
 		if params.has_key("limit"):
 			p["limit"]=int(params["limit"])
-		t=time.time()
+		if P: t=time.time()
 		ret=list(coll.find(**p))
-		#print round((time.time()-t)*1000,5)
-		if True or D:
-			acenv.dbg["dbtimer"]+=time.time()-t
+		if P:
+			acenv.profiler["dbtimer"]+=time.time()-t
+			acenv.profiler["dbcounter"]+=1
 		if ret:
 			if len(ret) is 1:
 				return ret[0]

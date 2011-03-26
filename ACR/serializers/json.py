@@ -2,6 +2,8 @@
 
 from ACR.utils import json_compat
 from pymongo.json_util import default
+
+name="JSON"
 def serialize(acenv):
 	if not json_compat:
 		return "ERROR: JSON serializer not installed"

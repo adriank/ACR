@@ -26,7 +26,7 @@ from ACR.core.view import View
 from ACR.errors import *
 from ACR import components,serializers
 from ACR.components import *
-from ACR.acconfig import MIMEmapper
+from ACR.acconfig import *
 import time,os
 import locale
 import pymongo
@@ -43,7 +43,12 @@ class Application(object):
 	appDir=""
 	lang="en"
 	immutable=False
-	def __init__(self,appDir):
+	def __init__(self,domain):
+		domainWOPort=domain.split(':')[0]
+		if acconfig.appsDir:
+			appDir=os.path.join(acconfig.appsDir,domainWOPort)
+		else:
+			appDir=acconfig.appDir
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		self.configPath=os.path.join(appDir, "config.xml")
 		try:
@@ -68,9 +73,8 @@ class Application(object):
 			raise Exception("Application name not set in configuration file!")
 		#for optimization we get some data from config and add it as object properties
 		self.computeLangs()
-		self.domain="".join(config.get("/domain/text()", ["localhost"]))
-		#TODO this is ugly
-		self.DB_NAME=self.domain.split(":")[1].replace(".","_").replace("http://","").replace("/","")
+		self.domain=domain#"".join(config.get("/domain/text()", ["localhost"]))
+		self.DB_NAME=domainWOPort.replace(".","_")
 		db_overwritten=config.get("/mongo[@db]")
 		if db_overwritten:
 			self.DB_NAME=db_overwritten
@@ -79,26 +83,26 @@ class Application(object):
 		if host:
 			connopts["host"]=host
 		self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
-		debug=config.get("/debug")
-		if debug:
+		if config.get("/debug"):
 			self.dbg={
 				"enabled":str2obj(config.get("/debug[@enable]")),
-				"level":config.get("/debug[@level]","error"),
+				"level":config.get("/debug[@level]","error")
+			}
+		if config.get("/profiler"):
+			self.profiler={
+				"enabled":str2obj(config.get("/profiler[@enable]")),
 				"dbtimer":0,
 				"dbcounter":0
 			}
 		self.output={
-			#"engine":config.get("/output[@engine]"),
 			"xsltfile":config.get("/output[@xsltfile]"),
 			"format":config.get("/output[@format]","application/xml")
 		}
-		#engineConf=config.get("/engine")[0]
-		#self.engine=te.get(engineConf[1]["name"]).engine(engineConf)
 		self.prefix=(config.get("/prefix") or "ACR")+"_"
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])
 			self.getComponent(component[1]["name"],component[2])
-		#do it or not?
+		#XXX do it or not?
 		#self.config=None
 		self.immutable=True
 
@@ -112,16 +116,9 @@ class Application(object):
 		return self.DEFAULT_DB
 
 	def getComponent(self,name,conf=None):
-		##print "getComponent"
-		##print name
 		if self.COMPONENTS_CACHE.has_key(name):
-			##print "cache"
 			return self.COMPONENTS_CACHE[name]
-		##print "Component not in cache"
-		##print components.get(name)
 		o=components.get(name).getObject(conf)
-		##print o
-		##print "end"
 		self.COMPONENTS_CACHE[name]=o
 		return o
 
@@ -170,8 +167,9 @@ class Application(object):
 	#will be generator
 	def generate(self,acenv):
 		D=acenv.doDebug
+		P=acenv.doProfiling
 		if D: acenv.info("START")
-		if True: t=time.time()
+		if P: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
 			if D:acenv.info("Session cookie found")
@@ -209,16 +207,25 @@ class Application(object):
 			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"
 		#if True:
-		all=round((time.time()-t)*1000,5)
-		dbms=round(acenv.dbg["dbtimer"]*1000,5)
-		if True or D:
-			print("Generated in %s, where:"%(all))
-			print("	DBMS took %s"%(dbms))
-			print("	Python took %s"%(all-dbms))
+		if P:
+			all=round((time.time()-t)*1000,5)
+			dbms=round(acenv.profiler["dbtimer"]*1000,5)
+			dbcounter=acenv.profiler["dbcounter"]
+			print("Tree generated in %sms, where:"%(all))
+			if dbcounter:
+				print("	DBMS took %sms in #%s queries averaging at %sms per query"%(dbms,dbcounter,dbms/dbcounter))
+			else:
+				print("DBMS was not used.")
+			pytime=all-dbms
+			print("	Python took %sms"%(pytime))
 			t=time.time()
 		x=s.serialize(acenv)
-		if True or D:
-			print "Serializer took %s"%(round((time.time()-t)*1000,5))
+		if P:
+			serializertime=round((time.time()-t)*1000,5)
+			acenv.profiler["pytime"]=pytime+serializertime
+			acenv.profiler["alltime"]=all+serializertime
+			print "%s serializer took\n	%sms"%(s.name,serializertime)
+			print("Asyncode Runtime took %s"%(acenv.profiler["pytime"]))
 		if D: acenv.info("END")
 		return x
 

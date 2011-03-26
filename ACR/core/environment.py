@@ -49,8 +49,8 @@ class Environment(Debugger):
 	doRedirect=False
 	redirect=False
 	tree=None
-	dbg=None
-	doDebug=False
+	profiler=False
+	doProfiling=False
 
 	def __init__(self,app):
 		self.generations={}
@@ -64,6 +64,10 @@ class Environment(Debugger):
 				j=i[1]
 			self.__dict__[i[0]]=j
 		super(Environment, self).__init__(app)
+		try:
+			self.doProfiling=app.profiler["enabled"]
+		except:
+			pass
 		self.requestStorage={}
 		self.outputHeaders=[]
 		self.cookies={}

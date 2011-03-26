@@ -12,7 +12,7 @@ Additionally you can have following Python modules (if ACF can't load them, ther
 
 2. Installation
 
-Unpack package to a directory of your choice, set the globals.appDir or globals.appsDir (not recommended for begginers!) to your project or directory with projects in the asyncode.py file and run it. Your site will be available at http://localhost:9999/.
+Unpack package to a directory of your choice and run asyncode.py file. Your site will be available at http://localhost:9999/.
 
 Structure of the project directory is:
 
@@ -71,4 +71,3 @@ You can now consume the data or use ObjectML to do so. If ACTE is in use additio
 10. it executes the data in layout XML and outputs HTML.
 
 There is no documentation besides above for now. You need to hack or ask us.
-
