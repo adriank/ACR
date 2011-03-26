@@ -2,7 +2,11 @@
 from ACR.errors import Error
 
 try:
-	from cjson import *
+	import cjson3
+	print "cjson"
+	def dumps(s,default):
+		print s
+		return cjson.encode(s)
 	#TODO unify cjson API with simplejson/json
 except:
 	try:
@@ -25,7 +29,8 @@ except:
 	#	return d
 
 	#return json.loads(s, object_hook=object_hook)
-loads=json.loads
-load=json.load
-dumps=json.dumps
-dump=json.dump
+	loads=json.loads
+	load=json.load
+	def dumps(s,default):
+		json.dumps(s,default=default, separators=(',',':'))
+	dump=json.dump
