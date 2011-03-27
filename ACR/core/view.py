@@ -21,7 +21,7 @@ from ACR.utils.xmlextras import *
 from ACR import acconfig
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,prepareVars,typesMap
+from ACR.utils import getStorage,prepareVars,typesMap,str2obj
 from ACR.utils.interpreter import make_tree
 import os,re
 
@@ -128,7 +128,10 @@ class View(object):
 			self.output["format"]=output[0][1]["format"]
 		except: pass
 		try:
-			self.output["xsltfile"]=output[0][1]["xsltfile"].lower() is "none"
+			self.output["xsltfile"]=str2obj(output[0][1]["xsltfile"])
+		except: pass
+		try:
+			self.output["xslt-force-reload"]=str2obj(output[0][1]["xslt-force-reload"])
 		except: pass
 		try:
 			self.outputConfig=output[0][1]["config"]
@@ -351,14 +354,8 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-		try:
-			acenv.output["format"]=self.output["format"]
-		except:
-			pass
-		try:
-			acenv.output["xsltfile"]=self.output["xsltfile"]
-		except:
-			pass
+		if acenv.output:
+			acenv.output.update(self.output)
 
 	def isUpToDate(self):
 		return (self.parent and self.parent.isUpToDate() or True) and self.timestamp >= os.stat(self.path).st_mtime

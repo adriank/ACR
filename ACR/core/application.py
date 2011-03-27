@@ -98,6 +98,9 @@ class Application(object):
 			"xsltfile":config.get("/output[@xsltfile]"),
 			"format":config.get("/output[@format]","application/xml")
 		}
+		forceReload=config.get("/output[@xslt-force-reload]")
+		if forceReload:
+			self.output["xslt-force-reload"]=str2obj(forceReload)
 		self.prefix=(config.get("/prefix") or "ACR")+"_"
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])

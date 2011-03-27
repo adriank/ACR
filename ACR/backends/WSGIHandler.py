@@ -44,7 +44,7 @@ def computeMIME(mime,agent):
 	if not agent:
 		return mime[0]
 	if "text/html" in mime or "*/*" in mime:
-		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1 and agent.find("rekonq")==-1):
+		if ((agent.find("translat")==-1) and re.search("Firefox|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1 and agent.find("rekonq")==-1):
 			return "application/xml"
 		else:
 			return "text/html"
