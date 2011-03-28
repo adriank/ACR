@@ -545,10 +545,10 @@ class Tree(object):
 					return int(args)
 				elif fnName=="float":
 					return float(args)
-				elif fnName=="len":
-					return len(args)
 				elif fnName=="str":
 					return str(args)
+				elif fnName=="len":
+					return len(args)
 				elif fnName=="type":
 					return type(args)
 				elif fnName=="escape":
