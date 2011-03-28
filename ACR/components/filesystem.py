@@ -19,7 +19,6 @@
 from ACR.components import Component
 from ACR.errors import *
 from ACR.utils import prepareVars, replaceVars
-from ACR.utils.generations import Object,List
 from ACR.utils.xmlextras import tree2xml
 import os
 import shutil
@@ -44,10 +43,10 @@ class FileSystem(Component):
 		try:
 			all=os.listdir(fullpath)
 		except OSError,e:
-			o=Object()
-			o.status="error"
-			o.error=e
-			return o
+			return {
+				"status":"error",
+				"error":e
+			}
 		all.sort()
 		if _filter:
 			all=filter(lambda file: fnmatch.fnmatch(file, _filter),all)
@@ -61,26 +60,33 @@ class FileSystem(Component):
 			dirs=filter(lambda dir: dir not in files,all)
 		ret=[]
 		if len(files)==0:
-			o=Object()
-			o.error="dirEmpty"
-			return o
+			return {
+				"status":"error",
+				"error":"dirEmpty"
+			}
 		path=conf["path"]
 		if dirs:
 			for i in dirs:
-				o=Object()
 				o.name=i
 				o.path=path
 				o.type="dir"
-				ret.append(o)
+				ret.append({
+					"name":i,
+					"path":path,
+					"type":"dir"
+				})
 		if files and not onlyDirs:
 			for i in files:
 				o=Object()
 				o.name=i
 				o.path=path
-				#TODO change it to mimetype
-				#o.type="file"
-				ret.append(o)
-		return List(ret)
+				#TODO change type to mimetype
+				ret.append({
+					"name":i,
+					"path":path,
+					"type":"file"
+				})
+		return ret
 
 	def tree(self,acenv,conf):
 		#TODO as list but should return whole dir tree. Subdirs should be in subnodes of Object()
@@ -89,11 +95,11 @@ class FileSystem(Component):
 	def create(self,acenv,conf,update=False):
 		D=acenv.doDebug
 		#path=os.path.join(self.abspath+conf["path"])
-		o=Object()
 		if not update and os.path.isfile(conf["fullpath"]):
-			o.status="error"
-			o.error="fileExists"
-			return o
+			return {
+				"status":"error",
+				"error":"fileExists"
+			}
 		# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c']
 		path=os.path.normpath(conf["path"]).split("/")[:-1]
 		currPath=self.abspath
@@ -106,9 +112,10 @@ class FileSystem(Component):
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except (IOError,OSError) ,e:
-			o.status="error"
-			o.error=e
-			return o
+			return {
+				"status":"error",
+				"error":e
+			}
 		#FIXME - else or finally or smth else?
 		else:
 			file.close()
@@ -127,7 +134,7 @@ class FileSystem(Component):
 			raise Error("IOError", 'cannot open %s'%(e))
 		else:
 			file.close()
-		return Object()
+		return {"status":"ok"}
 
 	def delete(self,acenv,conf):
 		D=acenv.doDebug
@@ -137,7 +144,7 @@ class FileSystem(Component):
 				os.remove(path)
 			else:
 				shutil.rmtree(path)
-		return Object()
+		return {"status":"ok"}
 
 	def copy(self,acenv,conf):
 		#D=acenv.doDebug
@@ -145,19 +152,17 @@ class FileSystem(Component):
 		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
 		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.copyfile(copyFrom, copyTo)
-		return Object()
+		return {"status":"ok"}
 
 	def move(self,acenv,conf):
 		copyFrom=os.path.join(self.abspath,*replaceVars(acenv,conf["from"]).split("/"))
 		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
 		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.move(copyFrom, copyTo)
-		return o
+		return {"status":"ok"}
 
 	def exists(self,acenv,conf):
-		o=Object()
-		o.exists=os.path.exists(conf["fullpath"])
-		return o
+		return os.path.exists(conf["fullpath"])
 
 	def get(self,acenv,conf):
 		fullpath=conf["fullpath"]
@@ -165,15 +170,16 @@ class FileSystem(Component):
 			file=open(fullpath,"r")
 			content=file.read()
 		except IOError,e:
-			#FIXIT
-			raise e
+			return {
+				"status":"error",
+				"error":e
+			}
 			#print 'cannot open', conf["path"]
 		else:
 			file.close()
-		o=Object()
-		o.set("<![CDATA["+content.replace("]]>","]]>]]&gt;<![CDATA[")+"]]>")
-		o._doFn=False
-		return o
+		return {
+			"content":"".join(["<![CDATA[",content.replace("]]>","]]>]]&gt;<![CDATA["),"]]>"])
+		}
 
 	def generate(self, acenv, config):
 		D=acenv.doDebug
