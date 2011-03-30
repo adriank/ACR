@@ -109,7 +109,7 @@ class Session(object):
 		#log.info("Deleting session cookie")
 		import time
 		t=time.time()-10000
-		log.debug("Session cookie deleted by setting date to %s",t)
+		#log.debug("Session cookie deleted by setting date to %s",t)
 		HTTP.setCookie(self.env,{"name":"SESS", "value":"", "date":t})
 		return
 
