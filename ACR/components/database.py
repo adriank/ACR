@@ -83,11 +83,6 @@ class DataBase(Component):
 		return ";".join(q)
 
 	def generate(self,acenv,conf):
-		if type(conf["query"]) is list:
-			try:
-				conf["query"]="".join(conf["query"])
-			except:
-				conf["query"]="".join(map(str,conf["query"]))
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
 
 	def none2null(self,s):
