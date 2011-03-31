@@ -29,7 +29,8 @@ def computePOST(env):
 	post=None
 	contentType=env['CONTENT_TYPE']
 	if contentType.startswith("application/x-www-form-urlencoded"):
-		POST=env['wsgi.input'].read()
+		l=int(env['CONTENT_LENGTH'])
+		POST=env['wsgi.input'].read(l)
 		post=parseurlencoded(POST)
 	elif contentType.startswith("multipart/form-data"):
 		form=cgi.FieldStorage(env['wsgi.input'],environ=env)
