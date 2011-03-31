@@ -53,7 +53,7 @@ class handler(object):
 			#self.conn.commit()
 		except Exception ,e:
 			#if D: log.error("SQLError %s",str(e))
-			raise Error("SQLError",escapeQuotes(str(e))+": "+sql)
+			raise Error("SQLError", escapeQuotes(str(e))+": "+str(sql))
 		#if D: log.info("Query returned rows (there was SELECT)")
 		#this is most most memory efficient structure but needs to be replaced with yield by merging it with pygresql
 		try:
