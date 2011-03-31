@@ -17,6 +17,7 @@ def serialize(env):
 		elif type(node) in [str,unicode]:
 			tab.append(node)
 
+	D=env.doDebug
 	tab=[]
 	rec(env.generations["layout"])
 	for i in range(len(tab)):
@@ -25,4 +26,5 @@ def serialize(env):
 	ret="".join(tab)
 	ret=re.sub("<br.*/>|</p>|</h.*>","\n",ret)
 	ret=re.sub("<[^>]*>","",ret)
+	if D: env.debug("Returned: %s",ret)
 	return ret
