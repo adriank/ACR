@@ -108,6 +108,8 @@ class DataBase(Component):
 		P=env.doProfiling
 		if D: env.debug("START DB:query with: conf='%s'",conf)
 		query=replaceVars(env,conf["query"],self.none2null)
+		if type(query) is list:
+			query="".join(map(str,query))
 		if D: env.debug("replaceVars returned '%s'",query)
 		if P:
 			t=time.time()
