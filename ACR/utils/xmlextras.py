@@ -97,11 +97,11 @@ def tree2xml(root,esc=False):
 		nodetype=type(node)
 		if nodetype is dict:
 			tag="object"
-			if not name:
-				try:
-					name=node.pop("name")
-				except:
-					pass
+			#if not name:
+			#	try:
+			#		name=node.pop("name")
+			#	except:
+			#		pass
 			for i in node.keys():
 				if i[0]=='@':
 					attrs[i[1:]]=node.pop(i)
