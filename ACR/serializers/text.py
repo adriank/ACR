@@ -12,17 +12,17 @@ def serialize(env):
 			for i in node:
 				if type(i) in (dict,list):
 					rec(i)
-				else:
-					tab.append(str(i))
+				elif type(i) in [str,unicode]:
+					tab.append(i)
 		elif type(node) in [str,unicode]:
 			tab.append(node)
 
 	tab=[]
-	rec(env.generations)
+	rec(env.generations["layout"])
 	for i in range(len(tab)):
 		if type(tab[i]) is unicode:
 			tab[i]=tab[i].encode("utf-8")
 	ret="".join(tab)
 	ret=re.sub("<br.*/>|</p>|</h.*>","\n",ret)
-	ret=re.sub("<.*>","",ret)
+	ret=re.sub("<[^>]*>","",ret)
 	return ret
