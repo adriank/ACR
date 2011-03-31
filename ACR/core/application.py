@@ -189,7 +189,7 @@ class Application(object):
 				"error":{
 					"@name":"GlobalError",
 					"@error":e.name,
-					"@message":e.message
+					"@message":str(e)
 				}
 			}
 			try:
