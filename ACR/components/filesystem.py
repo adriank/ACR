@@ -67,9 +67,6 @@ class FileSystem(Component):
 		path=conf["path"]
 		if dirs:
 			for i in dirs:
-				o.name=i
-				o.path=path
-				o.type="dir"
 				ret.append({
 					"name":i,
 					"path":path,
@@ -77,9 +74,6 @@ class FileSystem(Component):
 				})
 		if files and not onlyDirs:
 			for i in files:
-				o=Object()
-				o.name=i
-				o.path=path
 				#TODO change type to mimetype
 				ret.append({
 					"name":i,
