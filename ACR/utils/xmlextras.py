@@ -111,19 +111,15 @@ def tree2xml(root,esc=False):
 			if nodetype not in [str,unicode]:
 				node=str(node)
 			if name:
-				#if esc: node=escape(node)
 				tab.append('<%s>%s</%s>'%(name,node,name))
 			else:
 				tab.append(node)
 			return
 		if name:
-			#if esc: name=escape(name)
 			attrs["name"]=name
 		tab.append("<"+tag)
 		if attrs and len(attrs)>0:
 			for i in attrs.iteritems():
-				#if esc and type(i[1]) is str:
-				#	i=(i[0],escape(i[1]))
 				tab.append(" %s=\"%s\""%i)
 		nodes=[]
 		if not node:
@@ -133,20 +129,13 @@ def tree2xml(root,esc=False):
 			#print node
 			if type(node) is dict:
 				for i in node.iteritems():
-					#typ=type(i[1])
-					#if typ is str:
-						#if esc:
-						#	content=escape(i[1])
-					#else:
-						rec(i[1],i[0])
-						#tab.append(content)
+					rec(i[1],i[0])
 			if type(node) is list:
 				for i in node:
 					if type(i) in (dict,list):
 						rec(i)
 					else:
 						i=str(i)
-						#if esc: i=escape(i)
 						tab.append("<item>%s</item>"%i)
 			tab.append("</"+tag+">")
 
