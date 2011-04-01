@@ -3,7 +3,7 @@
 git clone http://dev.asyncode.com/git/acr.git
 mv acr ACDK
 cd ACDK
-rm -rf .git debian test *.komodoproject *.kpf
+rm -rf .git debian test *.komodoproject *.kpf setup.py testACF.py wsgi.py
 git clone http://dev.asyncode.com/git/acfrontend.git
 cd acfrontend
 rm -rf .git debian *.komodoproject *.kpf
