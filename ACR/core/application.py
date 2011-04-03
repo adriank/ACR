@@ -21,7 +21,10 @@
 
 from ACR.utils.xmlextras import *
 from ACR.utils import dicttree, json_compat, str2obj
-from ACR.session.mongoSession import MongoSession
+try:
+	from ACR.session.mongoSession import MongoSession as sessionBackend
+except:
+	from ACR.session.file import FileSession as sessionBackend
 from ACR.core.view import View
 from ACR.errors import *
 from ACR import components,serializers
@@ -29,7 +32,10 @@ from ACR.components import *
 from ACR.acconfig import *
 import time,os
 import locale
-import pymongo
+try:
+	import pymongo
+except:
+	print "No MongoDB driver found. Please install pymongo."
 
 pjoin=os.path.join
 pexists=os.path.exists
@@ -82,7 +88,10 @@ class Application(object):
 		host=config.get("/mongo[@host]")
 		if host:
 			connopts["host"]=host
-		self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
+		try:
+			self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
+		except:
+			pass
 		if config.get("/debug"):
 			self.dbg={
 				"enabled":str2obj(config.get("/debug[@enable]")),
@@ -178,7 +187,7 @@ class Application(object):
 			if D:acenv.info("Session cookie found")
 			sessID=acenv.cookies[prefix]
 			try:
-				acenv.sessionStorage=MongoSession(acenv,sessID)
+				acenv.sessionStorage=sessionBackend(acenv,sessID)
 			except:
 				sessID=None
 		try:
