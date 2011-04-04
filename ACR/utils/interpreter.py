@@ -528,7 +528,6 @@ class Tree(object):
 			elif op=="(":
 				""" The built-in functions """
 				fnName=node[1][1]
-				raise Warning(fnName)
 				args=exe(node[2])
 				if fnName=="sum":
 					if type(args) in NUM_TYPES:
