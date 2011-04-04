@@ -358,12 +358,24 @@ class View(object):
 			acenv.output.update(self.output)
 
 	def isUpToDate(self):
-		print "start"
-		print self.name
-		print self.parent
+		"""
+			Parent is not up to date and
+			self is not refreshed after parent change and
+			file is changed
+			-> false
+		"""
 		if self.parent:
-			print self.parent.isUpToDate()
-		return (self.parent and self.parent.isUpToDate() or True) and (self.parent and self.timestamp >= self.parent.timestamp or True) and self.timestamp >= os.stat(self.path).st_mtime
+			if not self.parent.isUpToDate():
+				print "parent"
+				return False
+			#TODO needs new attribute storing parsing time
+			#if self.timestamp < self.parent.timestamp:
+			#	print "parent timestamp",self.timestamp," ",self.parent.timestamp
+			#	return False
+		if self.timestamp < os.stat(self.path).st_mtime:
+			print "self"
+			return False
+		return True
 
 	def __setattr__(self, name, val):
 		if name!="immutable" and self.immutable:
