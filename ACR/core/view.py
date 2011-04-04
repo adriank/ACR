@@ -86,13 +86,13 @@ class View(object):
 		#parses "xmlns:" attributes and extracts namespaces
 		for i in attrs:
 			if i.startswith("xmlns:"):
-				key=i.split(":")[1]
-				value=attrs[i].split("/").pop().lower()
+				key=i.split(":",1)[1]
+				value=attrs[i].rsplit("/",1)[1].lower()
 				ns[key]=value
 		self.namespaces=ns
 		#checks whether view inherits from another view
 		try:
-			self.parent=app.getView(filter(lambda x: not str.isspace(x) and len(x)!=0,attrs["inherits"].split("/")),True)[0]
+			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x),attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
 		except:
@@ -187,7 +187,7 @@ class View(object):
 		if ns:
 			for attr in attrs:
 				if attr.startswith(ns+":") and not attr==ns+cmd:
-					params[attr.split(":").pop()]=prepareVars(action[1][attr])
+					params[attr.rsplit(":",1)[1]]=prepareVars(action[1][attr])
 		ret={
 			"command":cmd,
 			"params":params,

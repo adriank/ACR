@@ -139,7 +139,7 @@ class List(Default):
 		return True
 
 	def _prepareValue(self,value):
-		return map(lambda x: Object(x), RE_DELIMITER.split(value))
+		return RE_DELIMITER.split(value)
 
 class CSV(List):
 	RE_DELIMITER=re.compile("\s*,\s*")

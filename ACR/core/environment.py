@@ -81,7 +81,7 @@ class Environment(Debugger):
 		if self.cookies.has_key(self.prefix+"pagelang"):
 			self.lang=self.cookies[self.prefix+"pagelang"]
 		else:
-			l=lang.split(",")[0].split("-")[0]
+			l=lang.split(",",1)[0].split("-",1)[0]
 			if l in self.app.langs:
 				self.lang=l
 

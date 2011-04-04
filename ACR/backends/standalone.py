@@ -32,7 +32,7 @@ def serve_static(env,start_response):
 	response=[]
 	length=0
 	status="200 OK"
-	extension=env["PATH_INFO"].split(".").pop()
+	extension=env["PATH_INFO"].rsplit(".",1)[1]
 	if acconfig.appDir:
 		path=acconfig.appDir
 	else:

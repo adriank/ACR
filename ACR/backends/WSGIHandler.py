@@ -67,19 +67,20 @@ def application(env,start_response):
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
-	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";")[0].split(","))
+	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";",1)[0].split(","))
 	acenv.UA=env.get("HTTP_USER_AGENT")
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
 	#if app.debug["enabled"]:
 	#	log.setLevel(acconfig.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE'):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
-	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",")[0].split("-")[0]))
+	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",",1)[0].split("-",1)[0]))
 	post=None
 	if env.get('REQUEST_METHOD',"").lower()=="post":
 		post=HTTP.computePOST(env)
 	acenv.posts=post
-	acenv.URLpath=filter(lambda x: len(x)!=0 or str.isspace(x), env['PATH_INFO'].split("/"))
+	strisspace=str.isspace
+	acenv.URLpath=filter(lambda x: len(x)!=0 or strisspace(x), env['PATH_INFO'].split("/"))
 	output=app.generate(acenv)
 	headers=acenv.outputHeaders
 	headers.append(("Content-Type",acenv.output["format"]))

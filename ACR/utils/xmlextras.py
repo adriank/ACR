@@ -277,7 +277,7 @@ def NS2Tuple(s,delimiter=":"):
 	returns: tuple (namespace: rest)
 	"""
 	try:
-		ns,action=s.split(delimiter)
+		ns,action=s.split(delimiter,1)
 	except:
 		ns,action=(None,s)
 	return (ns,action)

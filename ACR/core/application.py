@@ -50,7 +50,7 @@ class Application(object):
 	lang="en"
 	immutable=False
 	def __init__(self,domain):
-		domainWOPort=domain.split(':')[0]
+		domainWOPort=domain.split(':',1)[0]
 		if acconfig.appsDir:
 			appDir=os.path.join(acconfig.appsDir,domainWOPort)
 		else:
