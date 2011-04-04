@@ -32,7 +32,8 @@ class Interpreter(Component):
 			if D: acenv.error("Execution failed with error: %s", str(e))
 			return {
 				"status":"error",
-				"error":"ExecutionFailed"
+				"error":"ExecutionFailed",
+				"message":str(e)
 			}
 
 	def parseAction(self, config):
