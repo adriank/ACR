@@ -63,7 +63,8 @@ class Environment(Debugger):
 			else:
 				j=i[1]
 			self.__dict__[i[0]]=j
-		super(Environment, self).__init__(app)
+		if app.dbg["enabled"]:
+			super(Environment, self).__init__(app)
 		try:
 			self.doProfiling=app.profiler["enabled"]
 		except:

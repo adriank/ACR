@@ -119,8 +119,8 @@ class Application(object):
 		self.immutable=True
 
 	# checks if an application instance should be reloaded
-	def checkRefresh(self):
-		return self.timestamp < os.stat(self.configPath).st_mtime
+	def isUpToDate(self):
+		return self.timestamp >= os.stat(self.configPath).st_mtime
 
 	def getDBConn(self):
 		if not self.DEFAULT_DB:

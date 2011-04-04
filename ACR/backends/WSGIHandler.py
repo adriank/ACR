@@ -61,7 +61,7 @@ def application(env,start_response):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app
 		#D=app.dbg.get("enabled",False)
-		if app.checkRefresh():
+		if not app.isUpToDate():
 			app=Application(path)
 	else:
 		app=Application(path)
