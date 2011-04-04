@@ -358,10 +358,18 @@ class View(object):
 			acenv.output.update(self.output)
 
 	def isUpToDate(self):
-		return (self.parent and self.parent.isUpToDate()) and self.timestamp >= os.stat(self.path).st_mtime
+		print "start"
+		print self.name
+		print self.parent
+		if self.parent:
+			print self.parent.isUpToDate()
+		return (self.parent and self.parent.isUpToDate() or True) and self.timestamp >= os.stat(self.path).st_mtime
 
 	def __setattr__(self, name, val):
 		if name!="immutable" and self.immutable:
 			#if D: log.error("%s is read only",name)
 			raise Exception("PropertyImmutable")
 		self.__dict__[name]=val
+
+	def __str__(self):
+		return "View(%s)"%self.name

@@ -53,6 +53,8 @@ def computeMIME(mime,agent):
 	return mime[0]
 
 def application(env,start_response):
+	for i in env:
+		print i+": "+str(env[i])
 	t=time.time()
 	response=[]
 	D=False
@@ -61,12 +63,13 @@ def application(env,start_response):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app
 		#D=app.dbg.get("enabled",False)
-		if not app.isUpToDate():
+		if not app.deploymentMode and not app.isUpToDate():
 			app=Application(path)
 	else:
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
+	acenv.requestStorage["__clientIP__"]=env.get("REMOTE_ADDR","unknown")
 	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";",1)[0].split(","))
 	acenv.UA=env.get("HTTP_USER_AGENT")
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)

@@ -49,6 +49,8 @@ class Application(object):
 	appDir=""
 	lang="en"
 	immutable=False
+	deploymentMode=False
+
 	def __init__(self,domain):
 		domainWOPort=domain.split(':',1)[0]
 		if acconfig.appsDir:
@@ -58,7 +60,8 @@ class Application(object):
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		self.configPath=os.path.join(appDir, "config.xml")
 		try:
-			self.timestamp=os.stat(self.configPath).st_mtime
+			if not self.deploymentMode:
+				self.timestamp=os.stat(self.configPath).st_mtime
 			config=xml2tree(self.configPath)
 		except (IOError,OSError):
 			raise AppNotFound(appDir)
@@ -88,6 +91,8 @@ class Application(object):
 		host=config.get("/mongo[@host]")
 		if host:
 			connopts["host"]=host
+		if str2obj(config.get("/deployment[@enable]")):
+			self.deploymentMode=True
 		try:
 			self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
 		except:
@@ -136,6 +141,7 @@ class Application(object):
 
 	#lazy view objects creation
 	def getView(self,URLpath,errorOnNotFound=False):
+		print URLpath
 		#TODO rewrite it:
 		# 1. View.isUpToDate - should check its super view and posibly update object internally,
 		#    when view file is deleted, should raise error
@@ -146,8 +152,10 @@ class Application(object):
 			o=o["default"]
 			#if D: acenv.debug("Executing '%s'/default"%("/".join(URLpath)))
 		#TODO handle an event when file was deleted; probably raises exception
-		if type(o) is View and o.isUpToDate():
+		print "xxx"
+		if type(o) is View:# and o.isUpToDate():
 			#if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
+			print o.isUpToDate()
 			return (o, URLpath[i:])
 		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
 		#elif D: acenv.info("View is not cached")
