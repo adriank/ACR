@@ -91,7 +91,7 @@ class Application(object):
 		host=config.get("/mongo[@host]")
 		if host:
 			connopts["host"]=host
-		if str2obj(config.get("/deployment[@enable]")):
+		if str2obj(config.get("/deployment[@enable]","f")):
 			self.deploymentMode=True
 		try:
 			self.storage=pymongo.Connection(**connopts)[self.DB_NAME]

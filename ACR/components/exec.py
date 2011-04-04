@@ -25,14 +25,17 @@ from ACR.errors import *
 import os
 import re
 from ACR.utils import dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
+import subprocess
 
 class Exec(Component):
 	def generate(self,acenv,conf):
-		content=conf["content"]
-		params=conf["params"]["exec"]
+		command=conf["params"]["exec"]
 		content=replaceVars(acenv,content)
-		os.system(params)
-		return Object()
+		start=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+		start.stdin.write(conf["content"])
+		start.wait()
+		start.stdin.close()
+		return start.stdout.read()
 
 	def parseAction(self,conf):
 		try:

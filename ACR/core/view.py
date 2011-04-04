@@ -363,7 +363,7 @@ class View(object):
 		print self.parent
 		if self.parent:
 			print self.parent.isUpToDate()
-		return (self.parent and self.parent.isUpToDate() or True) and self.timestamp >= os.stat(self.path).st_mtime
+		return (self.parent and self.parent.isUpToDate() or True) and (self.parent and self.timestamp >= self.parent.timestamp or True) and self.timestamp >= os.stat(self.path).st_mtime
 
 	def __setattr__(self, name, val):
 		if name!="immutable" and self.immutable:
