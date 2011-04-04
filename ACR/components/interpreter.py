@@ -19,22 +19,21 @@
 
 from ACR.utils.interpreter import make_tree
 from ACR.components import Component
-from ACR.utils.generations import Object
 
 class Interpreter(Component):
 	def generate(self, acenv, conf):
 		D=acenv.doDebug
 		if D: acenv.debug("START Interpreter with: '%s'", conf["expression"].tree)
 		try:
-			o=Object(conf["expression"].execute(acenv))
+			ret=conf["expression"].execute(acenv)
+			if D: acenv.debug("END Interpreter with: '%s'", ret)
+			return ret
 		except Exception,e:
 			if D: acenv.error("Execution failed with error: %s", str(e))
-			o=Object()
-			o.status="error"
-			o.error="ExecutionFailed"
-		else:
-			if D: acenv.debug("END Interpreter with: '%s'", o._value)
-		return o
+			return {
+				"status":"error",
+				"error":"ExecutionFailed"
+			}
 
 	def parseAction(self, config):
 		if config["command"] not in ["execute","exec"]:

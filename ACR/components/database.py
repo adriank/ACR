@@ -27,7 +27,6 @@ import locale
 
 #re.I is case-insensitive regular expression
 RE_CACHE=re.compile("insert|update|select|delete",re.I)
-EMPTY_OBJECT=Object()
 
 class DataBase(Component):
 	def __init__(self,config):
@@ -97,18 +96,22 @@ class DataBase(Component):
 		ret=[]
 		for i in result["rows"]:
 			ret.append(i[0])
-		return List(ret)
+		return ret
 
 	def query(self,env,conf):
 		D=env.doDebug
+		P=env.doProfiling
 		if D: env.debug("START DB:query with: conf='%s'",conf)
 		query=replaceVars(env,conf["query"],self.none2null)
+		if type(query) is list:
+			query="".join(map(str,query))
 		if D: env.debug("replaceVars returned '%s'",query)
-		if True or D:
+		if P:
 			t=time.time()
 		result=self.CONNECTIONS[conf.get("server","default")].query(query)
-		if True or D:
-			env.dbg["dbtimer"]+=time.time()-t
+		if P:
+			env.profiler["dbtimer"]+=time.time()-t
+			env.profiler["dbcounter"]+=1
 		if D: env.debug("database returned %s",result)
 		if result and len(result["rows"]):
 			if D: env.debug("Creating list of ordered dicts.")

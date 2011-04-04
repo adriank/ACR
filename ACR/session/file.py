@@ -25,13 +25,14 @@ from ACR.session import Session
 from ACR.errors import Error
 
 class FileSession(Session):
-	def __init__(self, acenv, id=None):
-		D=acenv.doDebug
-		if D: acenv.info("Created FileSession object with id=%s",id)
+	def __init__(self, acenv, ID=None):
+		self.D=acenv.doDebug
+		print "WARNING! File session backend user. It is strongly recommended to install MongoDB and pymongo python driver."
+		if self.D: acenv.info("Created FileSession object with id=%s",ID)
 		#TODO check if dir exists and raise error when not
-		self.sessDir=acenv.app.sessionDir
-		if D:acenv.info("Session directory is set to %s",self.sessDir)
-		super(FileSession, self).__init__(acenv,id)
+		self.sessDir=os.path.join(acenv.app.appDir,"session")
+		if self.D:acenv.info("Session directory is set to %s",self.sessDir)
+		super(FileSession, self).__init__(acenv,ID)
 
 	def exists(self,id):
 		return False
@@ -40,7 +41,7 @@ class FileSession(Session):
 		return os.path.join(self.sessDir, self.id)
 
 	def save(self):
-		#log.info("Saving session")
+		print("Saving session")
 		if not self.modified:
 			#log.info("Session is not modified")
 			return

@@ -23,7 +23,6 @@
 from xml.sax import make_parser, handler
 from xml.sax.saxutils import escape,unescape
 from ACR.errors import Error
-from ACR.utils.generations import Object,List
 import re
 from datetime import datetime
 
@@ -55,33 +54,15 @@ def unescapeQuotes(s):
 	"""
 	return unescape(s,unescapeDict)
 
-def str2obj(s):
-	"""
-	Converts string to an object.
-	input: string
-	returns: object which was converted or the same string's object representation as in input
-	"""
-	r=s.strip().lower()
-	if r=="true" or r=="t":
-		return True
-	elif r=="false" or r=="f":
-		return False
-	elif r=="none":
-		return None
-	#TODO is that correct?
-	return s
-
-def serialize(value,doEscape=False):
-	typev=type(value)
-	if typev is str:
-		sI=value
-		if doEscape:
-			sI=escape(sI)
-		return sI
-	elif typev is datetime:
-		return value.strftime("%A, %d %B %Y, %X")
-	else:
-		return str(value)
+#def serialize(value,doEscape=False):
+#	typev=type(value)
+#	if typev is str:
+#		sI=value
+#		return sI
+#	elif typev is datetime:
+#		return value.strftime("%A, %d %B %Y, %X")
+#	else:
+#		return str(value)
 
 #TO-C
 def tree2xml(root,esc=False):
@@ -94,9 +75,10 @@ def tree2xml(root,esc=False):
 		if type(node) is not tuple:
 			node=str(node)
 		if type(node) is str:
-			s=node.strip()
-			if s:
-				tab.append(s)
+			if not node.strip():
+				tab.append(" ")
+			else:
+				tab.append(node)
 			return
 		tab.append("<"+node[0])
 		if node[1]:
@@ -115,11 +97,11 @@ def tree2xml(root,esc=False):
 		nodetype=type(node)
 		if nodetype is dict:
 			tag="object"
-			if not name:
-				try:
-					name=node.pop("name")
-				except:
-					pass
+			#if not name:
+			#	try:
+			#		name=node.pop("name")
+			#	except:
+			#		pass
 			for i in node.keys():
 				if i[0]=='@':
 					attrs[i[1:]]=node.pop(i)
@@ -129,20 +111,15 @@ def tree2xml(root,esc=False):
 			if nodetype not in [str,unicode]:
 				node=str(node)
 			if name:
-				if esc:node=escape(node)
 				tab.append('<%s>%s</%s>'%(name,node,name))
 			else:
 				tab.append(node)
 			return
 		if name:
-			if esc:
-				name=escape(name)
 			attrs["name"]=name
 		tab.append("<"+tag)
 		if attrs and len(attrs)>0:
 			for i in attrs.iteritems():
-				if esc:
-					i=(i[0],escape(i[1]))
 				tab.append(" %s=\"%s\""%i)
 		nodes=[]
 		if not node:
@@ -152,31 +129,22 @@ def tree2xml(root,esc=False):
 			#print node
 			if type(node) is dict:
 				for i in node.iteritems():
-					typ=type(i[1])
-					if typ is str:
-						if esc:
-							content=escape(i[1])
-					else:
-						rec(i[1],i[0])
-						#tab.append(content)
+					rec(i[1],i[0])
 			if type(node) is list:
 				for i in node:
 					if type(i) in (dict,list):
 						rec(i)
 					else:
 						i=str(i)
-						if esc: i=escape(i)
 						tab.append("<item>%s</item>"%i)
 			tab.append("</"+tag+">")
 
 	#if D: log.info("Generating XML")
-	print root
-	print
 	if type(root) is dict:
 		tab=["<list>"]
 		#this is an exception. We want to have <object/>'s with name in root subnodes.
 		for i in root.iteritems():
-			if type(i[1]) is str:
+			if type(i[1]) in [str,unicode]:
 				tab.append('<object name="%s">%s</object>'%i)
 			else:
 				rec(i[1],i[0])
@@ -211,7 +179,7 @@ class Reader(handler.ContentHandler):
 		if len(a)>0:
 			attrs={}
 			for i in a.keys():
-				attrs[str(i)]=str2obj(a[i].strip().encode("utf-8"))
+				attrs[str(i)]=a[i].strip().encode("utf-8")
 		if not len(self.path):
 			self.root=ObjectTree([str(name).lower(),attrs,[]])
 			self.path.append(self.root)
@@ -221,12 +189,15 @@ class Reader(handler.ContentHandler):
 			self.path.append(l[2][-1])
 
 	def characters(self,data):
-		if len(data.strip())>0:
+		l=len(data.strip())
+		if l>0:
 			self.path[-1][2].append(data.encode("utf-8").replace("\t",""))
-		elif self.newlines and len(data)==1 and "\n" in data[0]:
+		elif self.newlines and len(data)==1 and data[0]=="\n":
 			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files
 		elif len(data)==1 and data[0] not in ["\t","\n"]:
+			self.path[-1][2].append(" ")
+		elif " " in data:
 			self.path[-1][2].append(" ")
 
 	def endElement(self,x):

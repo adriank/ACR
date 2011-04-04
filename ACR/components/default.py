@@ -25,13 +25,9 @@ class Default(Component):
 	def generate(self, env,config):
 		D=env.doDebug
 		if D: env.debug("START default:generation with %s", config)
-		#o=Object()
-		#if config.has_key("output") and config["output"]:
-		#	o.set(replaceVars(env, config["string"],escape))
-		#else:
-		#	o.set(replaceVars(env, config["string"]).replace("&","&amp;"))
-		#	o._doFn=False
 		ret=replaceVars(env, config["string"])
+		if type(ret) is list:
+			ret="".join(map(str,ret))
 		if D: env.debug("END default component generation with: '%s...'", ret)
 		return ret
 

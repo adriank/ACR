@@ -10,8 +10,10 @@
 # !!!NOT THREAD SAFE!!!
 #TODO thread safety!
 import sys
+import re
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree
+from ACR.utils.xmlextras import escape, unescape
 
 class ProgrammingError(Exception):
 	pass
@@ -48,7 +50,7 @@ class symbol_base(object):
 			return (self.id[1:-1], self.value)
 		elif self.id == "(literal)":
 			fstLetter=self.value[0]
-			if fstLetter is "'":
+			if fstLetter in ["'","\""]:
 				return self.value[1:-1]
 			elif fstLetter.isdigit():
 				try:
@@ -170,6 +172,7 @@ symbol("(literal)").nud=lambda self: self
 symbol("(end)")
 symbol(")")
 
+symbol("@")
 @method(symbol("."))
 def led(self, left):
 	attr=False
@@ -179,7 +182,7 @@ def led(self, left):
 	if token.id is "@":
 		attr=True
 		advance()
-	if token.id not in ["(name)","*"]:
+	if token.id not in ["(name)","*" ]:
 		raise SyntaxError("Expected an attribute name.")
 	self.first=left
 	if attr:
@@ -210,7 +213,8 @@ def led(self, left):
 	advance("]")
 	return self
 
-symbol(")"); symbol(",")
+symbol(")")
+symbol(",")
 
 #this is for built-in functions
 @method(symbol("("))
@@ -227,7 +231,7 @@ def led(self, left):
 	advance(")")
 	return self
 
-symbol(":");
+symbol(":")
 symbol("=")
 
 # constants
@@ -432,19 +436,22 @@ class Tree(object):
 			elif op=="<=":
 				return exe(node[1]) <= exe(node[2])
 			elif op=="not":
+				#if D: acenv.info("doing not '%s'",)
 				return not exe(node[1])
 			elif op=="in":
+				#if D: acenv.info("doing '%s' in '%s'",fst,snd)
 				return exe(node[1]) in exe(node[2])
 			elif op=="not in":
 				return exe(node[1]) not in exe(node[2])
-			elif op=="is" or op=="is not":
+			elif op in ["is","is not"]:
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
 				if type(fst) is str or type(snd) is str:
-					if D: acenv.debug("doing string comparison '%s'=='%s'",fst,snd)
+					if D: acenv.info("doing string comparison '%s'=='%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
+					if D: acenv.info("doing comparison '%s' is '%s'",fst,snd)
 					ret=fst is snd
 				if op=="is not":
 					return not ret
@@ -509,9 +516,14 @@ class Tree(object):
 						return nodeList
 					second=exe(node[2])
 					if type(first) in [list,tuple,str]:
-						return first[int(second)]
+						if type(second) is int or second.isdigit():
+							return first[int(second)]
+						return filter(None,exe((".",first,second)))
 					else:
-						return first[second]
+						try:
+							return first[second]
+						except:
+							return None
 				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="(":
 				""" The built-in functions """
@@ -536,10 +548,18 @@ class Tree(object):
 					return float(args)
 				elif fnName=="str":
 					return str(args)
+				elif fnName=="len":
+					return len(args)
 				elif fnName=="type":
 					return type(args)
 				elif fnName=="round":
 					return round(*args)
+				elif fnName=="escape":
+					return escape(args)
+				elif fnName=="unescape":
+					return unescape(args)
+				elif fnName=="replace":
+					return re.sub(args[1],args[2],args[0])
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

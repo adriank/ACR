@@ -21,9 +21,8 @@ from ACR.utils.xmlextras import *
 from ACR import acconfig
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,prepareVars,typesMap
+from ACR.utils import getStorage,prepareVars,typesMap,str2obj
 from ACR.utils.interpreter import make_tree
-from ACR.components import Object, List
 import os,re
 
 NODE="node"
@@ -70,7 +69,7 @@ class View(object):
 		#All "static" computations should be here. Don't do it inside handle!
 		#setting immutable because of setter
 		self.immutable=False
-		self.name="/".join(name)
+		self.name=".".join(name)
 		self.app=app
 		self.path=os.path.join(app.viewsPath,*name)+".xml"
 		#try:
@@ -129,13 +128,15 @@ class View(object):
 			self.output["format"]=output[0][1]["format"]
 		except: pass
 		try:
-			self.output["xsltfile"]=output[0][1]["xsltfile"]
+			self.output["xsltfile"]=str2obj(output[0][1]["xsltfile"])
+		except: pass
+		try:
+			self.output["xslt-force-reload"]=str2obj(output[0][1]["xslt-force-reload"])
 		except: pass
 		try:
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
-		print self.output
 		# TODO check if it is correct
 		## output inheritance
 		#if self.parent and self.parent.outputFormat:
@@ -235,6 +236,7 @@ class View(object):
 			# positions the action in the list of actions
 			before=attrs.get("before")
 			after=attrs.get("after")
+			#TODO this is nowhere near clearness. Need to write reference on inheritance regarding before/after and then implement it here
 			parentPos=findAction(ret,o["name"])
 			if before:
 				if before=='*':
@@ -256,6 +258,7 @@ class View(object):
 						pass
 			else:
 				if parentPos:
+					print "WARNING: action %s overwritten"%(o["name"])
 					ret.pop(parentPos)
 				ret.append(o)
 		return ret
@@ -294,7 +297,7 @@ class View(object):
 		inputSchemas=self.inputSchemas
 		if D: acenv.debug("inputSchemas are: %s",inputSchemas)
 		if not inputSchemas or not len(inputSchemas):
-			if D: acenv.debug("list of inputs is empty. Returning 'True'.")
+			if D: acenv.debug("END View:fillInputs with: list of inputs is empty")
 			return True
 		list=acenv.inputs
 		if D: acenv.debug("inputs are: %s",list)
@@ -337,7 +340,6 @@ class View(object):
 						getStorage(acenv,ns or "rs")[name]=default.execute(acenv)
 				continue
 			component=self.app.getComponent(action["component"])
-			#object or list
 			generation=component.generate(acenv,action["config"])
 			#if not generation:
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
@@ -352,14 +354,8 @@ class View(object):
 				if D: acenv.info("Executing SET=%s",action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
-		try:
-			acenv.output["format"]=self.output["format"]
-		except:
-			pass
-		try:
-			acenv.output["xsltfile"]=self.output["xsltfile"]
-		except:
-			pass
+		if acenv.output:
+			acenv.output.update(self.output)
 
 	def isUpToDate(self):
 		return (self.parent and self.parent.isUpToDate() or True) and self.timestamp >= os.stat(self.path).st_mtime

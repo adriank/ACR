@@ -9,6 +9,7 @@ class FakeEnv(object):
 	requestStorage={
 		"test":{
 			"_id":1,
+			"name":"aaa",
 			"o":{
 				"_id":2
 			},

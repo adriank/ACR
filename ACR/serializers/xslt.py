@@ -10,19 +10,19 @@ except:
 	raise Error("libxsltError","libxslt not installed")
 
 XSLTCache={}
-
-def transform(xml,xslt):
+name="ObjectML+libxslt"
+def transform(xml,xslt,forceReload=True):
 	try:
 		doc=libxml2.parseDoc(xml)
 	except Exception,e:
 		return "XML parsing Error."
-	if not XSLTCache.has_key(xslt):
+	if forceReload or not XSLTCache.has_key(xslt):
 		try:
 			#TODO implement checking for change of *ALL* xslt files
 			XSLTCache[xslt]=libxslt.parseStylesheetFile(xslt)
 	#		raise str(dir(acconfig.XSLTCache))
 		except Exception,e:
-			return "XSLT parsing Error."
+			return "XSLT parsing Error: %s"%e
 	r=XSLTCache[xslt].applyStylesheet(doc, None)
 	ret=r.serialize()
 	doc.freeDoc()
@@ -30,11 +30,5 @@ def transform(xml,xslt):
 	return ret
 
 def serialize(env):
-	fragments=[]
-	for i in env.generations.values():
-		fragments.append(tree2xml(i))
-	xslt=""
-	if env.output["xsltfile"]:
-		xslt="""<?xml-stylesheet type="text/xsl" href="/xslt/%s"?>\n"""%(env.output["xsltfile"])
-	#TODO allow one-object output
-	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%("".join(fragments)),os.path.join(env.app.appDir,"static/xslt",env.output["xsltfile"]))
+	xml=tree2xml(env.generations,True)
+	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%(xml),os.path.join(env.app.appDir,"static/xslt",env.output["xsltfile"]),env.output.get("xslt-force-reload"))

@@ -70,7 +70,7 @@ def replaceVars(env,l,fn=None):
 		if D: env.debug("END replaceVars with: %s","".join(ret))
 		return "".join(ret)
 	except TypeError,e:
-		if D: env.error("END replaceVars with TypeError: %s",ret)
+		if D: env.error("END replaceVars with TypeError: %s; returning %s",e,ret)
 		return ret
 
 def prepareVars(s):
@@ -106,11 +106,28 @@ def generateID(secret=None):
 	key=md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
 	return key
 
+
+def str2obj(s):
+	"""
+		Converts string to an object.
+		input: string
+		returns: object which was converted or the same string's object representation as in input
+	"""
+	r=s.strip().lower()
+	if r in ["true","t","y","yes"]:
+		return True
+	elif r in ["false","f","no"]:
+		return False
+	elif r in ["none","nil","null"]:
+		return None
+	return s
+
 from ACR.utils import types
 typesMap={
 	"default":types.Default,
 	"text":types.Text,
 	"xml":types.Default,
+	"html":types.Default,
 	"email":types.Email,
 	"number":types.Number,
 	"empty":types.Empty,

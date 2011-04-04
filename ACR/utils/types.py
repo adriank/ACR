@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.utils.xmlextras import unescapeQuotes
-from ACR.utils.generations import Object,List
 from ACR.errors import Error
 import re
 
@@ -65,10 +64,10 @@ class Default(object):
 		return True
 
 	def _prepareValue(self,value):
-		return Object(value)
+		return value
 
 	def __repr__(self):
-		return type(self).__name__+"Type"
+		return type(self).__name__+"Type(default="+str(self.__dict__.get("default","ErrorOnInvalid"))+")"
 
 class XML(Default):
 	pass
@@ -80,7 +79,7 @@ class Text(Default):
 		return True
 
 	def _prepareValue(self,value):
-		return Object(unescapeQuotes(value.strip()))
+		return unescapeQuotes(value.strip())
 
 class Number(Default):
 	def validate(self,value,config=None):
@@ -89,7 +88,7 @@ class Number(Default):
 		return True
 
 	def _prepareValue(self,value):
-		return Object(int(value))
+		return int(value)
 
 class Email(Default):
 	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
@@ -140,7 +139,7 @@ class List(Default):
 		return True
 
 	def _prepareValue(self,value):
-		return List(map(lambda x: Object(x), RE_DELIMITER.split(value)))
+		return map(lambda x: Object(x), RE_DELIMITER.split(value))
 
 class CSV(List):
 	RE_DELIMITER=re.compile("\s*,\s*")

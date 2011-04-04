@@ -44,21 +44,19 @@ def computeMIME(mime,agent):
 	if not agent:
 		return mime[0]
 	if "text/html" in mime or "*/*" in mime:
-		if ((agent.find("translat")==-1) and re.search("Gecko|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1):
+		if ((agent.find("translat")==-1) and re.search("Firefox|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1 and agent.find("rekonq")==-1):
 			return "application/xml"
 		else:
 			return "text/html"
 	elif "application/json" in mime and len(mime)==1:
 		return "application/json"
+	return mime[0]
 
 def application(env,start_response):
 	t=time.time()
 	response=[]
-	if acconfig.appsDir:
-		path=os.path.join(acconfig.appsDir,env["HTTP_HOST"].split(':')[0])
-	else:
-		path=acconfig.appDir
 	D=False
+	path=env["HTTP_HOST"]
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app
@@ -81,7 +79,7 @@ def application(env,start_response):
 	if env.get('REQUEST_METHOD',"").lower()=="post":
 		post=HTTP.computePOST(env)
 	acenv.posts=post
-	acenv.URLpath=filter(lambda x: not str.isspace(x) and len(x)!=0,env['PATH_INFO'].split("/"))
+	acenv.URLpath=filter(lambda x: len(x)!=0 or str.isspace(x), env['PATH_INFO'].split("/"))
 	output=app.generate(acenv)
 	headers=acenv.outputHeaders
 	headers.append(("Content-Type",acenv.output["format"]))
@@ -91,7 +89,13 @@ def application(env,start_response):
 	start_response(status, headers)
 	if not acenv.doRedirect:
 		response.append(output)
-	if D: print round((time.time()-t)*1000,2)
+	if acenv.doProfiling:
+		whole=round((time.time()-t)*1000,2)
+		headerstime=whole-acenv.profiler["alltime"]
+		print("Time spent on parsing HTTP headers and building objects: %sms"%(headerstime))
+		print("Time spent on Python and waitings: %sms"%(headerstime+acenv.profiler["pytime"]))
+		print "Request satisfied in %sms"%whole
+		print "WARNING! Python time includes some waitings related to one-threaded nature of WSGIRef. These waitings are not existent in deployment instalations due to multiprocessing/threading/asynchrony, but are stable through multiple runs. Use above timings to optimize your views. Measure time of 'HelloWorld!' app and substract the values from the results.\nRun the tests multiple times and get the mean to get best results!"
 	#h = hpy()
 	##print h.heap()
 	return response

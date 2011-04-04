@@ -24,6 +24,7 @@ from ACR import acconfig
 from ACR.utils import HTTP
 from datetime import datetime, timedelta
 from ACR.utils.hashcompat import md5_constructor
+import time
 try:
 	import cPickle as pickle
 except ImportError:
@@ -37,17 +38,17 @@ MAX_SESSION_KEY = 18446744073709551616L
 
 #try changing object to dict
 class Session(object):
-	def __init__(self, acenv, ID=None):
+	def __init__(self, acenv, ID=False):
 		if self.D: acenv.info("START Session.__init__ with id=%s",ID)
-		#log.debug("Created session object with ID=%s",ID)
 		self.modified=False
 		self.delCookie=False
 		self.data={}
-		self.ID=ID or False
+		self.env=acenv
+		self.ID=ID
 		if self.ID:
 			self.load()
 		else:
-			self.create(acenv)
+			self.create()
 
 	def __contains__(self, key):
 		return key in self.data
@@ -99,17 +100,16 @@ class Session(object):
 		except:
 			return {}
 
-	def create(self,acenv):
-		#log.debug("executed, function with no parameters")
+	def create(self):
+		print("executed, function with no parameters")
 		self.ID=self.generateID()
-		HTTP.setCookie(acenv,{"name":"SESS", "value":self.ID, "path":"/"})
+		HTTP.setCookie(self.env,{"name":"SESS", "value":self.ID, "path":"/"})
 
-	def deleteCookie(self,acenv):
+	def deleteCookie(self):
 		#log.info("Deleting session cookie")
-		import time
 		t=time.time()-10000
-		log.debug("Session cookie deleted by setting date to %s",t)
-		HTTP.setCookie(acenv,{"name":"SESS", "value":"", "date":t})
+		#log.debug("Session cookie deleted by setting date to %s",t)
+		HTTP.setCookie(self.env,{"name":"SESS", "value":"", "date":t})
 		return
 
 	def save(self, must_create=False):
