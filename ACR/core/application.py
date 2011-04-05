@@ -155,8 +155,7 @@ class Application(object):
 			if self.deploymentMode or o.isUpToDate():
 				#if D: acenv.info("View '%s' taken from cache"%("/".join(URLpath[:i])))
 				return (o, URLpath[i:])
-		#if D and type(o) is View and not o.isUpToDate(): acenv.info("View file changed")
-		#elif D: acenv.info("View is not cached")
+		#elif D: acenv.info("View %s is not cached","/".join(URLpath))
 		i=0
 		viewPath=pjoin(self.viewsPath, *URLpath[:i])
 		#if D: acenv.debug("Searching from '%s'"%(viewPath))
