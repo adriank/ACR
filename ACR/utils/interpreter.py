@@ -550,7 +550,12 @@ class Tree(object):
 				elif fnName=="len":
 					return len(args)
 				elif fnName=="type":
-					return type(args)
+					ret=type(args).__name__
+					if ret=="list":
+						return "array"
+					if ret=="dict":
+						return "object"
+					return ret
 				elif fnName=="round":
 					return round(*args)
 				elif fnName=="escape":
