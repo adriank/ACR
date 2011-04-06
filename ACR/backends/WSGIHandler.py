@@ -26,18 +26,11 @@ from ACR.core.environment import Environment
 from ACR.core.application import Application
 from cStringIO import StringIO
 #import cgi
-#from guppy import hpy
+try:
+	from guppy import hpy
+except:
+	pass
 
-#logging.basicConfig()
-#log=logging.getLogger("ACR.WSGIHandler")
-#logStream=StringIO()
-#handler=logging.StreamHandler()#(sys.stdout)#(strm=logStream)
-#handler.setFormatter(logging.Formatter('<item origin="%(name)s.%(funcName)s" line="%(lineno)d" level="%(levelname)s" file="%(filename)s"><message>%(message)s</message></item>'))
-#log.addHandler(handler)
-#logging.logThreads=0
-#logging.logProcesses=0
-#logging.logMultiprocessing=0
-#log.setLevel(logging.ERROR)
 APP_CACHE={}
 
 def computeMIME(mime,agent):
@@ -101,7 +94,7 @@ def application(env,start_response):
 		print "Request satisfied in %sms"%whole
 		print "WARNING! Python time includes some waitings related to one-threaded nature of WSGIRef. These waitings are not existent in deployment instalations due to multiprocessing/threading/asynchrony, but are stable through multiple runs. Use above timings to optimize your views. Measure time of 'HelloWorld!' app and substract the values from the results.\nRun the tests multiple times and get the mean to get best results!"
 	#h = hpy()
-	##print h.heap()
+	#print h.heap()
 	return response
 
 try:
