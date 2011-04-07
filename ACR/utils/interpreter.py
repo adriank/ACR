@@ -414,7 +414,11 @@ class Tree(object):
 				return exe(node[1]) and exe(node[2])
 			elif op=="+":
 				if len(node)>2:
-					return exe(node[1]) + exe(node[2])
+					left=exe(node[1])
+					if type(left) is dict:
+						left.update(exe(node[2]))
+						return left
+					return left + exe(node[2])
 				else:
 					return exe(node[1])
 			elif op=="-":
@@ -558,6 +562,8 @@ class Tree(object):
 					return ret
 				elif fnName=="round":
 					return round(*args)
+				elif fnName=="count":
+					return args.count()
 				elif fnName=="escape":
 					return escape(args)
 				elif fnName=="unescape":
