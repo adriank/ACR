@@ -86,6 +86,7 @@ class DataBase(Component):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
 
 	def none2null(self,s):
+		s=str(s)
 		if s.lower()=="none":
 			return "null"
 		return s

@@ -57,14 +57,14 @@ def replaceVars(env,l,fn=None):
 			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
 			v=dicttree.get(storage,i[1],acenv=env)
-			if doFN is not None:
-				v=doFN(v)
+			if fn is not None:
+				v=fn(v)
 			if D: env.debug("adding '%s' to the end of string",v)
 			ret.append(v)
 		else:
 			if D: env.debug("adding '%s' to the end of string",i)
-			if doFN is not None:
-				i=doFN(i)
+			if fn is not None:
+				i=fn(i)
 			ret.append(i)
 	if len(ret) is 1:
 		if D: env.debug("END replaceVars with: %s",ret[0])
