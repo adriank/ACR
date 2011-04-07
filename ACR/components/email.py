@@ -18,13 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR import acconfig
-from ACR.utils import mail,replaceVars,prepareVars,List,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
+from ACR.utils import mail,replaceVars,prepareVars,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
 from ACR.components import *
 from ACR.errors import *
 import os
 import re
 
-EMPTY_OBJECT=Object()
 
 class Email(Component):
 	def generate(self,acenv,conf):
@@ -33,22 +32,19 @@ class Email(Component):
 		params=conf["params"]
 		for h in params:
 			headers[h]=replaceVars(acenv,params[h])
-		##print "headers"
+		#print "headers"
 		recipients=headers["To"]
-		##print headers
+		#print headers
 		content=replaceVars(acenv,content)
 		#recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
 		typ=type(recipients)
-		if typ is List:
-			recipients=recipients._value
-			typ=list
 		if typ is list:
 			for i in recipients:
 				headers["To"]=i
 				mail.send(headers,content)
 		elif typ is str:
 			mail.send(headers,content)
-		return EMPTY_OBJECT
+		return {"status":"ok"}
 
 	def parseAction(self,conf):
 		try:
