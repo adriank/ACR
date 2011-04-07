@@ -46,10 +46,10 @@ class Mongo(Component):
 			where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
 		except (TypeError,ValueError),e:
 			raise Error("JSONError",replaceVars(acenv,params["where"]).replace('"',"'"))
-		try:
-			o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
-		except (TypeError),e:
-			raise Error("JSONError",replaceVars(acenv,config["content"]))
+		#try:
+		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		#except (TypeError),e:
+			#raise Error("JSONError",replaceVars(acenv,config["content"]))
 		coll.update(where,o)
 
 	def insert(self,acenv,config):
