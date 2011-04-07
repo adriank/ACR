@@ -44,8 +44,8 @@ class FileSystem(Component):
 			all=os.listdir(fullpath)
 		except OSError,e:
 			return {
-				"status":"error",
-				"error":e
+				"@status":"error",
+				"@error":e
 			}
 		all.sort()
 		if _filter:
@@ -61,24 +61,24 @@ class FileSystem(Component):
 		ret=[]
 		if len(files)==0:
 			return {
-				"status":"error",
-				"error":"dirEmpty"
+				"@status":"error",
+				"@error":"dirEmpty"
 			}
 		path=conf["path"]
 		if dirs:
 			for i in dirs:
 				ret.append({
-					"name":i,
-					"path":path,
-					"type":"dir"
+					"@name":i,
+					"@path":path,
+					"@type":"dir"
 				})
 		if files and not onlyDirs:
 			for i in files:
 				#TODO change type to mimetype
 				ret.append({
-					"name":i,
-					"path":path,
-					"type":"file"
+					"@name":i,
+					"@path":path,
+					"@type":"file"
 				})
 		return ret
 
@@ -91,8 +91,8 @@ class FileSystem(Component):
 		#path=os.path.join(self.abspath+conf["path"])
 		if not update and os.path.isfile(conf["fullpath"]):
 			return {
-				"status":"error",
-				"error":"fileExists"
+				"@status":"error",
+				"@error":"fileExists"
 			}
 		# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c']
 		path=os.path.normpath(conf["path"]).split("/")[:-1]
@@ -107,8 +107,8 @@ class FileSystem(Component):
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except (IOError,OSError) ,e:
 			return {
-				"status":"error",
-				"error":e
+				"@status":"error",
+				"@error":e
 			}
 		#FIXME - else or finally or smth else?
 		else:
@@ -128,7 +128,7 @@ class FileSystem(Component):
 			raise Error("IOError", 'cannot open %s'%(e))
 		else:
 			file.close()
-		return {"status":"ok"}
+		return {"@status":"ok"}
 
 	def delete(self,acenv,conf):
 		D=acenv.doDebug
@@ -138,7 +138,7 @@ class FileSystem(Component):
 				os.remove(path)
 			else:
 				shutil.rmtree(path)
-		return {"status":"ok"}
+		return {"@status":"ok"}
 
 	def copy(self,acenv,conf):
 		#D=acenv.doDebug
@@ -146,14 +146,14 @@ class FileSystem(Component):
 		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
 		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.copyfile(copyFrom, copyTo)
-		return {"status":"ok"}
+		return {"@status":"ok"}
 
 	def move(self,acenv,conf):
 		copyFrom=os.path.join(self.abspath,*replaceVars(acenv,conf["from"]).split("/"))
 		copyTo=os.path.join(self.abspath,*replaceVars(acenv,conf["to"]).split("/"))
 		if os.path.isfile(copyFrom) and not os.path.isfile(copyTo):
 			shutil.move(copyFrom, copyTo)
-		return {"status":"ok"}
+		return {"@status":"ok"}
 
 	def exists(self,acenv,conf):
 		return os.path.exists(conf["fullpath"])
@@ -165,8 +165,8 @@ class FileSystem(Component):
 			content=file.read()
 		except IOError,e:
 			return {
-				"status":"error",
-				"error":e
+				"@status":"error",
+				"@error":e
 			}
 			#print 'cannot open', conf["path"]
 		else:
