@@ -22,8 +22,7 @@
 from ACR.session import Session
 from ACR.errors import Error
 import pymongo
-import time
-
+from ACR.utils import now
 """
 	Session is stored in Mongo as object where:
 	-
@@ -44,7 +43,7 @@ class MongoSession(Session):
 			self.deleteCookie()
 		if not self.data.has_key("_id"):
 			self.data["_id"]=self.ID
-		self["last_login"]=time.time()
+		self["last_login"]=now()
 		if self.P: t=time.time()
 		self.sessCollection.save(self.data)
 		if self.P:

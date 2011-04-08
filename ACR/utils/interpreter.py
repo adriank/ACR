@@ -597,8 +597,8 @@ class Tree(object):
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
 				elif fnName=="now":
-					import time
-					return time.time()
+					from ACR.utils import now
+					return now()
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

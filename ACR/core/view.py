@@ -27,6 +27,9 @@ import os,re
 
 NODE="node"
 SET="set"
+APPEND="append"
+INSERT="insert"
+WRITE_COMMANDS=[SET,APPEND,INSERT]
 COMMAND="command"
 INHERITS="inherits"
 IMPORT="import"
@@ -92,7 +95,7 @@ class View(object):
 		self.namespaces=ns
 		#checks whether view inherits from another view
 		try:
-			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x),attrs["inherits"].split("/")),True)[0]
+			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
 		except:
@@ -202,7 +205,7 @@ class View(object):
 			if not name:
 				return None
 			i=len(actions)-1
-			if i<=0:
+			if i<0:
 				return None
 			try:
 				while not actions[i]["name"]==name:
@@ -237,30 +240,32 @@ class View(object):
 			before=attrs.get("before")
 			after=attrs.get("after")
 			#TODO this is nowhere near clearness. Need to write reference on inheritance regarding before/after and then implement it here
-			parentPos=findAction(ret,o["name"])
+			posInParent=None
+			if o["type"]==NODE:
+				pos=findAction(ret,o["name"])
+				if pos>-1:
+					print "WARNING: node %s overwritten"%(o["name"])
+					ret.pop(pos)
 			if before:
 				if before=='*':
 					ret.insert(0, o)
-					ret.pop(parentPos)
 				else:
 					try:
 						ret.insert(findAction(ret,before),o)
 					except:
-						pass
+						ret.append(o)
 			elif after:
 				if after=='*':
 					ret.append(o)
-					ret.pop(parentPos)
 				else:
 					try:
 						ret.insert(findAction(ret,after)+1,o)
 					except:
-						pass
+						ret.append(o)
 			else:
-				if parentPos:
-					print "WARNING: action %s overwritten"%(o["name"])
-					ret.pop(parentPos)
 				ret.append(o)
+		#for i in ret:
+		#	print i["name"]
 		return ret
 
 	def fillPosts(self,acenv):

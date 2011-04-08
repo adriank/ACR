@@ -7,7 +7,6 @@ from ACR.errors import *
 from ACR.utils.hashcompat import md5_constructor
 from ACR.utils.xmlextras import escapeQuotes
 from ACR.utils import dicttree
-#from ACR.utils.interpreter import make_tree
 from ACR import acconfig
 
 if hasattr(random, 'SystemRandom'):
@@ -109,6 +108,8 @@ def generateID(secret=None):
 	key=md5_constructor("%s%s%s%s" % (randrange(0, 184467440737096L), 144, time.time(), secret)).hexdigest()
 	return key
 
+def now():
+	return datetime.now()
 
 def str2obj(s):
 	"""
