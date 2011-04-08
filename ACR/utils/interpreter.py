@@ -82,11 +82,14 @@ class symbol_base(object):
 					return ret
 				for j in i:
 					try:
+						print j
 						t_append(j.getTree())
 					except:
+						print j
 						t_append(j)
 				if self.id is "(":
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
+				#TODO check if this is ever used?
 				if self.id is "[":
 					return t
 				#ret_append(t)
@@ -173,6 +176,11 @@ symbol("(end)")
 symbol(")")
 
 symbol("@")
+@method(symbol("@"))
+def nud(self):
+	self.id="(current)"
+	return self
+
 @method(symbol("."))
 def led(self, left):
 	attr=False
@@ -204,6 +212,7 @@ def nud(self):
 		self.first=token.value
 		advance()
 	return self
+
 symbol("]")
 
 @method(symbol("["))
@@ -467,10 +476,14 @@ class Tree(object):
 					evaluatePath()
 			elif op=="(storage)":
 				return getStorage(acenv,node[1])
+			elif op=="(current)":
+				return self.current
 			elif op=="name":
 				return node[1]
 			elif op==".":
 				fst=exe(node[1])
+				if node[2][0]=="*":
+					return type(fst) is list and fst or [fst]
 				snd=exe(node[2])
 				if type(fst) is list:
 					ret=[]
@@ -508,11 +521,23 @@ class Tree(object):
 						nodeList=[]
 						nodeList_append=nodeList.append
 						for i in first:
-							try:
-								if exe((s[0],i[s[1]],s[2])):
-									nodeList_append(i)
-							except:
-								pass
+							self.current=i
+							#TODO move it to tree building phase
+							if type(s[1]) is tuple and s[1][0]=="name":
+								s=(s[0],s[1][1],s[2])
+							if type(s[1]) is str:
+								try:
+									if exe((s[0],i[s[1]],s[2])):
+										nodeList_append(i)
+								except:
+									pass
+							else:
+								try:
+									#TODO optimize an event when @ is not used. exe(s[1]) can be cached
+									if exe((s[0],exe(s[1]),exe(s[2]))):
+										nodeList_append(i)
+								except:
+									pass
 						return nodeList
 					second=exe(node[2])
 					if type(first) in [list,tuple,str]:
