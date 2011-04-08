@@ -368,9 +368,9 @@ class View(object):
 			if not self.parent.isUpToDate():
 				return False
 			#TODO needs new attribute storing parsing time
-			#if self.timestamp < self.parent.timestamp:
+			if self.timestamp < self.parent.timestamp:
 			#	print "parent timestamp",self.timestamp," ",self.parent.timestamp
-			#	return False
+				return False
 		if self.timestamp < os.stat(self.path).st_mtime:
 			return False
 		return True

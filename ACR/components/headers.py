@@ -25,7 +25,7 @@ from ACR.utils import replaceVars,HTTP
 class Headers(Component):
 	def setcookie(self,env,config):
 		#if config[1]["action"].lower()=="set":
-		d={"name":replaceVars(env,config["name"]), "value":replaceVars(env,config["value"])}
+		d={"name":replaceVars(env,config["name"],fn=str), "value":replaceVars(env,config["value"])}
 		if config.has_key("path"):
 			d["path"]=replaceVars(env,config["path"])
 		HTTP.setCookie(env,d)
@@ -34,7 +34,7 @@ class Headers(Component):
 	def redirect(self,env,config):
 		if env.doDebug: env.info("Requested redirect to <a href=\"#\">%s</a>"%(replaceVars(env,config["location"])))
 		env.doRedirect=True
-		env.outputHeaders.append(("Location",replaceVars(env,config["location"])))
+		env.outputHeaders.append(("Location",replaceVars(env,config["location"],fn=str)))
 		return {}
 
 	def generate(self,env,config):
