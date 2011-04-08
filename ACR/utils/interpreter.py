@@ -82,10 +82,8 @@ class symbol_base(object):
 					return ret
 				for j in i:
 					try:
-						print j
 						t_append(j.getTree())
 					except:
-						print j
 						t_append(j)
 				if self.id is "(":
 					return (self.id,ret[1],len(t) is 1 and t[0] or t)
@@ -598,6 +596,9 @@ class Tree(object):
 					return unescape(args)
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
+				elif fnName=="now":
+					import time
+					return time.time()
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:
