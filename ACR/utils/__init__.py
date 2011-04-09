@@ -14,7 +14,6 @@ if hasattr(random, 'SystemRandom'):
 else:
 	randrange=random.randrange
 
-PREFIX_DELIMITER="::"
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
 RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
 
@@ -85,12 +84,8 @@ def prepareVars(s):
 		while True:
 			ret.append(splitted.pop(0))
 			var=vars.pop(0)
-			try:
-				storageName,path=var.split(PREFIX_DELIMITER)
-			except ValueError:
-				storageName="rs"
-				path=var
-			path=path.split(".")
+			path=var.split(".")
+			storageName=path.pop(0) or "rs"
 			ret.append((storageName,path))
 	except:
 		pass
