@@ -35,7 +35,7 @@ class Err(Exception):
 		return s
 
 	def get(self):
-		return ("object",{"type":"error","name":self.name},[self.error])
+		return ("object",{"type":"error","name":"acr"+self.name},[self.error])
 
 class AbstractClass(Exception):
 	def __init__(self, message=""):

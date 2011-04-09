@@ -80,17 +80,17 @@ def prepareVars(s):
 	splitted=RE_PATH_split.split(s)
 	vars=RE_PATH.findall(s)
 	ret=[]
-	try:
-		while True:
-			ret.append(splitted.pop(0))
-			var=vars.pop(0)
-			path=var.split(".")
-			storageName=path.pop(0) or "rs"
-			if storageName not in ["rs","ss"]:
-				raise Exception("Wrong storage name in %s"%var)
-			ret.append((storageName,path))
-	except:
-		pass
+	#try:
+	while True:
+		ret.append(splitted.pop(0))
+		var=vars.pop(0)
+		path=var.split(".")
+		storageName=path.pop(0) or "rs"
+		if storageName not in ["rs","ss"]:
+			raise Exception("Wrong storage name in $%s"%var)
+		ret.append((storageName,path))
+	#except:
+		#pass
 	if ret[0]=="":
 		ret.pop(0)
 	if ret and ret[-1]=="":

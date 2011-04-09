@@ -200,8 +200,7 @@ class Application(object):
 			view.generate(acenv)
 		except Error,e:
 			acenv.generations={
-				"error":{
-					"@name":"GlobalError",
+				"acr:globalError":{
 					"@error":e.name,
 					"@message":str(e)
 				}

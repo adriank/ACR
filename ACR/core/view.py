@@ -98,8 +98,10 @@ class View(object):
 			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
-		except:
+		except (IOError):
 			raise Error("ParentViewNotFound","View '%s' not found."%attrs["inherits"])
+		except Exception,e:
+			raise Error("ParentViewError",str(e))
 		inputSchemas=[]
 		conditions=[]
 		actions=[]
