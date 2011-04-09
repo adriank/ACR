@@ -50,7 +50,7 @@ class Mongo(Component):
 		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
 		#except (TypeError),e:
 			#raise Error("JSONError",replaceVars(acenv,config["content"]))
-		coll.update(where,o)
+		coll.update(where,o,safe=True)
 
 	def insert(self,acenv,config):
 		D=acenv.doDebug
@@ -59,8 +59,21 @@ class Mongo(Component):
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
 		if D: acenv.debug("doing %s",coll.insert)
-		id=coll.insert(o)
+		id=coll.insert(o,safe=True)
 		if D:acenv.debug("inserted:\n%s",o)
+		ret={"@id":id}
+		#leaving space for debugging and profiling info
+		return ret
+
+	def save(self,acenv,config):
+		D=acenv.doDebug
+		if D: acenv.debug("START Mongo.save with: %s", config)
+		params=config["params"]
+		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		if D: acenv.debug("doing %s",coll.insert)
+		id=coll.save(o,safe=True)
+		if D:acenv.debug("saved:\n%s",o)
 		ret={"@id":id}
 		#leaving space for debugging and profiling info
 		return ret

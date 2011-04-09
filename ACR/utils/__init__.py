@@ -86,6 +86,8 @@ def prepareVars(s):
 			var=vars.pop(0)
 			path=var.split(".")
 			storageName=path.pop(0) or "rs"
+			if storageName not in ["rs","ss"]:
+				raise Exception("Wrong storage name in %s"%var)
 			ret.append((storageName,path))
 	except:
 		pass
