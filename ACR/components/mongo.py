@@ -83,10 +83,11 @@ class Mongo(Component):
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		prototype=replaceVars(acenv,params.get("where", config["content"]))
+		print prototype
 		try:
 			p={"spec":json.loads(prototype,object_hook=object_hook)}
 		except TypeError,e:
-			raise Error("JSONError",e)
+			raise Error("JSONError",str(e))
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
 		if params.has_key("skip"):

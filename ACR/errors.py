@@ -25,6 +25,8 @@ You should
 
 class Err(Exception):
 	def __init__(self, name, msg=""):
+		if type(msg) is not str:
+			raise Exception("Message must be string, but is: %s"%type(msg))
 		self.message=msg
 		self.name=name
 

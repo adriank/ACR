@@ -202,7 +202,7 @@ class Application(object):
 			acenv.generations={
 				"acr:globalError":{
 					"@error":e.name,
-					"@message":str(e)
+					"@message":e
 				}
 			}
 			try:
