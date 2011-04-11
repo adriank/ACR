@@ -553,9 +553,11 @@ class Tree(object):
 							return None
 				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="(":
-				""" The built-in functions """
+				""" Built-in functions """
 				fnName=node[1][1]
-				args=exe(node[2])
+				try:
+					args=exe(node[2])
+				except: pass
 				if fnName=="sum":
 					if type(args) in NUM_TYPES:
 						return args
@@ -599,6 +601,11 @@ class Tree(object):
 				elif fnName=="now":
 					from ACR.utils import now
 					return now()
+				elif fnName=="toMils":
+					if args.utcoffset() is not None:
+						args=args-args.utcoffset()
+					import calendar
+					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsecond / 1000)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

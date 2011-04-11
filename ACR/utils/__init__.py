@@ -68,7 +68,7 @@ def replaceVars(env,l,fn=None):
 		if D: env.debug("END replaceVars with: %s",ret[0])
 		return ret[0]
 	try:
-		ret=map(lambda e: type(e) is unicode and str(e) or e,ret)
+		ret=map(lambda e: type(e) is unicode and e.encode("utf-8") or e,ret)
 		if D: env.debug("END replaceVars with: %s","".join(ret))
 		return "".join(ret)
 	except TypeError,e:

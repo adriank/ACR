@@ -17,20 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
 dbschema="asyncode"
 SECRET_KEY="MySecret"
 appDir=""
 appsDir=""
-
-logLevels={
-	'debug': logging.DEBUG,
-	'info': logging.INFO,
-	'warning': logging.WARNING,
-	'error': logging.ERROR,
-	'critical': logging.CRITICAL
-}
 
 MIMEmapper={
 	"text/html":"xslt",

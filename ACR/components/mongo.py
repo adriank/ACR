@@ -29,6 +29,7 @@ from pymongo.json_util import object_hook, default
 class Mongo(Component):
 	SERVER='localhost'
 	PORT=27017
+	DIRECTION="DESCENDING"
 	def __init__(self,config):
 		if not config:
 			config={}
@@ -43,11 +44,11 @@ class Mongo(Component):
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		try:
-			where=json.loads(replaceVars(acenv,params["where"]),object_hook=object_hook)
+			where=json.loads(replaceVars(acenv,params["where"],fn=str),object_hook=object_hook)
 		except (TypeError,ValueError),e:
-			raise Error("JSONError",replaceVars(acenv,params["where"]).replace('"',"'"))
+			raise Error("JSONError",replaceVars(acenv,params["where"],fn=str).replace('"',"'"))
 		#try:
-		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
 		#except (TypeError),e:
 			#raise Error("JSONError",replaceVars(acenv,config["content"]))
 		coll.update(where,o,safe=True)
@@ -57,7 +58,7 @@ class Mongo(Component):
 		if D: acenv.debug("START Mongo.insert with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.insert(o,safe=True)
 		if D:acenv.debug("inserted:\n%s",o)
@@ -70,7 +71,7 @@ class Mongo(Component):
 		if D: acenv.debug("START Mongo.save with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		o=json.loads(replaceVars(acenv,config["content"]),object_hook=object_hook)
+		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.save(o,safe=True)
 		if D:acenv.debug("saved:\n%s",o)
@@ -78,23 +79,35 @@ class Mongo(Component):
 		#leaving space for debugging and profiling info
 		return ret
 
-	def find(self,acenv,config):
+	def count(self,acenv,config):
+		return self.find(acenv,config,count=True)
+
+	def find(self,acenv,config,count=False):
 		P=acenv.doProfiling
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		prototype=replaceVars(acenv,params.get("where", config["content"]))
-		print prototype
+		prototype=replaceVars(acenv,params.get("where", config["content"]),fn=str)
 		try:
 			p={"spec":json.loads(prototype,object_hook=object_hook)}
 		except TypeError,e:
 			raise Error("JSONError",str(e))
+		for i in params:
+			if type(params[i]) is list:
+				params[i]=replaceVars(acenv,params[i])
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
 		if params.has_key("skip"):
 			p["skip"]=int(params["skip"])
 		if params.has_key("limit"):
 			p["limit"]=int(params["limit"])
+		if params.has_key("sort"):
+			dir=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
+			p["sort"]=[(params["sort"],dir)]
 		if P: t=time.time()
+		if count:
+			ret=coll.find(**p).count()
+			#if D: acenv.debug("")
+			return ret
 		ret=list(coll.find(**p))
 		if P:
 			acenv.profiler["dbtimer"]+=time.time()-t
