@@ -12,14 +12,17 @@ Additionally you can have following Python modules (if ACF can't load them, ther
 
 2. Installation
 
-Unpack package to a directory of your choice and run
-
+Unpack package to a directory of your choice.
 
 3. Running
 
 Execute:
 
 python asyncode.py -p <project_dir>
+
+or
+
+python asyncode.py -P <projects_dir>
 
 Your site will be available at http://localhost:9999/.
 
@@ -31,5 +34,4 @@ http://doc.asyncode.com/
 
 6. Support
 
-Commercial support is available by Asyncode Ltd. Check http://asyncode.com/support
-
+Commercial support is available by Asyncode Ltd. Check http://asyncode.com/
