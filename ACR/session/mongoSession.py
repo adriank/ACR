@@ -30,6 +30,7 @@ from ACR.utils import now
 
 class MongoSession(Session):
 	def __init__(self, acenv, ID=None):
+		#print "ID ",ID
 		self.D=acenv.doDebug
 		self.P=acenv.doProfiling
 		if self.D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",ID)
@@ -46,14 +47,17 @@ class MongoSession(Session):
 			self.data["_id"]=self.sessID
 		self["last_login"]=now()
 		if self.P: t=time.time()
+		#print "self.data", self.data
 		self.sessCollection.save(self.data)
 		if self.P:
 			self.env.profiler["dbtimer"]+=time.time()-t
 			self.env.profiler["dbcounter"]+=1
 
 	def load(self):
+		#print "load"
 		if self.P: t=time.time()
 		self.data=list(self.sessCollection.find({"_id":self.sessID}))[0]
+		#print self.data
 		if self.P:
 			self.env.profiler["dbtimer"]+=time.time()-t
 			self.env.profiler["dbcounter"]+=1

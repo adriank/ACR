@@ -45,7 +45,9 @@ class Session(object):
 		self.data={}
 		self.env=acenv
 		self.sessID=ID
+		#print "sessID ",self.sessID
 		if self.sessID:
+			#print self.load
 			self.load()
 		else:
 			self.create()
@@ -101,9 +103,9 @@ class Session(object):
 			return {}
 
 	def create(self):
-		print("executed, function with no parameters")
-		self.ID=self.generateID()
-		HTTP.setCookie(self.env,{"name":"SESS", "value":self.ID, "path":"/"})
+		#print("executed, function with no parameters")
+		self.sessID=self.generateID()
+		HTTP.setCookie(self.env,{"name":"SESS", "value":self.sessID, "path":"/"})
 
 	def deleteCookie(self):
 		#log.info("Deleting session cookie")

@@ -44,6 +44,7 @@ class User(Component):
 	ROLE="user"
 	APPROVED=False
 	MAIN=False
+
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
@@ -64,6 +65,7 @@ class User(Component):
 			if D: acenv.info("Setting session as:\n	%s",user)
 			user["ID"]=str(user.pop("_id"))
 			acenv.sessionStorage.data=user
+			#print "login sess data ",acenv.sessionStorage.data
 			return {"@status":"ok"}
 		else:
 			if D: acenv.error("Password is not correct")

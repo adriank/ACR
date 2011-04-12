@@ -193,7 +193,7 @@ class Application(object):
 			sessID=acenv.cookies[prefix]
 			try:
 				acenv.sessionStorage=sessionBackend(acenv,sessID)
-			except:
+			except IndexError:
 				sessID=None
 		try:
 			view, acenv.inputs=self.getView(acenv.URLpath)
