@@ -22,7 +22,7 @@ from ACR.utils import replaceVars,generateID
 from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
-from ACR.session.file import FileSession
+from ACR.session.mongoSession import MongoSession
 
 class User(Component):
 	#defaults
@@ -46,7 +46,7 @@ class User(Component):
 		if result['password']==md5_constructor(password).hexdigest():
 			if D: acenv.info("Password is correct")
 			if not acenv.sessionStorage:
-				acenv.sessionStorage=FileSession(acenv)
+				acenv.sessionStorage=MongoSession(acenv)
 			if D: acenv.info("Setting ID=%s, email=%s and role=%s to session",result['id'],email,result['role'])
 			acenv.sessionStorage["ID"]=result['id']
 			acenv.sessionStorage["email"]=email
