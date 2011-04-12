@@ -113,7 +113,7 @@ class FileSystem(Component):
 		#FIXME - else or finally or smth else?
 		else:
 			file.close()
-		return o
+		return {"status":"ok"}
 
 	def update(self,acenv,conf):
 		return self.create(acenv,conf,True)
