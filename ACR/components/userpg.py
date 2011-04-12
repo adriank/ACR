@@ -29,6 +29,7 @@ class User(Component):
 	ROLE="user"
 	APPROVED=False
 	MAIN=False
+
 	def login(self,acenv,conf):
 		D=acenv.doDebug
 		email=replaceVars(acenv,conf["email"])
@@ -67,7 +68,7 @@ class User(Component):
 			acenv.sessionStorage.delete()
 		except:
 			pass
-		return {}
+		return {"@status":"ok"}
 
 	#TODO test and debug!
 	def register(self,acenv,conf):

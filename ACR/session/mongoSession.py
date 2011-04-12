@@ -41,8 +41,9 @@ class MongoSession(Session):
 		if self.D: self.env.info("Saving session")
 		if self.delCookie:
 			self.deleteCookie()
+			return
 		if not self.data.has_key("_id"):
-			self.data["_id"]=self.ID
+			self.data["_id"]=self.sessID
 		self["last_login"]=now()
 		if self.P: t=time.time()
 		self.sessCollection.save(self.data)
@@ -52,16 +53,16 @@ class MongoSession(Session):
 
 	def load(self):
 		if self.P: t=time.time()
-		self.data=list(self.sessCollection.find({"_id":self.ID}))[0]
+		self.data=list(self.sessCollection.find({"_id":self.sessID}))[0]
 		if self.P:
 			self.env.profiler["dbtimer"]+=time.time()-t
 			self.env.profiler["dbcounter"]+=1
-		self.data["ID"]=str(self.data.pop("_id"))
+		self.sessID=str(self.data.pop("_id"))
 		if self.D: self.env.debug("Loaded session: %s",self.data)
 
 	def delete(self):
 		if self.P: t=time.time()
-		self.sessCollection.remove({"_id":self.ID})
+		self.sessCollection.remove({"_id":self.sessID})
 		if self.P:
 			acenv.profiler["dbtimer"]+=time.time()-t
 			acenv.profiler["dbcounter"]+=1

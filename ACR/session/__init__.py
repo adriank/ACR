@@ -44,8 +44,8 @@ class Session(object):
 		self.delCookie=False
 		self.data={}
 		self.env=acenv
-		self.ID=ID
-		if self.ID:
+		self.sessID=ID
+		if self.sessID:
 			self.load()
 		else:
 			self.create()
