@@ -43,7 +43,8 @@ class Default(object):
 	def get(self,acenv=None,value=None):
 		D=acenv and acenv.doDebug
 		if D:acenv.debug("START Type.get")
-		if value:
+		# "" is valid so is not None is needed!
+		if value is not None:
 			if D: acenv.debug("END Type.get value was set, returning with: '%s'",value)
 			return self._prepareValue(value)
 		try:
