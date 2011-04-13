@@ -292,7 +292,7 @@ class View(object):
 				acenv.requestStorage[i]=typ.get(acenv,value)
 		except Error, e:
 			if e.name=="NotValidValue":
-				raise Error("NotValidValue", "Value of %s is invalid"%(i))
+				raise Error("NotValidValue", "Value of %s is invalid, %s"%(i,e))
 			else:
 				raise e
 		if D:acenv.debug("requestStorage is %s",acenv.requestStorage)

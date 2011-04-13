@@ -55,7 +55,7 @@ class Default(object):
 				return self.default.execute(acenv)
 			else:
 				if D: acenv.debug("END Type.get with error ValueNotVaild")
-				raise Error("NotValidValue")
+				raise Error("NotValidValue", "Validation failed and no default value was set.")
 
 	def reset(self):
 		self._value=None
@@ -113,9 +113,7 @@ class NonEmpty(Default):
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
-		# shortest is a@a.pl == 6 letters
 		if len(value)>0:
-			#print value
 			return True
 		else:
 			raise Error("EmptyString", "Should not be an empty string")
