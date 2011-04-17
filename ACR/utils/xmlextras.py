@@ -97,17 +97,20 @@ def tree2xml(root,esc=False):
 		nodetype=type(node)
 		if nodetype is dict:
 			tag="object"
-			#if not name:
-			#	try:
-			#		name=node.pop("name")
-			#	except:
-			#		pass
 			for i in node.keys():
 				if i[0]=='@':
 					attrs[i[1:]]=node.pop(i)
 		elif nodetype is list:
 			tag="list"
 		else:
+			if nodetype is datetime:
+				d={
+					"name":name,
+					"date":str(node.date()),
+					"time":str(node.time()).split(".")[0]
+				}
+				tab.append("<%(name)s-date>%(date)s</%(name)s-date><%(name)s-time>%(time)s</%(name)s-time>"%d)
+				return
 			if nodetype not in [str,unicode]:
 				node=str(node)
 			if name:

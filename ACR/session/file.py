@@ -27,7 +27,7 @@ from ACR.errors import Error
 class FileSession(Session):
 	def __init__(self, acenv, ID=None):
 		self.D=acenv.doDebug
-		print "WARNING! File session backend user. It is strongly recommended to install MongoDB and pymongo python driver."
+		#print "WARNING! File session backend used. It is strongly recommended to install MongoDB and pymongo python driver."
 		if self.D: acenv.info("Created FileSession object with id=%s",ID)
 		#TODO check if dir exists and raise error when not
 		self.sessDir=os.path.join(acenv.app.appDir,"session")
@@ -41,7 +41,7 @@ class FileSession(Session):
 		return os.path.join(self.sessDir, self.id)
 
 	def save(self):
-		print("Saving session")
+		#print("Saving session")
 		if not self.modified:
 			#log.info("Session is not modified")
 			return
@@ -82,8 +82,8 @@ class FileSession(Session):
 	def load(self):
 		#log.info("Loading session from file.")
 		#log.debug("Executing - function w/o parameters")
-		import time
-		t=time.time()
+		#import time
+		#t=time.time()
 		session_data = {}
 		try:
 			session_file = open(self._key_to_file(), "rb")
@@ -104,8 +104,8 @@ class FileSession(Session):
 			self.deleteCookie()
 			raise e
 		#log.info("Session data set to %s",session_data)
-		print "file"
-		print round((time.time()-t)*1000,5)
+		#print "file"
+		#print round((time.time()-t)*1000,5)
 		self.data=session_data
 
 	def delete(self):

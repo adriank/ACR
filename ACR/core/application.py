@@ -35,7 +35,8 @@ import locale
 try:
 	import pymongo
 except:
-	print "No MongoDB driver found. Please install pymongo."
+	pass
+	#print "No MongoDB driver found. Please install pymongo."
 
 pjoin=os.path.join
 pexists=os.path.exists
