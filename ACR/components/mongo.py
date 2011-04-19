@@ -35,7 +35,7 @@ class Mongo(Component):
 			config={}
 		server=config.get("server",self.SERVER)
 		port=config.get("port",self.PORT)
-		self.conn=pymongo.Connection()
+		#self.conn=pymongo.Connection()
 		#self.DEFAULT_DB=config.get("defaultdb")
 		self.DEFAULT_COLL=config.get("defaultcoll")
 
