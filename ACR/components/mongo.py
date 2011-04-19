@@ -62,7 +62,7 @@ class Mongo(Component):
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.insert(o,safe=True)
 		if D:acenv.debug("inserted:\n%s",o)
-		ret={"@id":id}
+		ret={"@id":id,"@status":"ok"}
 		#leaving space for debugging and profiling info
 		return ret
 

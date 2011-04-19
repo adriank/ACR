@@ -44,7 +44,7 @@ class Email(Component):
 				mail.send(headers,content)
 		elif typ is str:
 			mail.send(headers,content)
-		return {"status":"ok"}
+		return {"@status":"ok"}
 
 	def parseAction(self,conf):
 		try:
