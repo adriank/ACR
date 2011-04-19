@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from subprocess import *
 SENDMAIL = "/usr/sbin/sendmail"
 
 def send(headers, content):
@@ -26,6 +27,10 @@ def send(headers, content):
 		m.append(i.strip()+": "+headers[i]+"\n")
 	m.append("\n")
 	m.append(content)
-	p=os.popen("%s -t" % SENDMAIL, "w")
-	p.write("".join(m))
-	p.close()
+	try:
+		p=Popen([SENDMAIL,"-t"], bufsize=2024, stdin=PIPE)
+	except OSError:
+		raise Exception("%s failed with error code %s"%(SENDMAIL,res))
+	for i in m:
+		p.stdin.write(i)
+	p.stdin.close()

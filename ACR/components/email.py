@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR import acconfig
-from ACR.utils import mail,replaceVars,prepareVars,dicttree,PREFIX_DELIMITER,getStorage,RE_PATH
+from ACR.utils import mail,replaceVars,prepareVars,dicttree,getStorage,RE_PATH
 from ACR.components import *
 from ACR.errors import *
 import os

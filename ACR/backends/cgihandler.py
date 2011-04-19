@@ -24,11 +24,15 @@ from ACR.backends.WSGIHandler import application
 from ACR import acconfig
 
 acconfig.appDir=os.getcwd()+"/project"
+write=sys.stdout.write
 
 def _start_response(status, headers, exc_info=None):
-  if exc_info is not None:
-    raise exc_info[0], exc_info[1], exc_info[2]
-  return sys.stdout.write
+	if exc_info is not None:
+		raise exc_info[0], exc_info[1], exc_info[2]
+	write("Status: "+status+"\n")
+	for i in headers:
+		write(i[0]+": "+i[1]+"\n")
+	write("\n")
 
 env = dict(os.environ)
 if not env.has_key("PATH_INFO"):
@@ -40,10 +44,10 @@ env["wsgi.run_once"] = True
 #env["wsgi.url_scheme"] = wsgiref.util.guess_scheme(env)
 env["wsgi.multithread"] = False
 env["wsgi.multiprocess"] = False
+#print "Content-type: text/html;\n\n"
 result=application(env, _start_response)
 if result is not None:
 	for data in result:
-		sys.stdout.write(data)
-#print "Content-type: text/html;\n\n"
+		write(data)
 #for i in env:
 	#sys.stdout.write(str(i)+": "+str(env[i])+"<br/>")

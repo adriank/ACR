@@ -213,7 +213,7 @@ class Application(object):
 		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
 		acenv.generations["acr:appDetails"]={"@domain":acenv.domain,"@config":acenv.outputConfig}
 		try:
-			acenv.generations["acr:view"]={"@path":view.name}
+			acenv.generations["acr:view"]={"@path":view.name.replace(".","/")}
 		except:
 			pass
 		if acenv.sessionStorage:
