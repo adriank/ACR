@@ -31,10 +31,12 @@ class Exec(Component):
 	def generate(self,acenv,conf):
 		command=conf["params"]["exec"]
 		content=replaceVars(acenv,content)
-		start=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
-		start.stdin.write(conf["content"])
-		start.wait()
-		start.stdin.close()
+		try:
+			p=subprocess.Popen(command.split(), bufsize=2024, stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+		except OSError:
+			raise Error("SubProcessError","%s failed with error code %s"%(command,res))
+		p.stdin.write(conf["content"])
+		p.stdin.close()
 		return start.stdout.read()
 
 	def parseAction(self,conf):
