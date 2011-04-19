@@ -82,8 +82,6 @@ class FileSession(Session):
 	def load(self):
 		#log.info("Loading session from file.")
 		#log.debug("Executing - function w/o parameters")
-		#import time
-		#t=time.time()
 		session_data = {}
 		try:
 			session_file = open(self._key_to_file(), "rb")

@@ -64,6 +64,7 @@ class User(Component):
 				acenv.sessionStorage=MongoSession(acenv)
 			if D: acenv.info("Setting session as:\n	%s",user)
 			user["ID"]=str(user.pop("_id"))
+			user["loggedIn"]=True
 			acenv.sessionStorage.data=user
 			#print "login sess data ",acenv.sessionStorage.data
 			return {"@status":"ok"}
@@ -91,11 +92,11 @@ class User(Component):
 			"email":email,
 			"password":md5_constructor(replaceVars(acenv,conf["password"])).hexdigest(),
 			"role":replaceVars(acenv,conf.get("role",self.ROLE)),
-			"approval_key":key,
+			"approvalKey":key,
 			"privileges":[]
 		}
 		id=usersColl.save(d)
-		return {"@status":"ok","@id":id,"approval_key":key}
+		return {"@status":"ok","@id":id,"approvaKey":key}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)
