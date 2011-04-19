@@ -316,7 +316,13 @@ class View(object):
 				typ.set(list.pop(0))
 			except:
 				pass
-			acenv.requestStorage[i["name"]]=typ.get(acenv)
+			try:
+				acenv.requestStorage[i["name"]]=typ.get(acenv)
+			except Error, e:
+				if e.name=="NotValidValue":
+					raise Error("NotValidValue", "Value of '%s' is invalid."%(i["name"]))
+				else:
+					raise e
 		if D:
 			acenv.debug("RS is: %s",acenv.requestStorage)
 			acenv.debug("END View:fillInputs")

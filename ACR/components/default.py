@@ -25,9 +25,7 @@ class Default(Component):
 	def generate(self, env,config):
 		D=env.doDebug
 		if D: env.debug("START default:generation with %s", config)
-		ret=replaceVars(env, config["string"])
-		if type(ret) is list:
-			ret="".join(map(str,ret))
+		ret=replaceVars(env, config["string"],str)
 		if D: env.debug("END default component generation with: '%s...'", ret)
 		return ret
 
@@ -37,7 +35,7 @@ class Default(Component):
 			if type(elem) is tuple:
 				s.append(tree2xml(elem,True))
 			elif type(elem) is str:
-				s.append(elem.strip())
+				s.append(elem)
 		return {
 			"string":prepareVars("".join(s).strip()),
 			"output":config.get("output",None)
