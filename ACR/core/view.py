@@ -348,8 +348,8 @@ class View(object):
 				continue
 			component=self.app.getComponent(action["component"])
 			generation=component.generate(acenv,action["config"])
-			if not generation.has_key("status"):
-				generation["status"]="ok"
+			if type(generation) is dict and not generation.has_key("@status"):
+				generation["@status"]="ok"
 			#if not generation:
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
 			if not action["name"]:
