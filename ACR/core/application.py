@@ -186,7 +186,7 @@ class Application(object):
 	def generate(self,acenv):
 		D=acenv.doDebug
 		P=acenv.doProfiling
-		if D: acenv.info("START")
+		if D: acenv.info("\033[95mSTART\033[0m")
 		if P: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):

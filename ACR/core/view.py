@@ -361,12 +361,12 @@ class View(object):
 			if not action["name"]:
 					continue
 			if action["type"]==NODE:
-				if D: acenv.info("Executing action=%s",action)
+				if D: acenv.info("\033[92mCreating node %s with config: %s\033[0m",action["name"],action)
 				#generation.name=action["name"]
 				#generation.view=self.name
 				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
-				if D: acenv.info("Executing SET=%s",action)
+				if D: acenv.info("\033[92mSetting %s with config: %s\033[0m",action["name"],action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
 		if acenv.output:
