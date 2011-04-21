@@ -44,6 +44,7 @@ def parsePosts(nodes):
 		typ=typesMap.get(attrs.get("type"),typesMap["default"])()
 		if attrs.has_key("default"):
 			typ.setDefault(make_tree(attrs["default"]))
+		else:
 			postCount+=1
 		ret[attrs["name"]]=typ
 	return (ret,postCount)
@@ -283,7 +284,7 @@ class View(object):
 		if D:acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts
 		if not list or len(list)<self.postCount:
-			raise Error("notEnoughPostFields","Not enough post fields")
+			raise Error("notEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
 		postSchemas=self.postSchemas
 		try:
 			for i in postSchemas:
@@ -342,7 +343,7 @@ class View(object):
 		acenv.requestStorage["__lang__"]=acenv.lang
 		self.checkConditions(acenv)
 		for action in self.actions:
-			if D: acenv.info("defining name='%s'",action["name"])
+			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
 			if action.has_key("condition") and not action["condition"].execute(acenv):
 				if D: acenv.warning("Condition is not meet")
 				if action["type"]==SET:
@@ -361,12 +362,12 @@ class View(object):
 			if not action["name"]:
 					continue
 			if action["type"]==NODE:
-				if D: acenv.info("\033[92mCreating node %s with config: %s\033[0m",action["name"],action)
+				if D: acenv.info("Creating node %s with config: %s",action["name"],action)
 				#generation.name=action["name"]
 				#generation.view=self.name
 				acenv.generations[action["name"]]=generation
 			elif action["type"]==SET:
-				if D: acenv.info("\033[92mSetting %s with config: %s\033[0m",action["name"],action)
+				if D: acenv.info("\033[96mSetting %s with config: %s\033[0m",action["name"],action)
 				ns,name=NS2Tuple(action["name"],"::")
 				getStorage(acenv,ns or "rs")[name]=generation
 		if acenv.output:

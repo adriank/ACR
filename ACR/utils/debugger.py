@@ -58,6 +58,13 @@ class Debugger(object):
 		def f(x):
 			if type(x) is unicode:
 				x=x.encode("utf8")
+			if self.CUT_AFTER and type(x) is dict:
+				s=[]
+				for i in x.iteritems():
+					s.append("'%s': %s"%(i[0],repr(i[1])[:self.CUT_AFTER]))
+					if len(s[-1])>self.CUT_AFTER:
+						s.append("...")
+				return "{\n\t"+",\n\t".join(s)+"\n}"
 			s=str(x).replace("\n","").replace("\t","")
 			if self.CUT_AFTER and len(s)>self.CUT_AFTER:
 				return s[:self.CUT_AFTER]+"..."

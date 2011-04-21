@@ -26,8 +26,8 @@ class KeyGenerator(Component):
 		command=conf["command"]
 		if command=="md5":
 			value=replaceVars(env,conf["params"]["value"])
-			return Object(md5_constructor(value).hexdigest())
-		return Object(generateID())
+			return md5_constructor(value).hexdigest()
+		return generateID()
 
 def getObject(config):
 	return KeyGenerator(config)
