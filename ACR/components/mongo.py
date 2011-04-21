@@ -83,6 +83,7 @@ class Mongo(Component):
 		return self.find(acenv,config,count=True)
 
 	def find(self,acenv,config,count=False):
+		D=acenv.doDebug
 		P=acenv.doProfiling
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
@@ -114,12 +115,17 @@ class Mongo(Component):
 			acenv.profiler["dbcounter"]+=1
 		if ret:
 			if len(ret) is 1:
+				if D:acenv.debug("END Mongo.find with %s",ret[0])
 				return ret[0]
+			if D:acenv.debug("END Mongo.find with %s",ret)
 			return ret
 		else:
+			if D:acenv.debug("END Mongo.find with no object")
 			return {"@status":"nodata"}
 
 	def generate(self, acenv,config):
+		D=acenv.doDebug
+		if D: acenv.debug("START Mongo:%s with %s",config["command"].split(":").pop(), config)
 		return self.__getattribute__(config["command"].split(":").pop())(acenv,config)
 
 	def parseAction(self,config):

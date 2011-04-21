@@ -246,7 +246,7 @@ class View(object):
 			posInParent=None
 			if o["type"]==NODE:
 				pos=findAction(ret,o["name"])
-				if pos>-1:
+				if pos>-1 and ret[pos]["type"]==NODE:
 					#print "WARNING: node %s overwritten"%(o["name"])
 					ret.pop(pos)
 			if before:
