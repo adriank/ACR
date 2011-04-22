@@ -27,9 +27,10 @@ import os,re
 
 NODE="node"
 SET="set"
-APPEND="append"
+PUSH="push"
 INSERT="insert"
-WRITE_COMMANDS=[SET,APPEND,INSERT]
+WRITE_COMMANDS=[SET,PUSH,INSERT]
+ACTIONS=WRITE_COMMANDS+[NODE]
 COMMAND="command"
 INHERITS="inherits"
 IMPORT="import"
@@ -108,7 +109,7 @@ class View(object):
 		actions=[]
 		postSchemas=[]
 		output=[]
-		ACTIONS=[SET,NODE,IMPORT]
+
 		for node in tree[2]:
 			if type(node) is str:
 				continue
@@ -154,7 +155,6 @@ class View(object):
 		#if not self.actions:
 		#	self.immutable=True
 		#	return
-		#if D: log.debug("Setting defaults for posts")
 		#past here this object MUST be immutable
 		self.immutable=True
 
@@ -237,6 +237,8 @@ class View(object):
 			}
 			if attrs.has_key("default"):
 				o["default"]=make_tree(attrs["default"])
+			if attrs.has_key("path"):
+				o["path"]=make_tree(attrs["path"])
 			if attrs.has_key("condition"):
 				o["condition"]=make_tree(attrs["condition"])
 			# positions the action in the list of actions
@@ -245,6 +247,8 @@ class View(object):
 			#TODO this is nowhere near clearness. Need to write reference on inheritance regarding before/after and then implement it here
 			posInParent=None
 			if o["type"]==NODE:
+				if not o["name"]:
+					raise Error("noNodeNameError", "Nodes must have names set.")
 				pos=findAction(ret,o["name"])
 				if pos>-1 and ret[pos]["type"]==NODE:
 					#print "WARNING: node %s overwritten"%(o["name"])
@@ -344,14 +348,22 @@ class View(object):
 		self.checkConditions(acenv)
 		for action in self.actions:
 			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
+			action_type=action["type"]
+			path_set=action.has_key("path")
+			if path_set:
+				pointer=action["path"].execute(acenv)
+				if action_type==PUSH and type(pointer) is not list:
+					raise Error("notArrayError", "Path did not return array.")
 			if action.has_key("condition") and not action["condition"].execute(acenv):
 				if D: acenv.warning("Condition is not meet")
-				if action["type"]==SET:
-					if D: acenv.warning("Set condition is not meet.")
-					ns,name=NS2Tuple(action["name"],"::")
+				if action_type in WRITE_COMMANDS:
 					default=action.get("default")
 					if default:
-						getStorage(acenv,ns or "rs")[name]=default.execute(acenv)
+						if path_set:
+							if action_type==PUSH:
+								pointer.append(default.execute(acenv))
+								continue
+						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
 				continue
 			component=self.app.getComponent(action["component"])
 			generation=component.generate(acenv,action["config"])
@@ -359,17 +371,22 @@ class View(object):
 				generation["@status"]="ok"
 			#if not generation:
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
-			if not action["name"]:
-					continue
-			if action["type"]==NODE:
-				if D: acenv.info("Creating node %s with config: %s",action["name"],action)
-				#generation.name=action["name"]
-				#generation.view=self.name
-				acenv.generations[action["name"]]=generation
-			elif action["type"]==SET:
-				if D: acenv.info("\033[96mSetting %s with config: %s\033[0m",action["name"],action)
-				ns,name=NS2Tuple(action["name"],"::")
-				getStorage(acenv,ns or "rs")[name]=generation
+			#if not action["name"]:
+			#		continue
+			if path_set:
+				if action_type==PUSH:
+					pointer.append(generation)
+				#elif action["type"]==SET:
+				#	pointer=generation
+			else:
+				if action["type"]==NODE:
+					if D: acenv.info("Creating node %s with config: %s",action["name"],action)
+					#generation.name=action["name"]
+					#generation.view=self.name
+					acenv.generations[action["name"]]=generation
+				elif action["type"]==SET:
+					if D: acenv.info("Setting %s with config: %s",action["name"],action)
+					getStorage(acenv,"rs")[action["name"]]=generation
 		if acenv.output:
 			acenv.output.update(self.output)
 
