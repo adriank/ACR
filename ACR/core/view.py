@@ -284,8 +284,9 @@ class View(object):
 				acenv.debug("posts schema is empty.")
 				acenv.debug("END View:fillPosts with: 'True'.")
 			return True
-		if D:acenv.debug("postSchemas is %s",self.postSchemas)
-		if D:acenv.debug("posts is %s",acenv.posts)
+		if D:
+			acenv.debug("postSchemas is %s",self.postSchemas)
+			acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts
 		if not list or len(list)<self.postCount:
 			raise Error("notEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
@@ -367,7 +368,7 @@ class View(object):
 				continue
 			component=self.app.getComponent(action["component"])
 			generation=component.generate(acenv,action["config"])
-			if type(generation) is dict and not generation.has_key("@status"):
+			if action_type==NODE and type(generation) is dict and not generation.has_key("@status"):
 				generation["@status"]="ok"
 			#if not generation:
 			#	raise Error("ComponentError","Component did not return proper value. Please contact component author.")
@@ -375,17 +376,18 @@ class View(object):
 			#		continue
 			if path_set:
 				if action_type==PUSH:
+					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
 				#elif action["type"]==SET:
 				#	pointer=generation
 			else:
 				if action["type"]==NODE:
-					if D: acenv.info("Creating node %s with config: %s",action["name"],action)
+					if D: acenv.info("Adding node %s with: %s",action["name"],generation)
 					#generation.name=action["name"]
 					#generation.view=self.name
 					acenv.generations[action["name"]]=generation
 				elif action["type"]==SET:
-					if D: acenv.info("Setting %s with config: %s",action["name"],action)
+					if D: acenv.info("Setting %s with: %s",action["name"],generation)
 					getStorage(acenv,"rs")[action["name"]]=generation
 		if acenv.output:
 			acenv.output.update(self.output)

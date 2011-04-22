@@ -514,6 +514,8 @@ class Tree(object):
 				return ret
 			elif op=="[":
 				len_node=len(node)
+				if len_node is 1: # empty list
+					return []
 				if len_node is 2: # list
 					return map(exe,node[1])
 				if len_node is 3: # operator []
