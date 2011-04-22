@@ -512,6 +512,9 @@ class Tree(object):
 					except:
 						pass
 				return ret
+			#TODO move it to tree generation phase
+			elif op=="{":
+				return {}
 			elif op=="[":
 				len_node=len(node)
 				if len_node is 1: # empty list
