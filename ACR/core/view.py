@@ -380,7 +380,8 @@ class View(object):
 						raise Error("NotArrayError", "Path did not return array.")
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
-				#elif action["type"]==SET:
+					print pointer
+					#elif action["type"]==SET:
 				#	pointer=generation
 			else:
 				if action["type"]==NODE:

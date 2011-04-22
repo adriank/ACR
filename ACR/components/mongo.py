@@ -138,8 +138,6 @@ class Mongo(Component):
 			raise Error("no coll parameter specified")
 		if fields:
 			pars["fields"]=fields
-		print
-		print "".join(s)
 		return {
 			"command":config["command"],
 			"content":make_tree("".join(s)),
