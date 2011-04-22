@@ -22,9 +22,8 @@ from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 import pymongo
 from bson import objectid
-import json
+from ACR.utils.interpreter import make_tree
 import time
-from pymongo.json_util import object_hook, default
 
 class Mongo(Component):
 	SERVER='localhost'
@@ -43,25 +42,21 @@ class Mongo(Component):
 		D=acenv.doDebug
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		try:
-			where=json.loads(replaceVars(acenv,params["where"],fn=str),object_hook=object_hook)
-		except (TypeError,ValueError),e:
-			raise Error("JSONError",replaceVars(acenv,params["where"],fn=str).replace('"',"'"))
-		#try:
-		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
-		#except (TypeError),e:
-			#raise Error("JSONError",replaceVars(acenv,config["content"]))
+		where=params["where"].execute(acenv)
+		o=config["content"].execute(acenv)
+		if D:
+			acenv.debug("where clause is %s",where)
+			acenv.debug("update object is %s",o)
 		coll.update(where,o,safe=True)
 
 	def insert(self,acenv,config):
 		D=acenv.doDebug
-		if D: acenv.debug("START Mongo.insert with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
+		o=config["content"].execute(acenv)
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.insert(o,safe=True)
-		if D:acenv.debug("inserted:\n%s",o)
+		if D:acenv.info("inserted: %s",o)
 		ret={"@id":id,"@status":"ok"}
 		#leaving space for debugging and profiling info
 		return ret
@@ -87,11 +82,8 @@ class Mongo(Component):
 		P=acenv.doProfiling
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		prototype=replaceVars(acenv,params.get("where", config["content"]),fn=str)
-		try:
-			p={"spec":json.loads(prototype,object_hook=object_hook)}
-		except TypeError,e:
-			raise Error("JSONError",str(e))
+		#prototype=replaceVars(acenv,params.get("where", config["content"]),fn=str)
+		p={"spec":params.get("where", config["content"]).execute(acenv)}
 		for i in params:
 			if type(params[i]) is list:
 				params[i]=replaceVars(acenv,params[i])
@@ -135,7 +127,7 @@ class Mongo(Component):
 		for elem in config["content"]:
 			if type(elem) is tuple:
 				if elem[0]=="where":
-					pars["where"]=prepareVars("".join(elem[2]))
+					pars["where"]=make_tree("".join(elem[2]))
 				elif elem[0]=="field":
 					fields[elem[1]["name"]]=bool(str2obj(elem[1]["show"]))
 				else:
@@ -146,9 +138,11 @@ class Mongo(Component):
 			raise Error("no coll parameter specified")
 		if fields:
 			pars["fields"]=fields
+		print
+		print "".join(s)
 		return {
 			"command":config["command"],
-			"content":prepareVars("".join(s)),
+			"content":make_tree("".join(s)),
 			"params":pars
 		}
 

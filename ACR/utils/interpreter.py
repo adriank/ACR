@@ -143,14 +143,14 @@ def prefix(id, bp):
 def advance(id=None):
 	global token
 	if id and token.id != id:
-		raise SyntaxError("Expected %r" % id)
+		raise SyntaxError("Expected %r, got %s"%(id,token.id))
 	token=next()
 
 def method(s):
 	# decorator
 	assert issubclass(s, symbol_base)
 	def bind(fn):
-		setattr(s, fn.__name__, fn) #
+		setattr(s, fn.__name__, fn)
 	return bind
 
 infix_r("or", 30); infix_r("and", 40); prefix("not", 50)

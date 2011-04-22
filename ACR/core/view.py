@@ -351,10 +351,6 @@ class View(object):
 			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
 			action_type=action["type"]
 			path_set=action.has_key("path")
-			if path_set:
-				pointer=action["path"].execute(acenv)
-				if action_type==PUSH and type(pointer) is not list:
-					raise Error("notArrayError", "Path did not return array.")
 			if action.has_key("condition") and not action["condition"].execute(acenv):
 				if D: acenv.warning("Condition is not meet")
 				if action_type in WRITE_COMMANDS:
@@ -362,6 +358,9 @@ class View(object):
 					if default:
 						if path_set:
 							if action_type==PUSH:
+								pointer=action["path"].execute(acenv)
+								if type(pointer) is not list:
+									raise Error("NotArrayError", "Path did not return array.")
 								pointer.append(default.execute(acenv))
 								continue
 						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
@@ -376,6 +375,9 @@ class View(object):
 			#		continue
 			if path_set:
 				if action_type==PUSH:
+					pointer=action["path"].execute(acenv)
+					if action_type==PUSH and type(pointer) is not list:
+						raise Error("NotArrayError", "Path did not return array.")
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
 				#elif action["type"]==SET:

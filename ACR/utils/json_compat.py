@@ -10,6 +10,9 @@ except:
 		raise Error("JSONNotFound")
 
 def loads(s,object_hook=None):
+	if s.find("u'")!=-1:
+		s=s.replace("u'","'")
+	s=s.replace("'",'"')
 	try:
 		return json.loads(s,object_hook=object_hook)
 	except ValueError,e:
