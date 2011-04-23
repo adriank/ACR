@@ -22,7 +22,7 @@ from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 
 class Default(Component):
-	def generate(self, env,config):
+	def generate(self, env, config):
 		D=env.doDebug
 		if D: env.debug("START default:generation with %s", config)
 		ret=replaceVars(env, config["string"],str)

@@ -56,6 +56,8 @@ def replaceVars(env,l,fn=None):
 			storage=getStorage(env,i[0])
 			v=dicttree.get(storage,i[1],acenv=env)
 			if fn is not None:
+				if type(v) is unicode:
+					v=v.encode("utf8")
 				v=fn(v)
 			if D: env.debug("adding '%s' to the end of string",v)
 			ret.append(v)
@@ -81,14 +83,15 @@ def prepareVars(s):
 	splitted=RE_PATH_split.split(s)
 	vars=RE_PATH.findall(s)
 	ret=[]
+	STORAGES=["rs","ss","env","config"]
 	try:
 		while True:
 			ret.append(splitted.pop(0))
 			var=vars.pop(0)
 			path=var.split(".")
 			storageName=path.pop(0) or "rs"
-			if storageName not in ["rs","ss"]:
-				raise Exception("Wrong storage name in $%s"%var)
+			if storageName not in STORAGES:
+				raise Exception("Wrong storage name in $%s. Should it be $.%s?"%(var,var))
 			ret.append((storageName,path))
 	except IndexError:
 		pass

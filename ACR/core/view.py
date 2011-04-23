@@ -351,6 +351,7 @@ class View(object):
 			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
 			action_type=action["type"]
 			path_set=action.has_key("path")
+			if D: acenv.info("Checking condition")
 			if action.has_key("condition") and not action["condition"].execute(acenv):
 				if D: acenv.warning("Condition is not meet")
 				if action_type in WRITE_COMMANDS:
@@ -365,6 +366,7 @@ class View(object):
 								continue
 						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
 				continue
+			if D: acenv.info("Condition test passed")
 			component=self.app.getComponent(action["component"])
 			generation=component.generate(acenv,action["config"])
 			if action_type==NODE and type(generation) is dict and not generation.has_key("@status"):

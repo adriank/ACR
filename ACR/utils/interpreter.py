@@ -608,6 +608,9 @@ class Tree(object):
 					return unescape(args)
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
+				elif fnName=="objectID":
+					from bson.objectid import ObjectId
+					return ObjectId(args)
 				elif fnName=="now":
 					from ACR.utils import now
 					return now()

@@ -64,12 +64,11 @@ def unescapeQuotes(s):
 #	else:
 #		return str(value)
 
-#TO-C
 def tree2xml(root,esc=False):
 	"""
-	Converts dict/list tree to a xml.
-	input: (dict|list) a tree root/a fragment (list of dicts)
-	returns: xml tree parsed to a xml
+	Converts dict/list or tuple tree to a xml. Dict/list and tuple trees cannot be mixed at this time.
+	input: (dict|list|tuple) a tree root/a fragment (list of dicts)
+	returns: an xml fragment
 	"""
 	def tuplerec(node):
 		if type(node) is not tuple:
@@ -169,13 +168,13 @@ def tree2xml(root,esc=False):
 		ret=ret.encode("utf-8")
 	return ret
 
-#TODO need to try whether xml.etree.cElementTree is faster here; pure Python etree is slower
 #TODO whitespaces checkup and W3C spec verification of whitespace handling in XML and (X)HTML.
 class Reader(handler.ContentHandler):
-	def __init__(self,newlines):
+	def __init__(self,newlines,preserveCase=True):
 		self.root=None
 		self.newlines=newlines
 		self.path=[]
+		self.preserveCase=preserveCase
 
 	def startElement(self, name, a):
 		attrs=None
@@ -183,12 +182,14 @@ class Reader(handler.ContentHandler):
 			attrs={}
 			for i in a.keys():
 				attrs[str(i)]=a[i].strip().encode("utf-8")
+		if not self.preserveCase:
+			name=name.lower()
 		if not len(self.path):
-			self.root=ObjectTree([str(name).lower(),attrs,[]])
+			self.root=ObjectTree([name,attrs,[]])
 			self.path.append(self.root)
 		else:
 			l=self.path[-1]
-			l[2].append((str(name).lower(),attrs,[]))
+			l[2].append((name,attrs,[]))
 			self.path.append(l[2][-1])
 
 	def characters(self,data):
@@ -220,14 +221,17 @@ class Reader(handler.ContentHandler):
 		elem[0:len(elem)]=subelems
 		self.path.pop()
 
-def xml2tree(xmlfile,newlines=False):
+def xml2tree(xmlfile,newlines=False,preserveCase=True):
 	"""
 	Parses xml resource to xml tree.
-	input: xml file or url resource
+	input:
+		- xmlfile - xml file or url resource
+		- newlines - preserve newlines?
+		- preserveCase - if true all tags will be lowercased
 	returns: xml tree
 	"""
 	parser=make_parser()
-	r=Reader(newlines)
+	r=Reader(newlines,preserveCase)
 	parser.setContentHandler(r)
 	parser.parse(xmlfile)
 	return r.root

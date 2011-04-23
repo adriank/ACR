@@ -224,9 +224,9 @@ class Application(object):
 		try:
 			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"]))
 		except Error, e:
+			#XXX this is wrong answer e.g. in JSON output format mode - move it to each serializer!
 			acenv.output["format"]="text/html"
 			return "<html><body>"+str(e)+"</body</html>"
-		#if True:
 		if P:
 			all=round((time.time()-t)*1000,5)
 			dbms=round(acenv.profiler["dbtimer"]*1000,5)

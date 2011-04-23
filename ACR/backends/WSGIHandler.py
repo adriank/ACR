@@ -66,8 +66,6 @@ def application(env,start_response):
 	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";",1)[0].split(","))
 	acenv.UA=env.get("HTTP_USER_AGENT")
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
-	#if app.debug["enabled"]:
-	#	log.setLevel(acconfig.logLevels.get(app.debug["level"],logging.ERROR))
 	if env.get('HTTP_COOKIE'):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",",1)[0].split("-",1)[0]))
