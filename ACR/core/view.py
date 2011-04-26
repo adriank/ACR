@@ -135,10 +135,10 @@ class View(object):
 			self.output["format"]=output[0][1]["format"]
 		except: pass
 		try:
-			self.output["xsltfile"]=str2obj(output[0][1]["xsltfile"])
+			self.output["XSLTFile"]=str2obj(output[0][1]["XSLTFile"])
 		except: pass
 		try:
-			self.output["xslt-force-reload"]=str2obj(output[0][1]["xslt-force-reload"])
+			self.output["XSLTForceReload"]=str2obj(output[0][1]["XSLTForceReload"])
 		except: pass
 		try:
 			self.outputConfig=output[0][1]["config"]
@@ -382,7 +382,6 @@ class View(object):
 						raise Error("NotArrayError", "Path did not return array.")
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
-					print pointer
 					#elif action["type"]==SET:
 				#	pointer=generation
 			else:

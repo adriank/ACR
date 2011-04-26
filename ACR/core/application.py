@@ -110,12 +110,12 @@ class Application(object):
 				"dbcounter":0
 			}
 		self.output={
-			"xsltfile":config.get("/output[@xsltfile]"),
+			"XSLTFile":config.get("/output[@XSLTFile]"),
 			"format":config.get("/output[@format]","application/xml")
 		}
-		forceReload=config.get("/output[@xslt-force-reload]")
+		forceReload=config.get("/output[@XSLTForceReload]")
 		if forceReload:
-			self.output["xslt-force-reload"]=str2obj(forceReload)
+			self.output["XSLTForceReload"]=str2obj(forceReload)
 		self.prefix=(config.get("/prefix") or "ACR")+"_"
 		for component in config.get("/component"):
 			#if D: log.debug("setting default configuration to %s component",component[1]["name"])
@@ -207,7 +207,7 @@ class Application(object):
 				}
 			}
 			try:
-				acenv.output["xsltfile"]=view.output.get("xsltfile")
+				acenv.output["XSLTFile"]=view.output.get("XSLTFile")
 			except:
 				pass
 		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
