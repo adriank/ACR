@@ -110,7 +110,7 @@ class Application(object):
 				"dbcounter":0
 			}
 		self.output={
-			"XSLTFile":config.get("/output[@XSLTFile]"),
+			"XSLTFile":config.get("/output[@XSLTFile]","index.xsl"),
 			"format":config.get("/output[@format]","application/xml")
 		}
 		forceReload=config.get("/output[@XSLTForceReload]")
