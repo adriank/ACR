@@ -365,12 +365,12 @@ class View(object):
 								pointer.append(default.execute(acenv))
 								continue
 						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
-					else:
-						getStorage(acenv,"rs")[action["name"]]={
-							"status":"error",
-							"error":"ConditionNotMeet",
-							"message":"Condition was not meet."
-						}
+					#else:
+					#	getStorage(acenv,"rs")[action["name"]]={
+					#		"status":"error",
+					#		"error":"ConditionNotMeet",
+					#		"message":"Condition was not meet."
+					#	}
 				continue
 			if D: acenv.info("Condition test passed")
 			component=self.app.getComponent(action["component"])
