@@ -172,8 +172,8 @@ class View(object):
 
 	def checkConditions(self, acenv):
 		for i in self.conditions:
-			if i["value"] and not i["value"].execute(acenv):
-				raise Error("ConditionNotSatisfied", "Condition %s is not satisfied."%i["name"])
+			if not i["value"].execute(acenv):
+				raise Error(i.get("error","ConditionNotSatisfied"), "Condition %s is not satisfied."%i["name"])
 		return True
 
 	#def importAction(self,action):
@@ -288,7 +288,7 @@ class View(object):
 			acenv.debug("postSchemas is %s",self.postSchemas)
 			acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts
-		if not list or len(list)<self.postCount:
+		if self.postCount and (not list or len(list)<self.postCount):
 			raise Error("notEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
 		postSchemas=self.postSchemas
 		try:
@@ -365,6 +365,12 @@ class View(object):
 								pointer.append(default.execute(acenv))
 								continue
 						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
+					else:
+						getStorage(acenv,"rs")[action["name"]]={
+							"status":"error",
+							"error":"ConditionNotMeet",
+							"message":"Condition was not meet."
+						}
 				continue
 			if D: acenv.info("Condition test passed")
 			component=self.app.getComponent(action["component"])
