@@ -287,8 +287,8 @@ class View(object):
 		if D:
 			acenv.debug("postSchemas is %s",self.postSchemas)
 			acenv.debug("posts is %s",acenv.posts)
-		list=acenv.posts
-		if self.postCount and (not list or len(list)<self.postCount):
+		list=acenv.posts or []
+		if not list or len(list)<self.postCount:
 			raise Error("notEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
 		postSchemas=self.postSchemas
 		try:
