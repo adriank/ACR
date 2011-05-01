@@ -31,4 +31,6 @@ def transform(xml,xslt,forceReload=True):
 
 def serialize(env):
 	xml=tree2xml(env.generations,True)
-	return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%(xml),os.path.join(env.app.appDir,"static/xslt",env.output["XSLTFile"]),env.output.get("XSLTForceReload"))
+	if env.output["XSLTFile"]:
+		return transform("""<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%(xml),os.path.join(env.app.appDir,"static/xslt",env.output["XSLTFile"]),env.output.get("XSLTForceReload"))
+	return """<?xml version="1.0" encoding="UTF-8"?><list>%s</list>\n"""%(xml)

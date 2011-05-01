@@ -47,7 +47,7 @@ class Mongo(Component):
 		if D:
 			acenv.debug("where clause is %s",where)
 			acenv.debug("update object is %s",o)
-		coll.update(where,o,safe=True)
+		coll.update(where,o,safe=True,multi=True)
 
 	def insert(self,acenv,config):
 		D=acenv.doDebug

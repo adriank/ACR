@@ -52,6 +52,7 @@ def application(env,start_response):
 	response=[]
 	D=False
 	path=env["HTTP_HOST"]
+	print path
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
 		# if application config file changes, reload whole app

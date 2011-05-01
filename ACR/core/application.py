@@ -197,6 +197,7 @@ class Application(object):
 			except IndexError:
 				sessID=None
 		try:
+			if D: acenv.debug("Inputs are '%s'",acenv.inputs)
 			view, acenv.inputs=self.getView(acenv.URLpath)
 			view.generate(acenv)
 		except Error,e:
