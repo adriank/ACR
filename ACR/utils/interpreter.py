@@ -602,6 +602,9 @@ class Tree(object):
 				elif fnName=="sort":
 					args.sort()
 					return args
+				elif fnName=="generateID":
+					from ACR.utils import generateID
+					return generateID()
 				elif fnName=="reverse":
 					args.reverse()
 					return args
