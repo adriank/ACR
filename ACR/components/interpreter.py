@@ -31,9 +31,9 @@ class Interpreter(Component):
 		except Exception,e:
 			if D: acenv.error("Execution failed with error: %s", str(e))
 			return {
-				"status":"error",
-				"error":"ExecutionFailed",
-				"message":str(e)
+				"@status":"error",
+				"@error":"ExecutionFailed",
+				"@message":str(e)
 			}
 
 	def parseAction(self, config):
