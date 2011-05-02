@@ -598,7 +598,9 @@ class Tree(object):
 				elif fnName=="round":
 					return round(*args)
 				elif fnName=="count":
-					return args.count()
+					if args in [True,False,None]:
+						return args
+					return len(args)
 				elif fnName=="sort":
 					args.sort()
 					return args
