@@ -602,6 +602,9 @@ class Tree(object):
 				elif fnName=="sort":
 					args.sort()
 					return args
+				elif fnName=="reverse":
+					args.reverse()
+					return args
 				elif fnName=="escape":
 					return escape(args)
 				elif fnName=="unescape":
