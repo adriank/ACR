@@ -66,13 +66,25 @@ class Mongo(Component):
 		if D: acenv.debug("START Mongo.save with: %s", config)
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		o=json.loads(replaceVars(acenv,config["content"],fn=str),object_hook=object_hook)
+		o=config["content"].execute(acenv)
 		if D: acenv.debug("doing %s",coll.insert)
 		id=coll.save(o,safe=True)
 		if D:acenv.debug("saved:\n%s",o)
 		ret={"@id":id}
 		#leaving space for debugging and profiling info
 		return ret
+
+	def remove(self,acenv,config):
+		D=acenv.doDebug
+		if D: acenv.debug("START Mongo.remove with: %s", config)
+		params=config["params"]
+		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+		o=config["content"].execute(acenv)
+		if D: acenv.debug("doing %s",coll.insert)
+		lastError=coll.remove(o,safe=True)
+		if D:acenv.debug("removed:\n%s",o)
+		#leaving space for debugging and profiling info
+		return {}
 
 	def count(self,acenv,config):
 		return self.find(acenv,config,count=True)
