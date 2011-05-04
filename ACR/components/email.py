@@ -23,20 +23,23 @@ from ACR.errors import *
 
 class Email(Component):
 	def generate(self,acenv,conf):
-		#TODO add debug strings
+		D=acenv.doDebug
+		if D:acenv.debug("START Email.send with: %s",conf)
 		content=conf["content"]
 		headers={}
 		params=conf["params"]
 		for h in params:
 			headers[h]=replaceVars(acenv,params[h])
+		if D:acenv.debug("Computed headers: %s",headers)
 		recipients=headers["To"]
 		content=replaceVars(acenv,content)
 		typ=type(recipients)
 		if typ is list:
+			if D:acenv.debug("Recipient is list.")
 			for i in recipients:
 				headers["To"]=i
 				mail.send(headers,content)
-		elif typ is str:
+		elif typ in [str,unicode]:
 			mail.send(headers,content)
 		return {"@status":"ok"}
 
