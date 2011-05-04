@@ -94,7 +94,6 @@ class Mongo(Component):
 		P=acenv.doProfiling
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		#prototype=replaceVars(acenv,params.get("where", config["content"]),fn=str)
 		p={"spec":params.get("where", config["content"]).execute(acenv)}
 		for i in params:
 			if type(params[i]) is list:

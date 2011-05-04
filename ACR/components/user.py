@@ -95,8 +95,8 @@ class User(Component):
 			"approvalKey":key,
 			"privileges":[]
 		}
-		id=usersColl.save(d)
-		return {"@status":"ok","@id":id,"approvaKey":key}
+		id=usersColl.save(d,safe=True)
+		return {"@status":"ok","@id":id,"@approvaKey":key}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)

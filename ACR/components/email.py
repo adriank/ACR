@@ -17,26 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR import acconfig
-from ACR.utils import mail,replaceVars,prepareVars,dicttree,getStorage,RE_PATH
-from ACR.components import *
+from ACR.utils import mail,replaceVars,prepareVars,dicttree
+from ACR.components import Component
 from ACR.errors import *
-import os
-import re
-
 
 class Email(Component):
 	def generate(self,acenv,conf):
+		#TODO add debug strings
 		content=conf["content"]
 		headers={}
 		params=conf["params"]
 		for h in params:
 			headers[h]=replaceVars(acenv,params[h])
-		#print "headers"
 		recipients=headers["To"]
-		#print headers
 		content=replaceVars(acenv,content)
-		#recipients=map(lambda x: replaceVars(acenv,x._value[0][2][0]),ret._value)
 		typ=type(recipients)
 		if typ is list:
 			for i in recipients:
