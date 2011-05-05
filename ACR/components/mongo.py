@@ -55,7 +55,14 @@ class Mongo(Component):
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		o=config["content"].execute(acenv)
 		if D: acenv.debug("doing %s",coll.insert)
-		id=coll.insert(o,safe=True)
+		try:
+			id=coll.insert(o,safe=True)
+		except Exception,e:
+			return {
+				"@status":"error",
+				"error":type(e),
+				"@message":str(e)
+			}
 		if D:acenv.info("inserted: %s",o)
 		ret={"@id":id,"@status":"ok"}
 		#leaving space for debugging and profiling info
