@@ -99,9 +99,16 @@ class Mongo(Component):
 	def find(self,acenv,config,count=False):
 		D=acenv.doDebug
 		P=acenv.doProfiling
+		if D:
+			if not count: acenv.debug("START Mongo:find with:\n%s",config)
+			else:acenv.debug("START Mongo:count with:\n%s",config)
+
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
-		p={"spec":params.get("where", config["content"]).execute(acenv)}
+		p={
+			"spec":params.get("where", config["content"]).execute(acenv)
+		}
+		if D:acenv.debug("Finding objects matching:\n%s",p["spec"])
 		for i in params:
 			if type(params[i]) is list:
 				params[i]=replaceVars(acenv,params[i])
