@@ -34,7 +34,7 @@ class Email(Component):
 				headers[h]=", ".join(headers[h])
 		if D:acenv.debug("Computed headers: %s",headers)
 		recipients=headers["To"]
-		#content=replaceVars(acenv,content)
+		content=replaceVars(acenv,content)
 		#typ=type(recipients)
 		#if typ is list:
 		#	if D:acenv.debug("Recipient is list.")
