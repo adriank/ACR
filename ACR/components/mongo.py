@@ -60,7 +60,7 @@ class Mongo(Component):
 		except Exception,e:
 			return {
 				"@status":"error",
-				"error":type(e),
+				"@error":type(e),
 				"@message":str(e)
 			}
 		if D:acenv.info("inserted: %s",o)

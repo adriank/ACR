@@ -29,18 +29,27 @@ class Email(Component):
 		headers={}
 		params=conf["params"]
 		for h in params:
-			headers[h]=replaceVars(acenv,params[h])
+			headers[h]=replaceVars(acenv,params[h],)
+			if type(headers[h]) is list:
+				headers[h]=", ".join(headers[h])
 		if D:acenv.debug("Computed headers: %s",headers)
 		recipients=headers["To"]
-		content=replaceVars(acenv,content)
-		typ=type(recipients)
-		if typ is list:
-			if D:acenv.debug("Recipient is list.")
-			for i in recipients:
-				headers["To"]=i
-				mail.send(headers,content)
-		elif typ in [str,unicode]:
+		#content=replaceVars(acenv,content)
+		#typ=type(recipients)
+		#if typ is list:
+		#	if D:acenv.debug("Recipient is list.")
+		#	for i in recipients:
+		#		headers["To"]=i
+		#		mail.send(headers,content)
+		#elif typ in [str,unicode]:
+		try:
 			mail.send(headers,content)
+		except Exception,e:
+			return {
+				"@status":"error",
+				"@error":type(e),
+				"@message":str(e)
+			}
 		return {"@status":"ok"}
 
 	def parseAction(self,conf):
