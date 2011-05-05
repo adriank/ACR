@@ -31,12 +31,8 @@ def get(d,path,falseOnNotFound=True,acenv=False):
 		ret=d
 		i=0
 		for o in path:
-			if o[0]=="@":
-				ret=getattr(ret, o[1:])
-				break
-			else:
-				ret=ret[o]
-				i+=1
+			ret=ret[o]
+			i+=1
 	except (AttributeError, KeyError, TypeError):
 		if D: acenv.debug("END dicttree.get with: ValueNotFound.")
 		if falseOnNotFound:
