@@ -99,10 +99,6 @@ class Mongo(Component):
 	def find(self,acenv,config,count=False):
 		D=acenv.doDebug
 		P=acenv.doProfiling
-		if D:
-			if not count: acenv.debug("START Mongo:find with:\n%s",config)
-			else:acenv.debug("START Mongo:count with:\n%s",config)
-
 		params=config["params"]
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		p={
