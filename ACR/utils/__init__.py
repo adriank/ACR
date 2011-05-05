@@ -135,6 +135,7 @@ typesMap={
 	"html":types.Default,
 	"email":types.Email,
 	"number":types.Number,
+	"boolean":types.Boolean,
 	"empty":types.Empty,
 	"nonempty":types.NonEmpty,
 	"hexcolor":types.HEXColor,

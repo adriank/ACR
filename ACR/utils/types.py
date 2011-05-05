@@ -19,6 +19,7 @@
 
 from ACR.utils.xmlextras import unescapeQuotes
 from ACR.errors import Error
+from ACR.utils import str2obj
 import re
 
 class Default(object):
@@ -90,6 +91,15 @@ class Number(Default):
 
 	def _prepareValue(self,value):
 		return int(value)
+
+class Boolean(Default):
+	def validate(self,value,config=None):
+		if type(str2obj(value)) in [str,unicode]:
+			raise Error("NotNumber", "Should be number, but is %s",value)
+		return True
+
+	def _prepareValue(self,value):
+		return str2obj(value)
 
 class Email(Default):
 	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
