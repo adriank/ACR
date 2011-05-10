@@ -467,7 +467,7 @@ class Tree(object):
 					if D: acenv.info("doing comparison '%s' is '%s'",fst,snd)
 					ret=fst is snd
 				if op=="is not":
-					if D: acenv.info("'not in' found. Returning %s",not ret)
+					if D: acenv.info("'is not' found. Returning %s",not ret)
 					return not ret
 				else:
 					return ret

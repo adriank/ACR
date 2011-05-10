@@ -24,13 +24,14 @@ SENDMAIL = "/usr/sbin/sendmail"
 def send(headers, content):
 	m=[]
 	for i in headers:
-		m.append(i.strip()+": "+headers[i]+"\n")
+		m.append(i.strip().encode("utf8")+": "+headers[i].encode("utf8")+"\n")
 	m.append("\n")
-	m.append(content)
+	m.append(content.encode("utf8"))
 	try:
 		p=Popen([SENDMAIL,"-t"], bufsize=2024, stdin=PIPE)
 	except OSError:
 		raise Exception("%s failed with error code %s"%(SENDMAIL,res))
+	print "".join(m)
 	for i in m:
 		p.stdin.write(i)
 	p.stdin.close()
