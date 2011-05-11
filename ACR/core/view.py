@@ -385,7 +385,7 @@ class View(object):
 				if action_type==PUSH:
 					pointer=action["path"].execute(acenv)
 					if action_type==PUSH and type(pointer) is not list:
-						raise Error("NotArrayError", "Path did not return array.")
+						raise Error("NotArrayError", "Path did not return array %s."%action["name"])
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
 					#elif action["type"]==SET:
