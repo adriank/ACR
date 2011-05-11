@@ -29,7 +29,7 @@ class Email(Component):
 		headers={}
 		params=conf["params"]
 		for h in params:
-			headers[h]=replaceVars(acenv,params[h],)
+			headers[h]=replaceVars(acenv,params[h])
 			if type(headers[h]) is list:
 				headers[h]=", ".join(headers[h])
 		if D:acenv.debug("Computed headers: %s",headers)

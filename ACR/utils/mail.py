@@ -24,9 +24,17 @@ SENDMAIL = "/usr/sbin/sendmail"
 def send(headers, content):
 	m=[]
 	for i in headers:
-		m.append(i.strip().encode("utf8")+": "+headers[i].encode("utf8")+"\n")
+		k=i.strip()
+		v=headers[i]
+		if type(k) is unicode:
+			k=k.encode("utf8")
+		if type(v) is unicode:
+			v=v.encode("utf8")
+		m.append(k+": "+v+"\n")
 	m.append("\n")
-	m.append(content.encode("utf8"))
+	if type(content) is unicode:
+		content=content.encode("utf8")
+	m.append(content)
 	try:
 		p=Popen([SENDMAIL,"-t"], bufsize=2024, stdin=PIPE)
 	except OSError:
