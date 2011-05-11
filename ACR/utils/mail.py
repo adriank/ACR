@@ -31,7 +31,6 @@ def send(headers, content):
 		p=Popen([SENDMAIL,"-t"], bufsize=2024, stdin=PIPE)
 	except OSError:
 		raise Exception("%s failed with error code %s"%(SENDMAIL,res))
-	print "".join(m)
 	for i in m:
 		p.stdin.write(i)
 	p.stdin.close()

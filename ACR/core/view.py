@@ -361,7 +361,7 @@ class View(object):
 							if action_type==PUSH:
 								pointer=action["path"].execute(acenv)
 								if type(pointer) is not list:
-									raise Error("NotArrayError", "Path did not return array.")
+									raise Error("NotArrayError", "Path did not return array in %s."%action["name"])
 								pointer.append(default.execute(acenv))
 								continue
 						getStorage(acenv,"rs")[action["name"]]=default.execute(acenv)
