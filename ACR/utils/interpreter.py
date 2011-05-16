@@ -14,6 +14,9 @@ import re
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree
 from ACR.utils.xmlextras import escape, unescape
+#print generator
+import types
+generator=types.GeneratorType
 
 class ProgrammingError(Exception):
 	pass
@@ -382,8 +385,12 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
-SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
-NUM_TYPES=[int,float,long]
+SELECTOR_OPS=("is",">","<","is not",">=","<=","in","not in",":")
+NUM_TYPES=(int,float,long)
+STR_TYPES=(str,unicode)
+#setting external modules to None, thus enabling lazy loading.
+#this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
+timeutils=ObjectId=calendar=None
 
 class Tree(object):
 	def __init__(self,tree):
@@ -397,7 +404,7 @@ class Tree(object):
 
 	def execute(self,acenv):
 		D=acenv.doDebug
-		if D: acenv.debug("START Tree.execute")
+		if D: acenv.start("Tree.execute")
 		def exe(node):
 			"""
 				node[0] - operator name
@@ -405,10 +412,12 @@ class Tree(object):
 			"""
 			if D: acenv.debug("executing node '%s'", node)
 			type_node=type(node)
-			if node is None or type_node in [str,int,float,long,bool]:
+			if node is None or type_node in (str,int,float,long,bool):
 				return node
+			#TODO change to yield
 			elif type_node is list:
 				return map(exe,node)
+			#TODO change to yield?
 			elif type_node is dict:
 				ret={}
 				for i in node.iteritems():
@@ -452,15 +461,15 @@ class Tree(object):
 				if D: acenv.debug("doing not '%s'",)
 				return not exe(node[1])
 			elif op=="in":
-				if D: acenv.debug("doing '%s' in '%s'",fst,snd)
+				if D: acenv.debug("doing '%s' in '%s'",exe(node[1]),exe(node[2]))
 				return exe(node[1]) in exe(node[2])
 			elif op=="not in":
 				return exe(node[1]) not in exe(node[2])
-			elif op in ["is","is not"]:
+			elif op in ("is","is not"):
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
-				if type(fst) is str or type(snd) is str:
+				if type(fst) in STR_TYPES or type(snd) in STR_TYPES:
 					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 					ret=str(fst) == str(snd)
 				else:
@@ -477,8 +486,6 @@ class Tree(object):
 					return node[1][1:-1]
 				elif fstLetter.isdigit:
 					return int(node[1])
-				else:
-					evaluatePath()
 			elif op=="(storage)":
 				return getStorage(acenv,node[1])
 			elif op=="(current)":
@@ -537,7 +544,7 @@ class Tree(object):
 							#TODO move it to tree building phase
 							if type(s[1]) is tuple and s[1][0]=="name":
 								s=(s[0],s[1][1],s[2])
-							if type(s[1]) is str:
+							if type(s[1]) in STR_TYPES:
 								try:
 									if exe((s[0],i[s[1]],s[2])):
 										nodeList_append(i)
@@ -552,7 +559,7 @@ class Tree(object):
 									pass
 						return nodeList
 					second=exe(node[2])
-					if type(first) in [list,tuple,str]:
+					if type(first) in [list,tuple]+STR_TYPES:
 						if type(second) is int or second.isdigit():
 							return first[int(second)]
 						return filter(None,exe((".",first,second)))
@@ -617,15 +624,22 @@ class Tree(object):
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
 				elif fnName in ["objectID","ObjectId"]:
-					from bson.objectid import ObjectId
+					if not ObjectId:
+						from bson.objectid import ObjectId
 					return ObjectId(args)
 				elif fnName=="now":
-					from ACR.utils import now
-					return now()
+					if not timeutils:
+						from ACR.utils import timeutils
+					return timeutils.now()
+				elif fnName=="age":
+					if not timeutils:
+						from ACR.utils import timeutils
+					return timeutils.age()
 				elif fnName=="toMils":
 					if args.utcoffset() is not None:
 						args=args-args.utcoffset()
-					import calendar
+					if not calendar:
+						import calendar
 					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsecond / 1000)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")

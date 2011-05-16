@@ -56,17 +56,22 @@ def set(d, path, o):
 		d=d[key]
 	d[path[-1]]=o
 
-#TODO implement limit function
-def flatten(fragment,limit=False):
+def flatten(fragment,skip=False):
 	def rec(frg):
 		dtype=type(frg)
 		if dtype is list:
 			for i in frg:
-				rec(i)
+				for j in rec(i):
+					yield j
 		elif dtype is dict:
-			ret.append(frg)
+			yield frg
 			for i in frg.iteritems():
-				rec(i[1])
-	ret=[]
-	rec(fragment)
-	return ret
+				for j in rec(i[1]):
+					yield j
+
+	g=rec(fragment)
+	if skip:
+		for i in xrange(skip):
+			g.next()
+	for i in g:
+		yield i

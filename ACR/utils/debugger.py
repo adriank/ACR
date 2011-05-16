@@ -12,7 +12,7 @@ class Debugger(object):
 	CRITICAL=50
 	ERROR=40
 	WARNING=30
-	INFO=20
+	INFO=START=END=20
 	DEBUG=10
 	doDebug=False
 
@@ -22,9 +22,12 @@ class Debugger(object):
 		self.dbgMap={
 			"debug":self.DEBUG,
 			"info":self.INFO,
+			"start":self.START,
+			"end":self.END,
 			"warning":self.WARNING,
 			"error":self.ERROR,
-			"critical":self.CRITICAL}
+			"critical":self.CRITICAL
+		}
 		try:
 			if app.dbg["enabled"]:
 				self.doDebug=True
@@ -32,7 +35,6 @@ class Debugger(object):
 				self.info("All strings will be cuted to %s chatacters. You can change this behavior by setting cutafter attribute of debuger in config file. 0 to switch it off."%self.CUT_AFTER)
 		except (KeyError, TypeError):
 			pass
-			#print 'Cannot read debug settings from app config.'
 
 	def debug(self, *s):
 		if self.dbgfn and self.level <= self.DEBUG:
@@ -41,6 +43,14 @@ class Debugger(object):
 	def info(self, *s):
 		if self.dbgfn and self.level <= self.INFO:
 			self.dbgfn("INFO", s)
+
+	def start(self, *s):
+		if self.dbgfn and self.level <= self.INFO:
+			self.dbgfn("START", s)
+
+	def end(self, *s):
+		if self.dbgfn and self.level <= self.INFO:
+			self.dbgfn("END", s)
 
 	def warning(self, *s):
 		if self.dbgfn and self.level <= self.WARNING:
