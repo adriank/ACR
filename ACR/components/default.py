@@ -29,6 +29,21 @@ class Default(Component):
 		if D: env.debug("END default component generation with: '%s...'", ret)
 		return ret
 
+	#def execute(self, acenv, conf):
+	#	D=acenv.doDebug
+	#	if D: acenv.debug("START Interpreter with: '%s'", conf["expression"].tree)
+	#	try:
+	#		ret=conf["expression"].execute(acenv)
+	#		if D: acenv.debug("END Interpreter with: '%s'", ret)
+	#		return ret
+	#	except Exception,e:
+	#		if D: acenv.error("Execution failed with error: %s", str(e))
+	#		return {
+	#			"@status":"error",
+	#			"@error":"ExecutionFailed",
+	#			"@message":str(e)
+	#		}
+
 	def parseAction(self,config):
 		s=[]
 		for elem in config["content"]:

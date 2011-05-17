@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.#@marcin: docstrings
 
+from types import GeneratorType as generator
+
 def get(d,path,falseOnNotFound=True,acenv=False):
 	"""
 	Returns value from dict/object hierarchy.
@@ -59,7 +61,7 @@ def set(d, path, o):
 def flatten(fragment,skip=False):
 	def rec(frg):
 		dtype=type(frg)
-		if dtype is list:
+		if dtype in (list,generator):
 			for i in frg:
 				for j in rec(i):
 					yield j

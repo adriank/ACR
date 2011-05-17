@@ -12,11 +12,8 @@
 import sys
 import re
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree
+from ACR.utils import getStorage, dicttree,iterators,generator
 from ACR.utils.xmlextras import escape, unescape
-#print generator
-import types
-generator=types.GeneratorType
 
 class ProgrammingError(Exception):
 	pass
@@ -385,9 +382,22 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
+def skip(g,n):
+	if type(n) is not int:
+		raise TypeError("generator indices must be integers, not %s"%type(n).__name__)
+	j=0
+	for i in g:
+		if j is n:
+			return i
+		j+=1
+	raise IndexError("generator index out of range")
+
 SELECTOR_OPS=("is",">","<","is not",">=","<=","in","not in",":")
-NUM_TYPES=(int,float,long)
-STR_TYPES=(str,unicode)
+#it must be list because of further concatenations
+NUM_TYPES=[int,float,long]
+STR_TYPES=[str,unicode]
+ITER_TYPES=iterators
+#TODO check if this is valid with import statement
 #setting external modules to None, thus enabling lazy loading.
 #this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
 timeutils=ObjectId=calendar=None
@@ -405,6 +415,7 @@ class Tree(object):
 	def execute(self,acenv):
 		D=acenv.doDebug
 		if D: acenv.start("Tree.execute")
+		#TODO change to yield?
 		def exe(node):
 			"""
 				node[0] - operator name
@@ -414,10 +425,8 @@ class Tree(object):
 			type_node=type(node)
 			if node is None or type_node in (str,int,float,long,bool):
 				return node
-			#TODO change to yield
 			elif type_node is list:
 				return map(exe,node)
-			#TODO change to yield?
 			elif type_node is dict:
 				ret={}
 				for i in node.iteritems():
@@ -496,15 +505,15 @@ class Tree(object):
 				fst=exe(node[1])
 				if D: acenv.debug("left is '%s'",fst)
 				if node[2][0]=="*":
-					return type(fst) is list and fst or [fst]
+					return type(fst) in ITER_TYPES and fst or [fst]
 				snd=exe(node[2])
 				if D: acenv.debug("right is '%s'",snd)
-				if type(fst) is list:
+				if type(fst) in ITER_TYPES:
 					ret=[]
 					ret_append=ret.append
 					for i in fst:
 						try:
-							ret_append(i.get(snd))
+							ret_append(i[snd])
 						except:
 							pass
 					return ret
@@ -529,9 +538,10 @@ class Tree(object):
 				return {}
 			elif op=="[":
 				len_node=len(node)
+				#TODO move it to tree generation phase
 				if len_node is 1: # empty list
 					return []
-				if len_node is 2: # list
+				if len_node is 2: # list - preserved to catch possible event of leaving it as '[' operator
 					return map(exe,node[1])
 				if len_node is 3: # operator []
 					first=exe(node[1])
@@ -559,15 +569,25 @@ class Tree(object):
 									pass
 						return nodeList
 					second=exe(node[2])
-					if type(first) in [list,tuple]+STR_TYPES:
+					tfirst=type(first)
+					if tfirst in [list,tuple,generator]+STR_TYPES:
 						if type(second) is int or second.isdigit():
-							return first[int(second)]
-						return filter(None,exe((".",first,second)))
+							n=int(second)
+							if tfirst is generator:
+								if n>0:
+									return skip(first,n)
+								elif n==0:
+									return first.next()
+								else:
+									first=list(first)
+							else:
+								return first[n]
+						return exe((".",first,second))
 					else:
 						try:
 							return first[second]
 						except:
-							return None
+							return []
 				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="(":
 				""" Built-in functions """
@@ -593,21 +613,19 @@ class Tree(object):
 					return float(args)
 				elif fnName=="str":
 					return str(args)
-				elif fnName=="len":
+				elif fnName in ("count","len"):
+					if args in (True,False,None):
+						return args
 					return len(args)
 				elif fnName=="type":
 					ret=type(args).__name__
-					if ret=="list":
+					if ret in ITER_TYPES:
 						return "array"
 					if ret=="dict":
 						return "object"
 					return ret
 				elif fnName=="round":
 					return round(*args)
-				elif fnName=="count":
-					if args in [True,False,None]:
-						return args
-					return len(args)
 				elif fnName=="sort":
 					args.sort()
 					return args
@@ -615,6 +633,8 @@ class Tree(object):
 					from ACR.utils import generateID
 					return generateID()
 				elif fnName=="reverse":
+					if type(args) is generator:
+						args=list(args)
 					args.reverse()
 					return args
 				elif fnName=="escape":
@@ -623,21 +643,23 @@ class Tree(object):
 					return unescape(args)
 				elif fnName=="replace":
 					return re.sub(args[1],args[2],args[0])
-				elif fnName in ["objectID","ObjectId"]:
+				elif fnName in ("objectID","ObjectId"):
+					global ObjectId
 					if not ObjectId:
 						from bson.objectid import ObjectId
 					return ObjectId(args)
-				elif fnName=="now":
+				elif fnName in ("now","age"):
+					global timeutils
 					if not timeutils:
 						from ACR.utils import timeutils
-					return timeutils.now()
-				elif fnName=="age":
-					if not timeutils:
-						from ACR.utils import timeutils
-					return timeutils.age()
+					if fnName=="now":
+						return timeutils.now()
+					if fnName=="age":
+						return timeutils.age()
 				elif fnName=="toMils":
 					if args.utcoffset() is not None:
 						args=args-args.utcoffset()
+					global calendar
 					if not calendar:
 						import calendar
 					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsecond / 1000)
@@ -647,8 +669,8 @@ class Tree(object):
 				return node
 
 		D=acenv.doDebug
-		if type(self.tree) not in [tuple,list,dict]:
+		if type(self.tree) not in (tuple,list,dict):
 			return self.tree
 		ret=exe(self.tree)
-		if D: acenv.debug("END Tree.execute with: '%s'", ret)
+		if D: acenv.end("Tree.execute with: '%s'", ret)
 		return ret

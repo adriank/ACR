@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from ACR.utils.interpreter import *
-from ACR.utils.generations import *
 import readline
+from types import GeneratorType as generator
 
 class FakeEnv(object):
 	requestStorage={
@@ -40,7 +40,13 @@ try:
 			tree=make_tree(raw_input(">>> "))
 			if debug:
 				print tree.tree
-			print tree.execute(fakeEnv)
+			r=tree.execute(fakeEnv)
+			if type(r) is generator:
+				if debug:
+					print "returning generator"
+				print list(r)
+			else:
+				print r
 		#except Exception,e:
 		#	print e
 except KeyboardInterrupt:

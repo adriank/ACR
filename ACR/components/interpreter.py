@@ -23,10 +23,10 @@ from ACR.components import Component
 class Interpreter(Component):
 	def generate(self, acenv, conf):
 		D=acenv.doDebug
-		if D: acenv.debug("START Interpreter with: '%s'", conf["expression"].tree)
+		if D: acenv.start("Interpreter with: '%s'", conf["expression"].tree)
 		try:
 			ret=conf["expression"].execute(acenv)
-			if D: acenv.debug("END Interpreter with: '%s'", ret)
+			if D: acenv.end("Interpreter with: '%s'", ret)
 			return ret
 		except Exception,e:
 			if D: acenv.error("Execution failed with error: %s", str(e))

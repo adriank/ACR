@@ -9,6 +9,9 @@ from ACR.utils.xmlextras import escapeQuotes
 from ACR.utils import dicttree
 from ACR.utils.timeutils import now
 from ACR import acconfig
+from types import GeneratorType as generator
+
+iterators=[list,generator]
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -125,7 +128,7 @@ def str2obj(s):
 		return None
 	return s
 
-from ACR.utils import types
+from ACR.utils import actypes as types
 typesMap={
 	"default":types.Default,
 	"text":types.Text,

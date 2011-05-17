@@ -21,7 +21,7 @@ from ACR.utils.xmlextras import *
 from ACR import acconfig
 from ACR import components
 from ACR.errors import *
-from ACR.utils import getStorage,prepareVars,typesMap,str2obj
+from ACR.utils import getStorage,prepareVars,typesMap,str2obj,iterators
 from ACR.utils.interpreter import make_tree
 import os,re
 
@@ -35,6 +35,7 @@ COMMAND="command"
 INHERITS="inherits"
 IMPORT="import"
 
+#there is no particular reason to do it outside the View class
 def parsePosts(nodes):
 	if not nodes:
 		return (None,None)
@@ -100,7 +101,7 @@ class View(object):
 			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
-		except (IOError):
+		except IOError:
 			raise Error("ParentViewNotFound","View '%s' not found."%attrs["inherits"])
 		except Exception,e:
 			raise Error("ParentViewError",str(e))
@@ -165,8 +166,8 @@ class View(object):
 			if not attrs:
 				attrs={"name":"unnamedCondition"}
 			ret.append({
-				"name":attrs.get("name"),
-				"value":make_tree(attrs.get("value") or "".join(i[2]).strip())
+				"name":attrs.get("name","unnamedCondition"),
+				"value":make_tree(attrs.get("value","".join(i[2]).strip()))
 			})
 		return ret
 
@@ -231,7 +232,7 @@ class View(object):
 			o={
 				"type":typ,#NODE or SET
 				#"command":cmd,#command name
-				"name":attrs.get("name",None),
+				"name":attrs.get("name","unnamedAction"),
 				"component":componentName,
 				"config":self.app.getComponent(componentName).parseAction(self.parseAction(action)),
 			}
@@ -271,25 +272,23 @@ class View(object):
 						ret.append(o)
 			else:
 				ret.append(o)
-		#for i in ret:
-		#	print i["name"]
 		return ret
 
 	def fillPosts(self,acenv):
 		D=acenv.doDebug
 		if D:
-			acenv.debug("START View:fillPosts")
+			acenv.start("View:fillPosts")
 		if not self.postSchemas or not len(self.postSchemas):
 			if D:
 				acenv.debug("posts schema is empty.")
-				acenv.debug("END View:fillPosts with: 'True'.")
+				acenv.end("View:fillPosts with: 'True'.")
 			return True
 		if D:
 			acenv.debug("postSchemas is %s",self.postSchemas)
 			acenv.debug("posts is %s",acenv.posts)
 		list=acenv.posts or {}
 		if len(list)<self.postCount:
-			raise Error("notEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
+			raise Error("NotEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
 		postSchemas=self.postSchemas
 		try:
 			for i in postSchemas:
@@ -302,15 +301,15 @@ class View(object):
 			else:
 				raise e
 		if D:acenv.debug("requestStorage is %s",acenv.requestStorage)
-		if D:acenv.debug("END View:fillPosts")
+		if D:acenv.end("View:fillPosts")
 
 	def fillInputs(self,acenv):
 		D=acenv.doDebug
-		if D: acenv.debug("START fillInputs")
+		if D: acenv.start("View:fillInputs")
 		inputSchemas=self.inputSchemas
 		if D: acenv.debug("inputSchemas are: %s",inputSchemas)
 		if not inputSchemas or not len(inputSchemas):
-			if D: acenv.debug("END View:fillInputs with: list of inputs is empty")
+			if D: acenv.end("View:fillInputs with: list of inputs is empty")
 			return True
 		list=acenv.inputs
 		if D: acenv.debug("inputs are: %s",list)
@@ -331,14 +330,14 @@ class View(object):
 					raise e
 		if D:
 			acenv.debug("RS is: %s",acenv.requestStorage)
-			acenv.debug("END View:fillInputs")
+			acenv.end("View:fillInputs")
 
 	def generate(self,acenv):
 		D=acenv.doDebug
-		if D: acenv.debug("START View.generate of view: %s",self.name)
+		if D: acenv.start("View.generate of view: %s",self.name)
 		try:
 			self.inputSchemas
-		except:# inputs is unNODEd
+		except:# inputs is undefined
 			acenv.generations.append({"type":"view","name":self.name})
 			self.transform(acenv)
 			return
@@ -382,13 +381,22 @@ class View(object):
 			#if not action["name"]:
 			#		continue
 			if path_set:
+				pointer=action["path"].execute(acenv)
 				if action_type==PUSH:
-					pointer=action["path"].execute(acenv)
-					if action_type==PUSH and type(pointer) is not list:
+					if type(pointer) not in iterators:
 						raise Error("NotArrayError", "Path did not return array %s."%action["name"])
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
-					#elif action["type"]==SET:
+				elif action["type"]==SET:
+					if type(pointer) not in iterators+[dict]:
+						raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
+					if type(pointer) is dict:
+						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
+						pointer[action["name"]]=generation
+					elif type(pointer) in iterators:
+						for i in pointer:
+							if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
+							i[action["name"]]=generation
 				#	pointer=generation
 			else:
 				if action["type"]==NODE:
