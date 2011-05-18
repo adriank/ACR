@@ -22,7 +22,7 @@ from ACR import acconfig
 from ACR import components
 from ACR.errors import *
 from ACR.utils import getStorage,prepareVars,typesMap,str2obj,iterators
-from ACR.utils.interpreter import make_tree
+from ACR.utils.interpreter import make_tree,Tree
 import os,re
 
 NODE="node"
@@ -383,6 +383,8 @@ class View(object):
 			if path_set:
 				pointer=action["path"].execute(acenv)
 				if action_type==PUSH:
+					if type(generation) is Tree:
+						generation=generation.execute(acenv)
 					if type(pointer) not in iterators:
 						raise Error("NotArrayError", "Path did not return array %s."%action["name"])
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
@@ -391,14 +393,20 @@ class View(object):
 					if type(pointer) not in iterators+[dict]:
 						raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
 					if type(pointer) is dict:
+						if type(generation) is Tree:
+							generation=generation.execute(acenv)
 						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
 						pointer[action["name"]]=generation
 					elif type(pointer) in iterators:
 						for i in pointer:
+							if type(generation) is Tree:
+								generation=generation.execute(acenv)
 							if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
 							i[action["name"]]=generation
 				#	pointer=generation
 			else:
+				if type(generation) is Tree:
+					generation=generation.execute(acenv)
 				if action["type"]==NODE:
 					if D: acenv.info("Adding node %s with: %s",action["name"],generation)
 					#generation.name=action["name"]

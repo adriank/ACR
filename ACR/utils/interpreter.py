@@ -392,7 +392,7 @@ def skip(g,n):
 		j+=1
 	raise IndexError("generator index out of range")
 
-SELECTOR_OPS=("is",">","<","is not",">=","<=","in","not in",":")
+SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
 #it must be list because of further concatenations
 NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
@@ -546,7 +546,7 @@ class Tree(object):
 				if len_node is 3: # operator []
 					first=exe(node[1])
 					s=node[2]
-					if type(s) is tuple and s[0] in SELECTOR_OPS:
+					if type(s) is tuple:# and s[0] in SELECTOR_OPS:
 						nodeList=[]
 						nodeList_append=nodeList.append
 						for i in first:

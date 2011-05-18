@@ -25,7 +25,7 @@ class Interpreter(Component):
 		D=acenv.doDebug
 		if D: acenv.start("Interpreter with: '%s'", conf["expression"].tree)
 		try:
-			ret=conf["expression"].execute(acenv)
+			ret=conf["expression"]
 			if D: acenv.end("Interpreter with: '%s'", ret)
 			return ret
 		except Exception,e:
