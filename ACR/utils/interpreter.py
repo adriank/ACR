@@ -12,7 +12,7 @@
 import sys
 import re
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree,iterators,generator
+from ACR.utils import getStorage, dicttree,iterators,generator,chain
 from ACR.utils.xmlextras import escape, unescape
 
 class ProgrammingError(Exception):
@@ -178,6 +178,12 @@ symbol("@")
 def nud(self):
 	self.id="(current)"
 	return self
+
+@method(symbol("("))
+def nud(self):
+	expr=expression()
+	advance(")")
+	return expr
 
 @method(symbol("."))
 def led(self, left):
@@ -398,9 +404,9 @@ NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
 ITER_TYPES=iterators
 #TODO check if this is valid with import statement
-#setting external modules to None, thus enabling lazy loading.
+#setting external modules to 0, thus enabling lazy loading. 0 ensures that Pythonic types are never matched.
 #this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
-timeutils=ObjectId=calendar=None
+timeutils=ObjectId=calendar=0
 
 class Tree(object):
 	def __init__(self,tree):
@@ -442,9 +448,14 @@ class Tree(object):
 			elif op=="+":
 				if len(node)>2:
 					fst=exe(node[1])
-					if type(fst) is dict:
-						fst.update(exe(node[2]))
+					snd=exe(node[2])
+					fsttype=type(fst)
+					if fsttype is dict:
+						fst.update(snd)
 						return fst
+					sndtype=type(snd)
+					if fsttype in ITER_TYPES or sndtype in ITER_TYPES:
+						return chain(fst,snd)
 					return fst + exe(node[2])
 				else:
 					return exe(node[1])
@@ -570,10 +581,10 @@ class Tree(object):
 						return nodeList
 					second=exe(node[2])
 					tfirst=type(first)
-					if tfirst in [list,tuple,generator]+STR_TYPES:
+					if tfirst in [list,tuple,generator,chain]+STR_TYPES:
 						if type(second) is int or second.isdigit():
 							n=int(second)
-							if tfirst is generator:
+							if tfirst in (generator,chain):
 								if n>0:
 									return skip(first,n)
 								elif n==0:
@@ -627,6 +638,8 @@ class Tree(object):
 				elif fnName=="round":
 					return round(*args)
 				elif fnName=="sort":
+					if type(args) is generator:
+						args=list(args)
 					args.sort()
 					return args
 				elif fnName=="generateID":
@@ -655,7 +668,7 @@ class Tree(object):
 					if fnName=="now":
 						return timeutils.now()
 					if fnName=="age":
-						return timeutils.age()
+						return timeutils.age(args,getStorage(acenv,"rs")["__lang__"])
 				elif fnName=="toMils":
 					if args.utcoffset() is not None:
 						args=args-args.utcoffset()

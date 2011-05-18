@@ -4,6 +4,7 @@
 from ACR.utils.interpreter import *
 import readline
 from types import GeneratorType as generator
+from itertools import chain
 
 class FakeEnv(object):
 	requestStorage={
@@ -41,7 +42,7 @@ try:
 			if debug:
 				print tree.tree
 			r=tree.execute(fakeEnv)
-			if type(r) is generator:
+			if type(r) in (generator,chain):
 				if debug:
 					print "returning generator"
 				print list(r)

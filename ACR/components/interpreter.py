@@ -24,17 +24,17 @@ class Interpreter(Component):
 	def generate(self, acenv, conf):
 		D=acenv.doDebug
 		if D: acenv.start("Interpreter with: '%s'", conf["expression"].tree)
-		try:
-			ret=conf["expression"]
-			if D: acenv.end("Interpreter with: '%s'", ret)
-			return ret
-		except Exception,e:
-			if D: acenv.error("Execution failed with error: %s", str(e))
-			return {
-				"@status":"error",
-				"@error":"ExecutionFailed",
-				"@message":str(e)
-			}
+		#try:
+		ret=conf["expression"]
+		if D: acenv.end("Interpreter with: '%s'", ret)
+		return ret
+		#except Exception,e:
+		#	if D: acenv.error("Execution failed with error: %s", str(e))
+		#	return {
+		#		"@status":"error",
+		#		"@error":"ExecutionFailed",
+		#		"@message":str(e)
+		#	}
 
 	def parseAction(self, config):
 		if config["command"] not in ["execute","exec"]:

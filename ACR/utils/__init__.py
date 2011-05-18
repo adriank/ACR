@@ -10,8 +10,9 @@ from ACR.utils import dicttree
 from ACR.utils.timeutils import now
 from ACR import acconfig
 from types import GeneratorType as generator
+from itertools import chain
 
-iterators=[list,generator]
+iterators=[list,generator,chain]
 
 if hasattr(random, 'SystemRandom'):
 	randrange=random.SystemRandom().randrange
@@ -24,13 +25,13 @@ RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
 def getStorage(env,s):
 	D=env.doDebug
 	if D:
-		env.debug("START getStorage with s= '%s'",s)
+		env.start("getStorage with s= '%s'",s)
 	s=s.lower()
 	if s=="session" or s=="ss":
 		if not env.sessionStorage:
-			if D: env.debug("END getStorage with: session do not exists")
+			if D: env.end("getStorage with: session do not exists")
 			return False
-		if D: env.debug("END getStorage with: session storage")
+		if D: env.end("getStorage with: session storage")
 		return env.sessionStorage.data
 	#elif s=="app" or s=="as":
 	#	return
@@ -39,7 +40,7 @@ def getStorage(env,s):
 	#	return
 	elif s=="global" or s=="gs":
 		return {}
-	if D: env.debug("END getStorage with: request storage")
+	if D: env.end("getStorage with: request storage")
 	return env.requestStorage
 
 def replaceVars(env,l,fn=None):
@@ -48,7 +49,7 @@ def replaceVars(env,l,fn=None):
 	fn - function that will be executed on each string
 	"""
 	D=env.doDebug
-	if D: env.debug("START replaceVars with: path='%s' and fn='%s'", l, fn)
+	if D: env.start("replaceVars with: path='%s' and fn='%s'", l, fn)
 	try:
 		l.__iter__
 	except:

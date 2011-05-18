@@ -230,7 +230,7 @@ class View(object):
 			ns,cmd=NS2Tuple(attrs.get(COMMAND,"default"))
 			componentName=self.namespaces.get(ns,"default")
 			o={
-				"type":typ,#NODE or SET
+				"type":typ,#NODE, SET...
 				#"command":cmd,#command name
 				"name":attrs.get("name","unnamedAction"),
 				"component":componentName,
@@ -400,9 +400,10 @@ class View(object):
 					elif type(pointer) in iterators:
 						for i in pointer:
 							if type(generation) is Tree:
-								generation=generation.execute(acenv)
-							if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
-							i[action["name"]]=generation
+								generation.current=i
+								g=generation.execute(acenv)
+							if D: acenv.info("Setting %s to %s in %s",action["name"],g,action["path"])
+							i[action["name"]]=g
 				#	pointer=generation
 			else:
 				if type(generation) is Tree:
