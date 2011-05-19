@@ -429,7 +429,7 @@ class Tree(object):
 			"""
 			if D: acenv.debug("executing node '%s'", node)
 			type_node=type(node)
-			if node is None or type_node in (str,int,float,long,bool):
+			if node is None or type_node in (str,int,float,long,bool,generator,chain):
 				return node
 			elif type_node is list:
 				return map(exe,node)
@@ -513,13 +513,16 @@ class Tree(object):
 			elif op=="name":
 				return node[1]
 			elif op==".":
-				fst=exe(node[1])
+				fst=node[1]
+				if type(fst) is tuple:
+					fst=exe(fst)
+				typefst=type(fst)
 				if D: acenv.debug("left is '%s'",fst)
 				if node[2][0]=="*":
-					return type(fst) in ITER_TYPES and fst or [fst]
+					return typefst in ITER_TYPES and fst or [fst]
 				snd=exe(node[2])
 				if D: acenv.debug("right is '%s'",snd)
-				if type(fst) in ITER_TYPES:
+				if typefst in ITER_TYPES:
 					ret=[]
 					ret_append=ret.append
 					for i in fst:
@@ -553,11 +556,15 @@ class Tree(object):
 				if len_node is 1: # empty list
 					return []
 				if len_node is 2: # list - preserved to catch possible event of leaving it as '[' operator
+					#TODO yielding is not possible here
+					#if type(node[1]) in (generator,chain):
+					#	for i in node[1]:
+					#		yield exe(i)
 					return map(exe,node[1])
 				if len_node is 3: # operator []
 					first=exe(node[1])
 					s=node[2]
-					if type(s) is tuple:# and s[0] in SELECTOR_OPS:
+					if type(s) is tuple and s[0] in SELECTOR_OPS:
 						nodeList=[]
 						nodeList_append=nodeList.append
 						for i in first:
@@ -581,8 +588,9 @@ class Tree(object):
 						return nodeList
 					second=exe(node[2])
 					tfirst=type(first)
-					if tfirst in [list,tuple,generator,chain]+STR_TYPES:
-						if type(second) is int or second.isdigit():
+					if tfirst in [tuple]+ITER_TYPES+STR_TYPES:
+						# nodes[N]
+						if type(second) in NUM_TYPES or second.isdigit():
 							n=int(second)
 							if tfirst in (generator,chain):
 								if n>0:
@@ -596,6 +604,7 @@ class Tree(object):
 						return exe((".",first,second))
 					else:
 						try:
+							print "ddd",first,second
 							return first[second]
 						except:
 							return []
