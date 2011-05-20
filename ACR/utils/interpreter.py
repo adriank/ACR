@@ -164,7 +164,7 @@ infix(">", 60); infix(">=", 60)
 #infix("<<", 100); infix(">>", 100)
 infix("+", 110); infix("-", 110)
 infix("*", 120); infix("/", 120); infix("//", 120)
-#infix("%", 120)
+infix("%", 120)
 prefix("-", 130); prefix("+", 130); #prefix("~", 130)
 #infix_r("**", 140)
 symbol(".", 150); symbol("[", 150); symbol("(", 150)
@@ -460,6 +460,8 @@ class Tree(object):
 					return - exe(node[1])
 			elif op=="*":
 				return exe(node[1]) * exe(node[2])
+			elif op=="%":
+				return exe(node[1]) % exe(node[2])
 			elif op=="/":
 				return exe(node[1]) / float(exe(node[2]))
 			elif op==">":
@@ -666,7 +668,7 @@ class Tree(object):
 						from ACR.utils.xmlextras import unescapeQuotes as unescape
 					return unescape(args)
 				elif fnName=="replace":
-					return str.replace(args[0],args[1],args[2])
+					return str.replace(str(args[0]),args[1],args[2])
 				elif fnName=="REsub":
 					return re.sub(args[1],args[2],args[0])
 				#array

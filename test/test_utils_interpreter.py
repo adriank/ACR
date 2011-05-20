@@ -8,7 +8,8 @@ import sys, unittest, os
 sys.setrecursionlimit(20000)
 
 class FakeEnv(object):
-	doDebug=True
+	#doDebug=True
+	doDebug=False
 	requestStorage={
 		"__lang__":"en",
 		"test":{
@@ -79,6 +80,11 @@ class Utils_interpreter(unittest.TestCase):
 	def test_arithm_mul(self):
 		self.assertEqual(execute("2*3*5*6"), 180)
 
+	def test_arithm_mod(self):
+		self.assertEqual(execute("2%3"), 2.0%3)
+		self.assertEqual(execute("2.0%3"), 2.0%3)
+		self.assertEqual(execute("float(2)%3"), float(2)%3)
+
 	def test_arithm_div(self):
 		self.assertEqual(execute("2/3"), 2.0/3)
 		self.assertEqual(execute("2.0/3"), 2.0/3)
@@ -145,10 +151,7 @@ class Utils_interpreter(unittest.TestCase):
 
 	def test_complex(self):
 		self.assertEqual(execute("23 is not 56 or 25 is 57"), True)
-		#self.assertEqual(execute("2 is 3 is not (not 5)"), )
-		#self.assertEqual(execute("1 + 2 or 3 / (not 4)"),)
-		#self.assertEqual(execute("4     and 5       - 1"), )
-		#self.assertEqual(execute("2+3/4-6*7 or 10 is not 11 and 14"), )
+		self.assertEqual(execute("2+3/4-6*7>0 or 10 is not 11 and 14"), 14)
 
 	def test_comparison_lt(self):
 		self.assertEqual(execute("2<3"), True)
