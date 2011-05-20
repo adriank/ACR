@@ -396,7 +396,7 @@ ITER_TYPES=iterators
 
 #setting external modules to 0, thus enabling lazy loading. 0 ensures that Pythonic types are never matched.
 #this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
-timeutils=ObjectId=generateID=calendar=escape=unescape=0
+timeutils=ObjectId=generateID=calendar=escape=escapeDict=unescape=unescapeDict=0
 
 class Tree(object):
 	def __init__(self,tree):
@@ -658,15 +658,15 @@ class Tree(object):
 					return str(args)
 				#string
 				elif fnName=="escape":
-					global escape
+					global escape,escapeDict
 					if not escape:
-						from ACR.utils.xmlextras import escapeQuotes as escape
-					return escape(args)
+						from ACR.utils.xmlextras import escape, escapeDict
+					return escape(args,escapeDict)
 				elif fnName=="unescape":
-					global unescape
+					global unescape,unescapeDict
 					if not unescape:
-						from ACR.utils.xmlextras import unescapeQuotes as unescape
-					return unescape(args)
+						from ACR.utils.xmlextras import unescape, unescapeDict
+					return unescape(args,unescapeDict)
 				elif fnName=="replace":
 					if type(args[0]) is unicode:
 						args[0]=args[0].encode("utf8")

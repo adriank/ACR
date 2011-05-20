@@ -192,6 +192,7 @@ class Utils_interpreter(unittest.TestCase):
 
 	def test_builtin_string(self):
 		self.assertEqual(execute("replace('foobar','oba','baz')"), 'fobazr')
+		self.assertEqual(execute("""escape('&lt;')"""), "&amp;lt;")
 		self.assertEqual(execute("""escape('<"&>')"""), "&lt;&quot;&amp;&gt;")
 		self.assertEqual(execute("""unescape('&lt;&quot;&amp;&gt;')"""), "<\"&>")
 
