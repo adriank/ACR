@@ -13,21 +13,18 @@ import unittest
 def doTests():
 	#print 'Started ACR testing.\n'
 
-	utils_init = unittest.TestLoader().loadTestsFromTestCase(Utils_init)
-	utils_dicttree = unittest.TestLoader().loadTestsFromTestCase(Utils_dicttree)
-	utils_xmlextras = unittest.TestLoader().loadTestsFromTestCase(Utils_xmlextras)
-	utils_http = unittest.TestLoader().loadTestsFromTestCase(Utils_http)
-
-	#print 'utils/init.py'
-	unittest.TextTestRunner(verbosity = 2).run(utils_init)
-	#print '\nutils/dicttree.py'
-	unittest.TextTestRunner(verbosity = 2).run(utils_dicttree)
-	#print '\nutils/interpreter.py'
+	#utils_init = unittest.TestLoader().loadTestsFromTestCase(Utils_init)
+	#utils_dicttree = unittest.TestLoader().loadTestsFromTestCase(Utils_dicttree)
+	#utils_xmlextras = unittest.TestLoader().loadTestsFromTestCase(Utils_xmlextras)
+	#utils_http = unittest.TestLoader().loadTestsFromTestCase(Utils_http)
+	#
+	##print 'utils/init.py'
+	#unittest.TextTestRunner(verbosity = 2).run(utils_init)
+	##print '\nutils/dicttree.py'
+	#unittest.TextTestRunner(verbosity = 2).run(utils_dicttree)
+	##print '\nutils/xmlextras.py'
+	#unittest.TextTestRunner(verbosity = 2).run(utils_xmlextras)
+	##print '\nutils/HTTP.py'
+	#unittest.TextTestRunner(verbosity = 2).run(utils_http)
+	print '\nutils/interpreter.py'
 	unittest.TextTestRunner(verbosity = 2).run(utils_interpreter)
-	#print '\nutils/xmlextras.py'
-	unittest.TextTestRunner(verbosity = 2).run(utils_xmlextras)
-	#print '\nutils/HTTP.py'
-	unittest.TextTestRunner(verbosity = 2).run(utils_http)
-	#print '\nutils/checktype.py'
-
-	#print 'Ended ACR testing.'

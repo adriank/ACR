@@ -12,8 +12,7 @@
 import sys
 import re
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree,iterators,generator,chain
-from ACR.utils.xmlextras import escape, unescape
+from ACR.utils import getStorage, dicttree,iterators,generator,chain,skip
 
 class ProgrammingError(Exception):
 	pass
@@ -86,7 +85,9 @@ class symbol_base(object):
 					except:
 						t_append(j)
 				if self.id is "(":
-					return (self.id,ret[1],len(t) is 1 and t[0] or t)
+					if len(t) is 1:
+						t=t[0]
+					return (self.id,ret[1],t)
 				#TODO check if this is ever used?
 				if self.id is "[":
 					return t
@@ -226,7 +227,6 @@ def led(self, left):
 	advance("]")
 	return self
 
-symbol(")")
 symbol(",")
 
 #this is for built-in functions
@@ -388,25 +388,15 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
-def skip(g,n):
-	if type(n) is not int:
-		raise TypeError("generator indices must be integers, not %s"%type(n).__name__)
-	j=0
-	for i in g:
-		if j is n:
-			return i
-		j+=1
-	raise IndexError("generator index out of range")
-
 SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
 #it must be list because of further concatenations
 NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
 ITER_TYPES=iterators
-#TODO check if this is valid with import statement
+
 #setting external modules to 0, thus enabling lazy loading. 0 ensures that Pythonic types are never matched.
 #this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
-timeutils=ObjectId=calendar=0
+timeutils=ObjectId=generateID=calendar=escape=unescape=0
 
 class Tree(object):
 	def __init__(self,tree):
@@ -449,14 +439,17 @@ class Tree(object):
 				if len(node)>2:
 					fst=exe(node[1])
 					snd=exe(node[2])
-					fsttype=type(fst)
-					if fsttype is dict:
+					typefst=type(fst)
+					if typefst is dict:
 						fst.update(snd)
 						return fst
-					sndtype=type(snd)
-					if fsttype in ITER_TYPES or sndtype in ITER_TYPES:
+					typesnd=type(snd)
+					if typefst in ITER_TYPES or typesnd in ITER_TYPES:
 						return chain(fst,snd)
-					return fst + exe(node[2])
+					if typefst in STR_TYPES or typesnd in STR_TYPES:
+						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
+						return str(fst)+str(snd)
+					return fst + snd
 				else:
 					return exe(node[1])
 			elif op=="-":
@@ -468,7 +461,7 @@ class Tree(object):
 			elif op=="*":
 				return exe(node[1]) * exe(node[2])
 			elif op=="/":
-				return exe(node[1]) / exe(node[2])
+				return exe(node[1]) / float(exe(node[2]))
 			elif op==">":
 				return exe(node[1]) > exe(node[2])
 			elif op=="<":
@@ -477,6 +470,18 @@ class Tree(object):
 				return exe(node[1]) >= exe(node[2])
 			elif op=="<=":
 				return exe(node[1]) <= exe(node[2])
+			#TODO this algorithm produces 3 for 1<2<3 and should be true
+			#elif op in "<=>=":
+			#	fst=exe(node[1])
+			#	snd=exe(node[2])
+			#	if op==">":
+			#		return fst > snd and snd or False
+			#	elif op=="<":
+			#		return fst < snd and snd or False
+			#	elif op==">=":
+			#		return fst >= snd and snd or False
+			#	elif op=="<=":
+			#		return fst <= snd and snd or False
 			elif op=="not":
 				if D: acenv.debug("doing not '%s'",)
 				return not exe(node[1])
@@ -489,9 +494,18 @@ class Tree(object):
 				if D: acenv.debug("found operator '%s'",op)
 				fst=exe(node[1])
 				snd=exe(node[2])
-				if type(fst) in STR_TYPES or type(snd) in STR_TYPES:
+				typefst=type(fst)
+				typesnd=type(snd)
+				if typefst in STR_TYPES or typesnd in STR_TYPES:
 					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
-					ret=str(fst) == str(snd)
+					ret=str(fst)==str(snd)
+				elif float in (typefst,typesnd):
+					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
+					ret=float(fst)==float(snd)
+				elif typefst is list and typesnd is list:
+					ret=fst==snd
+				elif typefst is dict and typesnd is dict:
+					ret=fst==snd
 				else:
 					if D: acenv.info("doing comparison '%s' is '%s'",fst,snd)
 					ret=fst is snd
@@ -604,7 +618,6 @@ class Tree(object):
 						return exe((".",first,second))
 					else:
 						try:
-							print "ddd",first,second
 							return first[second]
 						except:
 							return []
@@ -612,9 +625,12 @@ class Tree(object):
 			elif op=="(":
 				""" Built-in functions """
 				fnName=node[1][1]
+				args=None
 				try:
 					args=exe(node[2])
-				except: pass
+				except:
+					pass
+				#arithmetic
 				if fnName=="sum":
 					if type(args) in NUM_TYPES:
 						return args
@@ -627,49 +643,51 @@ class Tree(object):
 					if type(args) in NUM_TYPES:
 						return args
 					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
+				elif fnName=="round":
+					if type(args) is list:
+						return round(*args)
+					return round(args)
+				#casting
 				elif fnName=="int":
 					return int(args)
 				elif fnName=="float":
 					return float(args)
 				elif fnName=="str":
 					return str(args)
-				elif fnName in ("count","len"):
-					if args in (True,False,None):
-						return args
-					return len(args)
-				elif fnName=="type":
-					ret=type(args).__name__
-					if ret in ITER_TYPES:
-						return "array"
-					if ret=="dict":
-						return "object"
-					return ret
-				elif fnName=="round":
-					return round(*args)
+				#string
+				elif fnName=="escape":
+					global escape
+					if not escape:
+						from ACR.utils.xmlextras import escapeQuotes as escape
+					return escape(args)
+				elif fnName=="unescape":
+					global unescape
+					if not unescape:
+						from ACR.utils.xmlextras import unescapeQuotes as unescape
+					return unescape(args)
+				elif fnName=="replace":
+					return str.replace(args[0],args[1],args[2])
+				elif fnName=="REsub":
+					return re.sub(args[1],args[2],args[0])
+				#array
 				elif fnName=="sort":
-					if type(args) is generator:
+					if type(args) in (generator,chain):
 						args=list(args)
 					args.sort()
 					return args
-				elif fnName=="generateID":
-					from ACR.utils import generateID
-					return generateID()
 				elif fnName=="reverse":
-					if type(args) is generator:
+					if type(args) in (generator,chain):
 						args=list(args)
+					#reversed() is not help here since either way all data should be put in RAM and then reversed
 					args.reverse()
 					return args
-				elif fnName=="escape":
-					return escape(args)
-				elif fnName=="unescape":
-					return unescape(args)
-				elif fnName=="replace":
-					return re.sub(args[1],args[2],args[0])
-				elif fnName in ("objectID","ObjectId"):
-					global ObjectId
-					if not ObjectId:
-						from bson.objectid import ObjectId
-					return ObjectId(args)
+				elif fnName in ("count","len"):
+					if args in (True,False,None):
+						return args
+					if type(args) in ITER_TYPES:
+						return len(list(args))
+					return len(args)
+				#time
 				elif fnName in ("now","age"):
 					global timeutils
 					if not timeutils:
@@ -685,6 +703,24 @@ class Tree(object):
 					if not calendar:
 						import calendar
 					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsecond / 1000)
+				#misc
+				elif fnName=="type":
+					ret=type(args)
+					if ret in ITER_TYPES:
+						return "array"
+					if ret is dict:
+						return "object"
+					return ret.__name__
+				elif fnName=="generateID":
+					global generateID
+					if not generateID:
+						from ACR.utils import generateID
+					return generateID()
+				elif fnName in ("objectID","ObjectId"):
+					global ObjectId
+					if not ObjectId:
+						from bson.objectid import ObjectId
+					return ObjectId(args)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

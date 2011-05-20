@@ -1,209 +1,246 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#@marcin: tests for interpreter and helper functions
 
 from ACR.utils.interpreter import *
 from random import randint, choice
 import sys, unittest, os
 
-# change a global settings - depth of recursion
 sys.setrecursionlimit(20000)
 
-# --------------------- helpers -------------------------------------
+class FakeEnv(object):
+	doDebug=True
+	requestStorage={
+		"__lang__":"en",
+		"test":{
+			"_id":1,
+			"name":"aaa",
+			"o":{
+				"_id":2
+			},
+			"l":[
+				{
+					"_id":3,
+					"aaa":"ddd",
+					"false":2
+				},
+				{
+					"_id":4
+				}
+			]
+		}
+	}
+	def debug(*a):
+		print a
+	def start(*a):
+		print a
+	def end(*a):
+		print a
+	def info(*a):
+		print a
 
-# helper functions for creating correctness tests
-def generate():
-	file = open('testFile', 'w')
-	#print 'Testing parser. Enter a program or \'q\' for exit.'
-	while 1:
-		s = raw_input("program: ")
-		if s == 'q':
-			break
-		ans = make_tree(s)
-		#print "Answer: %s. Correct [y|n] ?" % str(ans),
-		yesno = raw_input()
-		if yesno == 'y':
-			file.write('self.assertTrue(make_tree("%s") == %s)\n' % (s,ans))
-	file.close()
-	
-# generate efficiency arithm test
-def generateEff_arith(n):
-	s = str(randint(0,100))
-	for i in range(0,n-1):
-		r = randint(0,3)
-		if r == 0:
-			s += '+'
-		elif r == 1:
-			s += '*'
-		elif r == 2:
-			s += '/'
-		else:
-			s += '-'
-		s += str(randint(0,100))
-	return s
+env=FakeEnv()
 
-# generate random variable with or without storage
-def generateVar(storage=True):
-	s = ""
-	if storage: # with storage
-		s += choice(['ss', 'rs', 'session', 'request']) + '::'
-	for i in range(0, randint(1,5)):
-		s += choice('abcde') + '.'
-	return s[0:-1] # without last character (dot)
-
-# generate efficiency variable test
-def generateEff_var(n):
-	s = generateVar()
-	for i in range(0, n-1):
-		s += '+' + generateVar() # simply adding variables
-	return s
-	
-def generateFileTest(s, path):
-	file = open(path, 'w')
-	file.write(s + '\n')
-	file.write(str(make_tree(s).tree))
-	file.close()
-
-# efficiency tests, reads data from file, which consists of two lines:
-# first is data in, and second data out (expected out)
-def test_efficiency(id):
-	def new_test():
-		file = open ('./test/test' + str(id), 'r')
-		s1 = file.readline().rstrip()
-		s2 = file.readline().rstrip()
-		assert (str(make_tree(s1).tree) == s2)
-		file.close()
-		return True
-	new_test.__name__ = 'test_efficiency' + str(id)
-	return new_test
-
-# --------------------------------------------------------------
+def execute(expr):
+	return make_tree(expr).execute(env)
 
 class Utils_interpreter(unittest.TestCase):
-	# corectness tests		
-	# associativity, addition, subtraction, multiplication, division, name literals
-	def test_add(self):
-		self.assertEqual(make_tree("2+3").tree, ('+',2,3))
-		self.assertEqual(make_tree("2+(3+4)").tree, ('+', 2, ('+', 3, 4)))
-		self.assertEqual(make_tree("2+3+4").tree, make_tree("(2+3)+4").tree)
-	
-	def test_sub(self):
-		self.assertEqual(make_tree("2-3").tree, ('-', 2, 3))
-		self.assertEqual(make_tree("2-(3-4)").tree, ('-', 2, ('-', 3, 4)))
-		self.assertEqual(make_tree("(2-3)-4").tree, ('-', ('-', 2, 3), 4))
+	def test_simple_types(self):
+		self.assertEqual(execute("null"), None)
+		self.assertEqual(execute("true"), True)
+		self.assertEqual(execute("false"), False)
+		self.assertEqual(execute("''"), "")
+		self.assertEqual(execute('""'), "")
+		self.assertEqual(execute("2"), 2)
+		self.assertEqual(execute("2.0"), 2.0)
+		self.assertEqual(execute("{}"), {})
 
-	def test_mul(self):
-		self.assertEqual(make_tree("2*3*5*6").tree, ('*', ('*', ('*', 2, 3), 5), 6))
-		self.assertEqual(make_tree("(2*3)*4").tree, ('*', ('*', 2, 3), 4))
-		self.assertEqual(make_tree("2*(3*4)").tree, ('*', 2, ('*', 3, 4)))
+	def test_arrays(self):
+		self.assertEqual(execute("[]"), [])
+		self.assertEqual(execute("[1,2,3]"), [1,2,3])
+		self.assertEqual(execute("[false,null,true,'',\"\",2,2.0,{}]"), [False,None,True,'',"",2,2.0,{}])
 
-	def test_div(self):	
-		self.assertEqual(make_tree("1/2/3").tree, ('/', ('/', 1, 2), 3))
-		self.assertEqual(make_tree("1/(2/3)/4").tree, ('/', ('/', 1, ('/', 2, 3)), 4))
+	def test_objects(self):
+		self.assertEqual(execute("{}"), {})
+		self.assertEqual(execute("{a:1,b:false,c:'string'}"), {"a":1,"b":False,"c":'string'})
+		self.assertEqual(execute("{'a':1,'b':false,'c':'string'}"), {"a":1,"b":False,"c":'string'})
 
-	def test_arithm_group(self):	
-		self.assertEqual(make_tree("2-3+4+5-7").tree, ('-', ('+', ('+', ('-', 2, 3), 4), 5), 7))
-		self.assertEqual(make_tree("33*2/5-2").tree, ('-', ('/', ('*', 33, 2), 5), 2))
-		self.assertEqual(make_tree("33-4*5+2/6").tree, ('+', ('-', 33, ('*', 4, 5)), ('/', 2, 6)))
-		self.assertEqual(make_tree("2//3//4//5").tree, ('//', ('//', ('//', 2, 3), 4), 5))
-	
-	def test_arithm_bracktes(self):
-		self.assertEqual(make_tree("(33-4)*5+2/6").tree, ('+', ('*', ('-', 33, 4), 5), ('/', 2, 6)))
-		self.assertEqual(make_tree("2/3/(4/5)*6").tree, ('*', ('/', ('/', 2, 3), ('/', 4, 5)), 6))
-		self.assertEqual(make_tree("((2+4))+6").tree, ('+', ('+', 2, 4), 6))
-	
-	def test_or(self):
-		self.assertEqual(make_tree("1 or 2 or 3").tree, ('or', 1, ('or', 2, 3)))
-	
-	def test_and(self):
-		self.assertEqual(make_tree("1 and (2 and 3)").tree, ('and', 1, ('and', 2, 3)))
-	
-	def test_not(self):
-		self.assertEqual(make_tree("not 222").tree, ('not', 222))
-		self.assertEqual(make_tree("not not not 7").tree, ('not', ('not', ('not', 7))))
+	def test_arithm_add(self):
+		self.assertEqual(execute("2+3"), 5)
+		self.assertEqual(execute("2+3+4"), 9)
+		self.assertEqual(execute("++3"), 3)
 
-	def test_and_or_not(self):
-		self.assertEqual(make_tree("(1 and 2) or 3").tree, ('or', ('and', 1, 2), 3))
-		self.assertEqual(make_tree("not 1 and 2").tree, ('and', ('not', 1), 2))
-		self.assertEqual(make_tree("not (1 and 2)").tree, ('not', ('and', 1, 2)))
-		self.assertEqual(make_tree("(not 1) and 2").tree, ('and', ('not', 1), 2))
-	
-	def test_is(self):
-		self.assertEqual(make_tree("2 is 3").tree, ('is', 2, 3))
+	def test_arithm_sub(self):
+		self.assertEqual(execute("-1"), -1)
+		self.assertEqual(execute("2-3"), 2-3)
+		self.assertEqual(execute("2.2-3.4"), 2.2-3.4)
+		self.assertEqual(execute("-+-3"), 3)
+		self.assertEqual(execute("+-+3"), -3)
 
-	def test_isnot(self):
-		self.assertEqual(make_tree("3 is not 6").tree, ('is not', 3, 6))
-		
-	def test_notin(self):
-		self.assertEqual(make_tree("4 not in 6").tree, ('not in', 4, 6))
-		self.assertEqual(make_tree("1 not in 5 not in 00").tree, ('not in', ('not in', 1, 5), 0))
+	def test_arithm_mul(self):
+		self.assertEqual(execute("2*3*5*6"), 180)
 
-	def test_is_isnot_notin_arithm(self):
-		self.assertEqual(make_tree("23 is not 56 or 25 is 57").tree, ('or', ('is not', 23, 56), ('is', 25, 57)))
-		self.assertEqual(make_tree("2 is 3 is not (not 5)").tree, ('is not', ('is', 2, 3), ('not', 5)))
-		self.assertEqual(make_tree("1 + 2 or 3 / (not 4)").tree, ('or', ('+', 1, 2), ('/', 3, ('not', 4))))
-		self.assertEqual(make_tree("4     and 5       - 1").tree, ('and', 4, ('-', 5, 1)))
-		self.assertEqual(make_tree("2+3/4-6*7 or 10 is not 11 and 14").tree, ('or', ('-', ('+', 2, ('/', 3, 4)), ('*', 6, 7)), ('and', ('is not', 10, 11), 14)))
-	
-	def test_prefix(self):
-		self.assertEqual(make_tree("~2 + +3").tree, ('+', ('~', 2), ('+', 3)))
-		self.assertEqual(make_tree("++3").tree, ('+', ('+', 3)))
-		self.assertEqual(make_tree("-+-3").tree, ('-', ('+', ('-', 3))))
-	
-	def test_greater_less(self):
-		self.assertEqual(make_tree("2 < 3 < 4 < 5").tree, ('<', ('<', ('<', 2, 3), 4), 5))
-		self.assertEqual(make_tree("1 <= (2 <= 3)").tree, ('<=', 1, ('<=', 2, 3)))
-	
-	def test_greater_less_prefixs_or(self):
-		self.assertEqual(make_tree("2 >= 1 or +1").tree, ('or', ('>=', 2, 1), ('+', 1)))
-		self.assertEqual(make_tree("+1 <= ~2 > -3").tree, ('>', ('<=', ('+', 1), ('~', 2)), ('-', 3)))
-	
-	def test_tuple(self):
-		self.assertEqual(make_tree("(1, 2, 3)").tree, ('(', [1, 2, 3]))
+	def test_arithm_div(self):
+		self.assertEqual(execute("2/3"), 2.0/3)
+		self.assertEqual(execute("2.0/3"), 2.0/3)
+		self.assertEqual(execute("float(2)/3"), float(2)/3)
 
-	def test_list(self):
-		self.assertEqual(make_tree("[1, 2, 3]").tree, ('[', [1, 2, 3]))
-		
-	def test_symbol_dot(self):
-		self.assertEqual(make_tree("a.b").tree, ('.', ('name', 'a'), ('name', 'b')))
-		# TODO test "a.b.c",  invalid!
-	
-	def test_operator_sqarebrackets(self):
-		self.assertEqual(make_tree("2[3]").tree, ('[', 2, 3))
-		self.assertEqual(make_tree("2[3][4][5]").tree, ('[', ('[', ('[', 2, 3), 4), 5))
+	def test_arithm_group(self):
+		self.assertEqual(execute("2-3+4+5-7"), 2-3+4+5-7)
+		self.assertEqual(execute("33*2/5-2"), 33*2/5.0-2)
+		self.assertEqual(execute("33-4*5+2/6"), 33-4*5+2/6.0)
+		#self.assertEqual(execute("2//3//4//5"), ('//', ('//', ('//', 2, 3), 4), 5))
 
-	def test_operator_sqarebrackets_symbol_dot_add_sub_lessequal(self):
-		self.assertEqual(make_tree("object.variable + 2 - list[0]").tree, ('-', ('+', ('.', ('name', 'object'), ('name', 'variable')), 2), ('[', ('name', 'list'), 0)))
-		self.assertEqual(make_tree("list[6].object[1] <= 1111111").tree, ('<=', ('[', ('.', ('[', ('name', 'list'), 6), ('name', 'object')), 1), 1111111))
-		
-	def test_const_prefixs_isnot_and_or(self):
-		self.assertEqual(make_tree("None").tree, None)
-		self.assertEqual(make_tree("True or False and None").tree, ('or', True, ('and', False, None)))
-		self.assertEqual(make_tree("~true").tree, ('~', True))
-		self.assertEqual(make_tree("~True is not False").tree, ('is not', ('~', True), False))
-	
-	def test_storage_var(self):
-		self.assertEqual(make_tree("ss::var").tree, ('(variable)', 'ss', 'var'))
-		self.assertEqual(make_tree("session::var.foo").tree, ('(variable)', 'session', 'var.foo'))
-		self.assertEqual(make_tree("request::var.s").tree, ('(variable)', 'request', 'var.s'))
-		self.assertEqual(make_tree("rs::a.b.c.d.e").tree, ('(variable)', 'rs', 'a.b.c.d.e'))
+	def test_arithm_parentheses(self):
+		self.assertEqual(execute("2+2*2"), 6)
+		self.assertEqual(execute("2+(2*2)"), 6)
+		self.assertEqual(execute("(2+2)*2"), 8)
+		self.assertEqual(execute("(33-4)*5+2/6"), (33-4)*5+2/6.0)
+		self.assertEqual(execute("2/3/(4/5)*6"), 2/3.0/(4/5.0)*6)
+		self.assertEqual(execute("((2+4))+6"), ((2+4))+6)
 
-	
-	# tests invalid expressions
-	def test_invalidExpression(self):
-		try: make_tree("not 1 not 2")
-		except Exception: pass
-		else: return False
-		try: make_tree("{$sesion::a.b.c}")
-		except Exception: pass
-		else: return False
-		try: make_tree("{$session:a.b.c}")
-		except Exception: pass
-		else: return False
-		return True
+	def test_logic_negatives(self):
+		self.assertEqual(execute("not false"), True)
+		self.assertEqual(execute("not null"), True)
+		self.assertEqual(execute("not 0"), True)
+		self.assertEqual(execute("not 0.0"), True)
+		self.assertEqual(execute("not ''"), True)
+		self.assertEqual(execute("not []"), True)
+		self.assertEqual(execute("not {}"), True)
 
-testcase1=unittest.FunctionTestCase(test_efficiency(1))
-testcase2=unittest.FunctionTestCase(test_efficiency(2))
-testcase3=unittest.TestLoader().loadTestsFromTestCase(Utils_interpreter)
+	def test_logic_not(self):
+		self.assertEqual(execute("not false"), True)
+		self.assertEqual(execute("not not not false"), True)
 
-utils_interpreter=unittest.TestSuite([testcase1, testcase2, testcase3])
+	def test_logic_or(self):
+		self.assertEqual(execute("1 or 2"), 1)
+		self.assertEqual(execute("0 or 2"), 2)
+		self.assertEqual(execute("'a' or 0 or 3"), 'a')
+		self.assertEqual(execute("null or false or 0 or 0.0 or '' or [] or {}"), {})
+
+	def test_logic_and(self):
+		self.assertEqual(execute("1 and 2"), 2)
+		self.assertEqual(execute("0 and 2"), 0)
+		self.assertEqual(execute("'a' and false and 3"), False)
+		self.assertEqual(execute("true and 1 and 1.0 and 'foo' and [1] and {a:1}"), {"a":1})
+
+	def test_comparison_is(self):
+		self.assertEqual(execute("2 is 2"), True)
+		self.assertEqual(execute("'2' is 2"), True)
+		self.assertEqual(execute("2 is '2'"), True)
+		self.assertEqual(execute("2 is 2.0"), True)
+		self.assertEqual(execute("[] is []"), True)
+		self.assertEqual(execute("[1] is [1]"), True)
+
+	def test_comparison_isnot(self):
+		self.assertEqual(execute("3 is not 6"), True)
+		self.assertEqual(execute("[] is not [1]"), True)
+
+	def test_membership_in(self):
+		self.assertEqual(execute("4 in [6,4,3]"),True)
+		self.assertEqual(execute("4 in {4:true}"),True)
+
+	def test_membership_notin(self):
+		self.assertEqual(execute("4 not in []"), True)
+		self.assertEqual(execute("1 not in {}"), True)
+
+	def test_complex(self):
+		self.assertEqual(execute("23 is not 56 or 25 is 57"), True)
+		#self.assertEqual(execute("2 is 3 is not (not 5)"), )
+		#self.assertEqual(execute("1 + 2 or 3 / (not 4)"),)
+		#self.assertEqual(execute("4     and 5       - 1"), )
+		#self.assertEqual(execute("2+3/4-6*7 or 10 is not 11 and 14"), )
+
+	def test_comparison_lt(self):
+		self.assertEqual(execute("2<3"), True)
+		self.assertEqual(execute("3<3"), False)
+		self.assertEqual(execute("2<=2"), True)
+		self.assertEqual(execute("2<=1"), False)
+
+	def test_comparison_gt(self):
+		self.assertEqual(execute("5>4"), True)
+		self.assertEqual(execute("5>5"), False)
+		self.assertEqual(execute("5>=5"), True)
+
+	def test_concatenation(self):
+		self.assertEqual(execute("'a'+'b'+\"c\""), 'abc')
+		self.assertEqual(execute("'5'+5"), '55')
+		self.assertEqual(list(execute("[1,2,4] + [3,5]")), [1,2,4,3,5])
+		self.assertEqual(execute('{"a":1,"b":2} + {"a":2,"c":3}'), {"a":2,"b":2,"c":3})
+
+	def test_builtin_casting(self):
+		self.assertEqual(execute("str('foo')"), 'foo')
+		self.assertEqual(execute("str(1)"), '1')
+		self.assertEqual(execute("str(1.0)"), '1.0')
+		self.assertEqual(execute("int(1)"), 1)
+		self.assertEqual(execute("int(1.0)"), 1)
+		self.assertEqual(execute("int('1')"), 1)
+		#self.assertEqual(execute("int('1.0')"), 1)
+		self.assertEqual(execute("float(1.0)"), 1.0)
+		self.assertEqual(execute("float(1)"), 1.0)
+		self.assertEqual(execute("float('1')"), 1.0)
+		self.assertEqual(execute("float('1.0')"), 1.0)
+
+	def test_builtin_arithmetic(self):
+		self.assertEqual(execute("sum([1,2,3,4])"), sum([1,2,3,4]))
+		self.assertEqual(execute("min([1,2,3,4])"), min([1,2,3,4]))
+		self.assertEqual(execute("max([1,2,3,4])"), max([1,2,3,4]))
+		self.assertEqual(execute("round(2/3)"), round(2.0/3))
+		self.assertEqual(execute("round(2/3,3)"), round(2.0/3,3))
+
+	def test_builtin_string(self):
+		self.assertEqual(execute("replace('foobar','oba','baz')"), 'fobazr')
+		self.assertEqual(execute("""escape('<"&>')"""), "&lt;&quot;&amp;&gt;")
+		self.assertEqual(execute("""unescape('&lt;&quot;&amp;&gt;')"""), "<\"&>")
+
+	def test_builtin_arrays(self):
+		self.assertEqual(execute("sort([1,2,3,4]+[2,4])"), [1,2,2,3,4,4])
+		self.assertEqual(execute("reverse([1,2,3,4]+[2,4])"), [4,2,4,3,2,1])
+		self.assertEqual(execute("len([1,2,3,4]+[2,4])"), 6)
+
+	def test_builtin_time(self):
+		from datetime import datetime
+		self.assertIsInstance(execute("now()"),datetime)
+		self.assertIsInstance(execute("age(now())"),tuple)
+
+	def test_builtin_misc(self):
+		from pymongo.objectid import ObjectId
+		self.assertIsInstance(execute("generateID()"),str)
+		self.assertIsInstance(execute("objectID()"),ObjectId)
+
+	def test_builtin_type(self):
+		self.assertEqual(execute("type([1,2,3,4]+[2,4])"), "array")
+		self.assertEqual(execute("type({})"), "object")
+		self.assertEqual(execute("type('')"), "str")
+
+class Utils_Paths(unittest.TestCase):
+	def test_simple_paths(self):
+		self.assertEqual(execute("$.*[0]"), env.requestStorage)
+		self.assertEqual(execute("$.__lang__"), "en")
+		self.assertEqual(execute("$.test.o._id"), 2)
+		self.assertEqual(execute("$.test.l._id"), [3, 4])
+		self.assertEqual(execute("$.*[test][0].o._id"), 2)
+		self.assertEqual(execute("$.*['test'][0].o._id"), 2)
+
+	def test_complex_paths(self):
+		self.assertEqual(execute("$.._id"), [1, 2, 3, 4])
+		self.assertEqual(execute("$..l[0]"), env.requestStorage["test"]["l"])
+		self.assertEqual(execute("$..l.._id"), [3,4])
+
+	## tests invalid expressions
+	#def test_invalidExpression(self):
+	#	try: execute("not 1 not 2")
+	#	except Exception: pass
+	#	else: return False
+	#	try: execute("{$sesion::a.b.c}")
+	#	except Exception: pass
+	#	else: return False
+	#	try: execute("{$session:a.b.c}")
+	#	except Exception: pass
+	#	else: return False
+	#	return True
+
+#testcase2=unittest.FunctionTestCase(test_efficiency(2))
+testcase1=unittest.TestLoader().loadTestsFromTestCase(Utils_interpreter)
+testcase2=unittest.TestLoader().loadTestsFromTestCase(Utils_Paths)
+
+utils_interpreter=unittest.TestSuite([testcase1,testcase2])

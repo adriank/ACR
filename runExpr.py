@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from ACR.utils.interpreter import *
-import readline
+import readline,sys
 from types import GeneratorType as generator
 from itertools import chain
 
@@ -38,16 +38,21 @@ debug=True
 try:
 	while True:
 		#try:
-			tree=make_tree(raw_input(">>> "))
+			if len(sys.argv) is 2:
+				tree=make_tree(sys.argv[1])
+			else:
+				tree=make_tree(raw_input(">>> "))
 			if debug:
 				print tree.tree
 			r=tree.execute(fakeEnv)
 			if type(r) in (generator,chain):
 				if debug:
-					print "returning generator"
+					print "returning",type(r).__name__
 				print list(r)
 			else:
 				print r
+			if len(sys.argv) is 2:
+				break
 		#except Exception,e:
 		#	print e
 except KeyboardInterrupt:

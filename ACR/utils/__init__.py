@@ -22,6 +22,16 @@ else:
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
 RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
 
+def skip(g,n):
+	if type(n) is not int:
+		raise TypeError("generator indices must be integers, not %s"%type(n).__name__)
+	j=0
+	for i in g:
+		if j is n:
+			return i
+		j+=1
+	raise IndexError("generator index out of range")
+
 def getStorage(env,s):
 	D=env.doDebug
 	if D:
