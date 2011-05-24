@@ -520,7 +520,7 @@ class Tree(object):
 			elif op=="(storage)":
 				return getStorage(acenv,node[1])
 			elif op=="(current)":
-				return selfTR.current
+				return self.current
 			elif op=="name":
 				return node[1]
 			elif op==".":
