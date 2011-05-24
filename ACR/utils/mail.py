@@ -23,6 +23,8 @@ SENDMAIL = "/usr/sbin/sendmail"
 
 def send(headers, content):
 	m=[]
+	if not headers.has_key("Content-Type"):
+		headers["Content-Type"]="text/html\;charset=UTF-8\n"
 	for i in headers:
 		k=i.strip()
 		v=headers[i]
@@ -42,3 +44,4 @@ def send(headers, content):
 	for i in m:
 		p.stdin.write(i)
 	p.stdin.close()
+	p=None

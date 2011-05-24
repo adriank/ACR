@@ -493,18 +493,21 @@ class Tree(object):
 				snd=exe(node[2])
 				typefst=type(fst)
 				typesnd=type(snd)
-				if typefst in STR_TYPES or typesnd in STR_TYPES:
+				if typefst in STR_TYPES:
 					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
-					ret=str(fst)==str(snd)
-				elif float in (typefst,typesnd):
-					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
-					ret=float(fst)==float(snd)
+					ret=fst==str(snd)
+				elif typefst is float:
+					if D: acenv.info("doing float comparison '%s' is '%s'",fst,snd)
+					ret=fst==float(snd)
+				elif typefst is int:
+					if D: acenv.info("doing float comparison '%s' is '%s'",fst,snd)
+					ret=fst==int(snd)
 				elif typefst is list and typesnd is list:
 					ret=fst==snd
 				elif typefst is dict and typesnd is dict:
 					ret=fst==snd
 				else:
-					if D: acenv.info("doing comparison '%s' is '%s'",fst,snd)
+					if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
 					ret=fst is snd
 				if op=="is not":
 					if D: acenv.info("'is not' found. Returning %s",not ret)

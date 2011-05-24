@@ -103,6 +103,9 @@ class Application(object):
 				"enabled":str2obj(config.get("/debug[@enable]")),
 				"level":config.get("/debug[@level]","error")
 			}
+		if config.get("/debug[@cutAfter]"):
+			self.dbg["cutAfter"]=config.get("/debug[@cutAfter]")
+
 		if config.get("/profiler"):
 			self.profiler={
 				"enabled":str2obj(config.get("/profiler[@enable]")),
