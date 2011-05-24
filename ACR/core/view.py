@@ -318,11 +318,11 @@ class View(object):
 			#TODO change to:
 			#acenv.requestStorage[i["name"]]=typ.get(acenv,list.pop(0))
 			try:
-				typ.set(list.pop(0))
-			except:
-				pass
-			try:
-				acenv.requestStorage[i["name"]]=typ.get(acenv)
+				try:
+					v=typ.get(acenv,list.pop(0))
+				except:
+					v=typ.get(acenv)
+				acenv.requestStorage[i["name"]]=v
 			except Error, e:
 				if e.name=="NotValidValue":
 					raise Error("NotValidValue", "Value of '%s' is invalid."%(i["name"]))

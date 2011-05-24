@@ -43,20 +43,20 @@ class Default(object):
 
 	def get(self,acenv=None,value=None):
 		D=acenv and acenv.doDebug
-		if D:acenv.debug("START Type.get")
+		if D:acenv.start("Type.get")
 		# "" is valid so is not None is needed!
 		if value is not None:
-			if D: acenv.debug("END Type.get value was set, returning with: '%s'",value)
+			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			return self._prepareValue(value)
 		try:
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
 			return self.value
 		except:
 			if self.__dict__.has_key("default"):
-				if D: acenv.debug("END Type.get with self.default: '%s'",self.default.execute(acenv))
+				if D: acenv.end("Type.get with self.default: '%s'",self.default.execute(acenv))
 				return self.default.execute(acenv)
 			else:
-				if D: acenv.debug("END Type.get with error ValueNotVaild")
+				if D: acenv.end("Type.get with error ValueNotVaild")
 				raise Error("NotValidValue", "Validation failed and no default value was set.")
 
 	def reset(self):

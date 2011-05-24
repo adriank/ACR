@@ -127,9 +127,9 @@ class Mongo(Component):
 			acenv.profiler["dbtimer"]+=time.time()-t
 			acenv.profiler["dbcounter"]+=1
 		if ret:
-			if len(ret) is 1:
-				if D:acenv.debug("END Mongo.find with %s",ret[0])
-				return ret[0]
+			#if len(ret) is 1:
+			#	if D:acenv.debug("END Mongo.find with %s",ret[0])
+			#	return ret[0]
 			if D:acenv.debug("END Mongo.find with %s",ret)
 			return ret
 		else:

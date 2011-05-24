@@ -402,12 +402,6 @@ class Tree(object):
 	def __init__(self,tree):
 		self.tree=tree
 
-	def __str__(self):
-		return "TreeObject(%s)"%str(self.tree)
-
-	def __repr__(self):
-		return self.__str__()
-
 	def execute(self,acenv):
 		D=acenv.doDebug
 		if D: acenv.start("Tree.execute")
@@ -485,8 +479,9 @@ class Tree(object):
 			#	elif op=="<=":
 			#		return fst <= snd and snd or False
 			elif op=="not":
-				if D: acenv.debug("doing not '%s'",)
-				return not exe(node[1])
+				fst=exe(node[1])
+				if D: acenv.debug("doing not '%s'",fst)
+				return not fst
 			elif op=="in":
 				if D: acenv.debug("doing '%s' in '%s'",exe(node[1]),exe(node[2]))
 				return exe(node[1]) in exe(node[2])
@@ -525,7 +520,7 @@ class Tree(object):
 			elif op=="(storage)":
 				return getStorage(acenv,node[1])
 			elif op=="(current)":
-				return self.current
+				return selfTR.current
 			elif op=="name":
 				return node[1]
 			elif op==".":
@@ -700,7 +695,7 @@ class Tree(object):
 						return timeutils.now()
 					if fnName=="age":
 						return timeutils.age(args,getStorage(acenv,"rs")["__lang__"])
-				elif fnName=="toMils":
+				elif fnName=="toMillis":
 					if args.utcoffset() is not None:
 						args=args-args.utcoffset()
 					global calendar
@@ -736,3 +731,9 @@ class Tree(object):
 		ret=exe(self.tree)
 		if D: acenv.end("Tree.execute with: '%s'", ret)
 		return ret
+
+	def __str__(self):
+		return "TreeObject(%s)"%str(self.tree)
+
+	def __repr__(self):
+		return self.__str__()

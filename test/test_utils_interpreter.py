@@ -230,6 +230,10 @@ class Utils_Paths(unittest.TestCase):
 		self.assertEqual(execute("$..l[0]"), env.requestStorage["test"]["l"])
 		self.assertEqual(execute("$..l.._id"), [3,4])
 
+	def test_selectors(self):
+		self.assertEqual(len(execute("$..*[_id>2]")), 2)
+		self.assertEqual(execute("$..*[_id and 2]"), [1,2,3, 4])
+
 	## tests invalid expressions
 	#def test_invalidExpression(self):
 	#	try: execute("not 1 not 2")
