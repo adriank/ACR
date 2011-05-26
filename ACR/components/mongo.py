@@ -96,7 +96,10 @@ class Mongo(Component):
 	def count(self,acenv,config):
 		return self.find(acenv,config,count=True)
 
-	def find(self,acenv,config,count=False):
+	def findOne(self,acenv,config):
+		return self.find(acenv,config,one=True)
+
+	def find(self,acenv,config,count=False,one=False):
 		D=acenv.doDebug
 		P=acenv.doProfiling
 		params=config["params"]
@@ -110,19 +113,22 @@ class Mongo(Component):
 				params[i]=replaceVars(acenv,params[i])
 		if params.has_key("fields"):
 			p["fields"]=params["fields"]
-		if params.has_key("skip"):
-			p["skip"]=int(params["skip"])
-		if params.has_key("limit"):
-			p["limit"]=int(params["limit"])
-		if params.has_key("sort"):
-			dir=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
-			p["sort"]=[(params["sort"],dir)]
+		if not one:
+			if params.has_key("skip"):
+				p["skip"]=int(params["skip"])
+			if params.has_key("limit"):
+				p["limit"]=int(params["limit"])
+			if params.has_key("sort"):
+				dir=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
+				p["sort"]=[(params["sort"],dir)]
 		if P: t=time.time()
 		if count:
 			ret=coll.find(**p).count()
-			#if D: acenv.debug("")
-			return ret
-		ret=list(coll.find(**p))
+		elif one:
+			ret=list(coll.find(**p).limit(-1))
+			ret=ret and ret[0] or None
+		else:
+			ret=list(coll.find(**p))
 		if P:
 			acenv.profiler["dbtimer"]+=time.time()-t
 			acenv.profiler["dbcounter"]+=1
