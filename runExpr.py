@@ -27,6 +27,14 @@ class FakeEnv(object):
 		}
 	}
 	doDebug=False
+	def debug(*a):
+		print a[1]%tuple(a[2:])
+	def start(*a):
+		print a[1]%tuple(a[2:])
+	def end(*a):
+		print a[1]%tuple(a[2:])
+	def info(*a):
+		print a[1]%tuple(a[2:])
 
 fakeEnv=FakeEnv()
 
@@ -34,7 +42,7 @@ print """AC Runtime BLSL Expression interactive shell
 	This interpreter has one storage accessible through "rs" namespace.
 	ctrl+c to exit.
 """
-debug=True
+fakeEnv.doDebug=True
 try:
 	while True:
 		#try:
@@ -42,7 +50,7 @@ try:
 				tree=make_tree(sys.argv[1])
 			else:
 				tree=make_tree(raw_input(">>> "))
-			if debug:
+			if fakeEnv.doDebug:
 				print tree.tree
 			r=tree.execute(fakeEnv)
 			if type(r) in (generator,chain):

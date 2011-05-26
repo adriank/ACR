@@ -29,7 +29,7 @@ NONE=["none","null","n","nil"]
 class symbol_base(object):
 	id=None
 	value=None
-	first=second=third=None
+	fst=snd=third=None
 
 	def nud(self):
 		raise SyntaxError("Syntax error (%r)." % self.id)
@@ -64,7 +64,7 @@ class symbol_base(object):
 				elif self.value=="None":
 					return None
 		#XXX this is crap - don't know where I've took this from
-		out=[self.id, self.first, self.second, self.third]
+		out=[self.id, self.fst, self.snd, self.third]
 		ret=[]
 		ret_append=ret.append
 		L=[dict,tuple,list]
@@ -76,7 +76,7 @@ class symbol_base(object):
 				t_append=t.append
 				if self.id is "{":
 					ret={}
-					for j in self.first.iteritems():
+					for j in self.fst.iteritems():
 						ret[j[0].getTree()]=j[1].getTree()
 					return ret
 				for j in i:
@@ -100,7 +100,7 @@ class symbol_base(object):
 	def __repr__(self):
 		if self.id == "(name)" or self.id == "(literal)":
 			return "(%s %s)" % (self.id[1:-1], self.value)
-		out=[self.id, self.first, self.second, self.third]
+		out=[self.id, self.fst, self.snd, self.third]
 		out=map(str, filter(None, out))
 		return "(" + " ".join(out) + ")"
 
@@ -123,21 +123,21 @@ def symbol(id, bp=0):
 
 def infix(id, bp):
 	def led(self, left):
-		self.first=left
-		self.second=expression(bp)
+		self.fst=left
+		self.snd=expression(bp)
 		return self
 	symbol(id, bp).led=led
 
 def infix_r(id, bp):
 	def led(self, left):
-		self.first=left
-		self.second=expression(bp-1)
+		self.fst=left
+		self.snd=expression(bp-1)
 		return self
 	symbol(id, bp).led=led
 
 def prefix(id, bp):
 	def nud(self):
-		self.first=expression(bp)
+		self.fst=expression(bp)
 		return self
 	symbol(id).nud=nud
 
@@ -197,10 +197,10 @@ def led(self, left):
 		advance()
 	if token.id not in ["(name)","*" ]:
 		raise SyntaxError("Expected an attribute name.")
-	self.first=left
+	self.fst=left
 	if attr:
 		token.value="@"+token.value
-	self.second=token
+	self.snd=token
 	advance()
 	return self
 
@@ -212,9 +212,9 @@ def nud(self):
 	global token
 	self.id="(storage)"
 	if token.id is ".":
-		self.first="rs"
+		self.fst="rs"
 	else:
-		self.first=token.value
+		self.fst=token.value
 		advance()
 	return self
 
@@ -222,8 +222,8 @@ symbol("]")
 
 @method(symbol("["))
 def led(self, left):
-	self.first=left
-	self.second=expression()
+	self.fst=left
+	self.snd=expression()
 	advance("]")
 	return self
 
@@ -232,12 +232,12 @@ symbol(",")
 #this is for built-in functions
 @method(symbol("("))
 def led(self, left):
-	self.first=left
-	self.second=[]
+	self.fst=left
+	self.snd=[]
 	if token.id is not ")":
-		self_second_append=self.second.append
+		self_snd_append=self.snd.append
 		while 1:
-			self_second_append(expression())
+			self_snd_append(expression())
 			if token.id is not ",":
 				break
 			advance(",")
@@ -268,8 +268,8 @@ def led(self, left):
 		raise SyntaxError("Invalid syntax")
 	advance()
 	self.id="not in"
-	self.first=left
-	self.second=expression(60)
+	self.fst=left
+	self.snd=expression(60)
 	return self
 
 @method(symbol("is"))
@@ -277,20 +277,20 @@ def led(self, left):
 	if token.id == "not":
 		advance()
 		self.id="is not"
-	self.first=left
-	self.second=expression(60)
+	self.fst=left
+	self.snd=expression(60)
 	return self
 
 symbol("]")
 
 @method(symbol("["))
 def nud(self):
-	self.first=[]
+	self.fst=[]
 	if token.id is not "]":
 		while 1:
 			if token.id is "]":
 				break
-			self.first.append(expression())
+			self.fst.append(expression())
 			if token.id not in SELECTOR_OPS+[","]:
 				break
 			advance(",")
@@ -301,14 +301,14 @@ symbol("}")
 
 @method(symbol("{"))
 def nud(self):
-	self.first={}
+	self.fst={}
 	if token.id is not "}":
 		while 1:
 			if token.id is "}":
 				break
 			key=expression()
 			advance(":")
-			self.first[key]=expression()
+			self.fst[key]=expression()
 			if token.id is not ",":
 				break
 			advance(",")
@@ -550,14 +550,14 @@ class Tree(object):
 				except:
 					return fst
 			elif op=="..":
-				first=dicttree.flatten(exe(node[1]))
+				fst=dicttree.flatten(exe(node[1]))
 				if node[2][0]=="*":
-					return first
+					return fst
 				ret=[]
-				second=exe(node[2])
-				for i in first:
+				snd=exe(node[2])
+				for i in fst:
 					try:
-						ret.append(i[second])
+						ret.append(i[snd])
 					except:
 						pass
 				return ret
@@ -576,12 +576,14 @@ class Tree(object):
 					#		yield exe(i)
 					return map(exe,node[1])
 				if len_node is 3: # operator []
-					first=exe(node[1])
+					fst=exe(node[1])
+					if not fst:
+						return fst
 					s=node[2]
 					if type(s) is tuple and s[0] in SELECTOR_OPS:
 						nodeList=[]
 						nodeList_append=nodeList.append
-						for i in first:
+						for i in fst:
 							self.current=i
 							#TODO move it to tree building phase
 							if type(s[1]) is tuple and s[1][0]=="name":
@@ -600,25 +602,25 @@ class Tree(object):
 								except:
 									pass
 						return nodeList
-					second=exe(node[2])
-					tfirst=type(first)
-					if tfirst in [tuple]+ITER_TYPES+STR_TYPES:
+					snd=exe(node[2])
+					tfst=type(fst)
+					if tfst in [tuple]+ITER_TYPES+STR_TYPES:
 						# nodes[N]
-						if type(second) in NUM_TYPES or second.isdigit():
-							n=int(second)
-							if tfirst in (generator,chain):
+						if type(snd) in NUM_TYPES or snd.isdigit():
+							n=int(snd)
+							if tfst in (generator,chain):
 								if n>0:
-									return skip(first,n)
+									return skip(fst,n)
 								elif n==0:
-									return first.next()
+									return fst.next()
 								else:
-									first=list(first)
+									fst=list(fst)
 							else:
-								return first[n]
-						return exe((".",first,second))
+								return fst[n]
+						return exe((".",fst,snd))
 					else:
 						try:
-							return first[second]
+							return fst[snd]
 						except:
 							return []
 				raise ProgrammingError("Wrong usage of '[' operator")
@@ -704,7 +706,7 @@ class Tree(object):
 					global calendar
 					if not calendar:
 						import calendar
-					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsecond / 1000)
+					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsnd / 1000)
 				#misc
 				elif fnName=="type":
 					ret=type(args)

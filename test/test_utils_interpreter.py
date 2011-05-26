@@ -10,26 +10,8 @@ sys.setrecursionlimit(20000)
 class FakeEnv(object):
 	#doDebug=True
 	doDebug=False
-	requestStorage={
-		"__lang__":"en",
-		"test":{
-			"_id":1,
-			"name":"aaa",
-			"o":{
-				"_id":2
-			},
-			"l":[
-				{
-					"_id":3,
-					"aaa":"ddd",
-					"false":2
-				},
-				{
-					"_id":4
-				}
-			]
-		}
-	}
+	def __init__(self,rs):
+		self.requestStorage=rs
 	def debug(*a):
 		print a
 	def start(*a):
@@ -39,10 +21,64 @@ class FakeEnv(object):
 	def info(*a):
 		print a
 
-env=FakeEnv()
+env1=FakeEnv({
+	"__lang__":"en",
+	"test":{
+		"_id":1,
+		"name":"aaa",
+		"o":{
+			"_id":2
+		},
+		"l":[
+			{
+				"_id":3,
+				"aaa":"ddd",
+				"false":2
+			},
+			{
+				"_id":4
+			}
+		]
+	}
+})
+env2=FakeEnv({
+	"store": {
+		"book": [
+			{ "category": "reference",
+				"author": "Nigel Rees",
+				"title": "Sayings of the Century",
+				"price": 8.95
+			},
+			{ "category": "fiction",
+				"author": "Evelyn Waugh",
+				"title": "Sword of Honour",
+				"price": 12.99
+			},
+			{ "category": "fiction",
+				"author": "Herman Melville",
+				"title": "Moby Dick",
+				"isbn": "0-553-21311-3",
+				"price": 8.99
+			},
+			{ "category": "fiction",
+				"author": "J. R. R. Tolkien",
+				"title": "The Lord of the Rings",
+				"isbn": "0-395-19395-8",
+				"price": 22.99
+			}
+		],
+		"bicycle": {
+			"color": "red",
+			"price": 19.95
+		}
+	}
+})
 
 def execute(expr):
-	return make_tree(expr).execute(env)
+	return make_tree(expr).execute(env1)
+
+def execute2(expr):
+	return make_tree(expr).execute(env2)
 
 class Utils_interpreter(unittest.TestCase):
 	def test_simple_types(self):
@@ -218,7 +254,9 @@ class Utils_interpreter(unittest.TestCase):
 
 class Utils_Paths(unittest.TestCase):
 	def test_simple_paths(self):
-		self.assertEqual(execute("$.*[0]"), env.requestStorage)
+		self.assertEqual(execute("$.*[0]"), env1.requestStorage)
+		self.assertEqual(execute("$.a.b.c"), None)
+		self.assertEqual(execute("$.a.b.c[0]"), None)
 		self.assertEqual(execute("$.__lang__"), "en")
 		self.assertEqual(execute("$.test.o._id"), 2)
 		self.assertEqual(execute("$.test.l._id"), [3, 4])
@@ -227,12 +265,16 @@ class Utils_Paths(unittest.TestCase):
 
 	def test_complex_paths(self):
 		self.assertEqual(execute("$.._id"), [1, 2, 3, 4])
-		self.assertEqual(execute("$..l[0]"), env.requestStorage["test"]["l"])
+		self.assertEqual(execute("$..l[0]"), env1.requestStorage["test"]["l"])
 		self.assertEqual(execute("$..l.._id"), [3,4])
+		#self.assertEqual(execute2("$.store.*"), env2.requestStorage["store"])
+		self.assertEqual(execute2("$.store.book.author"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
+		self.assertEqual(execute2("$.store.book"), env2.requestStorage["store"]["book"])
+		self.assertEqual(execute2("$..author"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
 
 	def test_selectors(self):
 		self.assertEqual(len(execute("$..*[_id>2]")), 2)
-		self.assertEqual(execute("$..*[_id and 2]"), [1,2,3, 4])
+		#self.assertEqual(execute2("$..*[_id>1 and _id<3]"), [2])
 
 	## tests invalid expressions
 	#def test_invalidExpression(self):
