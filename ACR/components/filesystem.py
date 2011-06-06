@@ -31,7 +31,10 @@ class FileSystem(Component):
 	def __init__(self,config):
 		#self.config=config
 		#TODO check whether it is path to proper directory (exists, permissions etc) or not
-		self.abspath=config[0][2][0]
+		try:
+			self.abspath=config[0][2][0]
+		except:
+			raise Error("MisconfigurationError", "FileSystem component could not find the proper configuration.")
 
 	def list(self,acenv,conf):
 		D=acenv.doDebug
@@ -183,7 +186,7 @@ class FileSystem(Component):
 		c=config["params"]
 		conf={}
 		for i in c:
-			conf[i]=replaceVars(acenv, c[i])
+			conf[i]=replaceVars(acenv, c[i], str)
 		if D:
 			if not conf.get("path"):
 				acenv.error("path not suplied")
