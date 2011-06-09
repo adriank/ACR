@@ -74,6 +74,8 @@ def tree2xml(root,esc=False):
 		if type(node) is not tuple:
 			node=str(node)
 		if type(node) is str:
+			if esc:
+				node=escapeQuotes(node)
 			if not node.strip():
 				tab.append(" ")
 			else:
@@ -112,6 +114,8 @@ def tree2xml(root,esc=False):
 				return
 			if nodetype not in [str,unicode]:
 				node=str(node)
+			if esc:
+				node=escapeQuotes(node)
 			if name:
 				tab.append('<%s>%s</%s>'%(name,node,name))
 			else:
@@ -138,6 +142,8 @@ def tree2xml(root,esc=False):
 						rec(i)
 					else:
 						i=str(i)
+						if esc:
+							i=escapeQuotes(i)
 						tab.append("<item>%s</item>"%i)
 			tab.append("</"+tag+">")
 
@@ -211,13 +217,13 @@ class Reader(handler.ContentHandler):
 		for i in elem:
 			if type(i) is tuple:
 				if len(lines):
-					subelems.append(escapeQuotes("".join(lines)))
+					subelems.append("".join(lines))
 					lines=[]
 				subelems.append(i)
 			elif type(i) is str:
 				lines.append(i)
 		if len(lines):
-			subelems.append(escapeQuotes("".join(lines)))
+			subelems.append("".join(lines))
 		elem[0:len(elem)]=subelems
 		self.path.pop()
 
@@ -230,7 +236,7 @@ def xml2tree(xmlfile,newlines=False,preserveCase=True):
 		- preserveCase - if true all tags will be lowercased
 	returns: xml tree
 	"""
-	parser=make_parser()
+	parser=make_parser(['prixx'])
 	r=Reader(newlines,preserveCase)
 	parser.setContentHandler(r)
 	parser.parse(xmlfile)
