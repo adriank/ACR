@@ -40,7 +40,7 @@ class ObjectTree(tuple):
 #TO-C
 def escapeQuotes(s):
 	"""
-	Escape characters '<', '>', '\'', '"', '&' in s
+	Escapes characters '<', '>', '\'', '"', '&' in s
 	input: string
 	returns: string with escaped characters
 	"""
@@ -211,13 +211,13 @@ class Reader(handler.ContentHandler):
 		for i in elem:
 			if type(i) is tuple:
 				if len(lines):
-					subelems.append("".join(lines))
+					subelems.append(escapeQuotes("".join(lines)))
 					lines=[]
 				subelems.append(i)
 			elif type(i) is str:
 				lines.append(i)
 		if len(lines):
-			subelems.append("".join(lines))
+			subelems.append(escapeQuotes("".join(lines)))
 		elem[0:len(elem)]=subelems
 		self.path.pop()
 

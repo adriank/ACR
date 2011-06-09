@@ -23,10 +23,12 @@ from ACR.utils.xmlextras import tree2xml
 import os
 import shutil
 import fnmatch
+import mimetypes
 
 class FileSystem(Component):
 	SHOW_DIRS=True
 	SHOW_HIDDEN=False
+	SHOW_MIME=False
 	ONLY_DIRS=False
 	def __init__(self,config):
 		#self.config=config
@@ -38,13 +40,14 @@ class FileSystem(Component):
 
 	def list(self,acenv,conf):
 		D=acenv.doDebug
-		fullpath=conf["fullpath"]
-		showDirs=conf.get("showdirs",self.SHOW_DIRS)
-		showHidden=conf.get("showhidden",self.SHOW_HIDDEN)
-		onlyDirs=conf.get("onlydirs",self.ONLY_DIRS)
+		fullPath=conf["fullPath"]
+		showDirs=conf.get("showDirs",self.SHOW_DIRS)
+		showHidden=conf.get("showHidden",self.SHOW_HIDDEN)
+		showMIME=conf.get("showMIME",self.SHOW_MIME)
+		onlyDirs=conf.get("onlyDirs",self.ONLY_DIRS)
 		_filter=conf.get("filter")
 		try:
-			all=os.listdir(fullpath)
+			all=os.listdir(fullPath)
 		except OSError,e:
 			return {
 				"@status":"error",
@@ -56,7 +59,7 @@ class FileSystem(Component):
 		if not showHidden:
 			all=filter(lambda file: not file[0]==".",all)
 		if not onlyDirs:
-			files=filter(lambda file: not os.path.isdir(os.path.join(fullpath,file)),all)
+			files=filter(lambda file: not os.path.isdir(os.path.join(fullPath,file)),all)
 			files.sort()
 		dirs=None
 		if showDirs:
@@ -65,7 +68,7 @@ class FileSystem(Component):
 		if len(files)==0:
 			return {
 				"@status":"error",
-				"@error":"dirEmpty"
+				"@error":"DirEmpty"
 			}
 		path=conf["path"]
 		if dirs:
@@ -78,11 +81,17 @@ class FileSystem(Component):
 		if files and not onlyDirs:
 			for i in files:
 				#TODO change type to mimetype
-				ret.append({
+				f={
 					"@name":i,
 					"@path":path,
 					"@type":"file"
-				})
+				}
+				if showMIME:
+					try:
+						f['@type']=mimetypes.types_map['.'+i.split(".").pop()].replace("/","_")
+					except:
+						f["@type"]="unknown"
+				ret.append(f)
 		return ret
 
 	def tree(self,acenv,conf):
@@ -92,10 +101,10 @@ class FileSystem(Component):
 	def create(self,acenv,conf,update=False):
 		D=acenv.doDebug
 		#path=os.path.join(self.abspath+conf["path"])
-		if not update and os.path.isfile(conf["fullpath"]):
+		if not update and os.path.isfile(conf["fullPath"]):
 			return {
 				"@status":"error",
-				"@error":"fileExists"
+				"@error":"FileExists"
 			}
 		# path is a list eg /a/b/c/foo.xml -> ['a', 'b', 'c']
 		path=os.path.normpath(conf["path"]).split("/")[:-1]
@@ -105,7 +114,7 @@ class FileSystem(Component):
 			if not os.path.isdir(currPath):
 				os.mkdir(currPath)
 		try:
-			file=open(conf["fullpath"], 'w')
+			file=open(conf["fullPath"], 'w')
 			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
 			file.write(conf["content"])#.replace("\r\n","\n"))
 		except (IOError,OSError) ,e:
@@ -123,7 +132,7 @@ class FileSystem(Component):
 
 	def append(self,acenv,conf):
 		D=acenv.doDebug
-		path=acenv,conf["fullpath"]
+		path=acenv, conf["fullPath"]
 		try:
 			file=open(path, 'a')
 			file.write(conf['content'])#.replace("\r\n","\n")
@@ -196,7 +205,7 @@ class FileSystem(Component):
 			conf["content"]=replaceVars(acenv,config["content"])
 		except:
 			pass
-		conf["fullpath"]=os.path.join(self.abspath,*conf["path"].split("/"))
+		conf["fullPath"]=os.path.join(self.abspath,*conf["path"].split("/"))
 		return self.__getattribute__(config["command"])(acenv,conf)
 
 	def parseAction(self, conf):

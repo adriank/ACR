@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+#import logging
 import re
 import os
 import mimetypes
@@ -40,7 +40,7 @@ def serve_static(env,start_response):
 	try:
 		config=xml2tree(os.path.join(path,"config.xml"))
 	except IOError:
-		logging.critical("Application config not found!")
+		#logging.critical("Application config not found!")
 		raise Exception("Application config not found!")
 	staticDir=os.path.join(path,"static")
 	try:
