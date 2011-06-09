@@ -30,11 +30,9 @@ from ACR.utils import now
 
 class MongoSession(Session):
 	def __init__(self, acenv, ID=None):
-		#print "ID ",ID
 		self.D=acenv.doDebug
 		self.P=acenv.doProfiling
 		if self.D: acenv.info("START MongoSession.__init__ Created Session object with id=%s",ID)
-		#TODO check if dir exists and raise error when not
 		self.sessCollection=acenv.app.storage.session
 		super(MongoSession, self).__init__(acenv,ID)
 
@@ -61,7 +59,7 @@ class MongoSession(Session):
 		if self.P:
 			self.env.profiler["dbtimer"]+=time.time()-t
 			self.env.profiler["dbcounter"]+=1
-		self.sessID=str(self.data.pop("_id"))
+		self.sessID=str(self.data.get("_id"))
 		if self.D: self.env.debug("Loaded session: %s",self.data)
 
 	def delete(self):

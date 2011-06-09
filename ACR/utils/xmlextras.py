@@ -243,23 +243,19 @@ def xml2tree(xmlfile,newlines=False,preserveCase=True):
 	return r.root
 
 def tpath(root,path, default=None):
-	#print "path is "+path
 	t=path.split("/")
 	try:
 		t.pop(0)
 		ret=root
 		if t:
-			#print "t: "+str(t)
 			for i in t:
 				if type(ret) is list:
 					ret=ret[0]
-				#print i
 				splitter=i.find("[")
 				_filter=None
 				if splitter>0:
 					_filter=i[splitter+1:-1].strip()
 					i=i[0:splitter]
-				#print "ret: "+str(ret)
 				if i=="*":
 					ret=ret[2]
 				if i=="text()":
@@ -278,7 +274,6 @@ def tpath(root,path, default=None):
 							if t[0]=="*":
 								return ret[0][1]
 							return ret[0][1][t[0]]
-				#print "done: "+str(ret)
 	except (AttributeError, KeyError, TypeError,IndexError),e:
 		return default
 	return ret

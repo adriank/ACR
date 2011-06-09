@@ -18,10 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ACR.errors import *
-import logging
 import sys
-
-log = logging.getLogger('ACR.plugin')
 
 #dict of component modules
 TE_CACHE={}
@@ -30,6 +27,8 @@ def get(name):
 	"""
 		Returns component of given name. Manages components cache.
 	"""
+	if not name:
+		name="json"
 	module=TE_CACHE.get(name,None)
 	if module:
 		return module

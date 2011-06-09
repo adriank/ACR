@@ -95,8 +95,8 @@ def application(env,start_response):
 	#print h.heap()
 	return response
 
-try:
-	from paste.exceptions.errormiddleware import ErrorMiddleware
-	application=ErrorMiddleware(application, debug=True)
-except:
-	pass
+#try:
+#	from paste.exceptions.errormiddleware import ErrorMiddleware
+#	application=ErrorMiddleware(application, debug=True)
+#except:
+#	pass
