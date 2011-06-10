@@ -226,7 +226,7 @@ class Application(object):
 			acenv.generations["acr:user"]={"@ID":sess["ID"],"@email":sess["email"],"@role":sess["role"]}
 			acenv.sessionStorage.save()
 		try:
-			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"]))
+			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"],"json"))
 		except Error, e:
 			#XXX this is wrong answer e.g. in JSON output format mode - move it to each serializer!
 			acenv.output["format"]="text/html"
@@ -250,7 +250,7 @@ class Application(object):
 			acenv.profiler["alltime"]=all+serializertime
 			print "%s serializer took\n	%sms"%(s.name,serializertime)
 			print("Asyncode Runtime took %s"%(acenv.profiler["pytime"]))
-		if D: acenv.info("END")
+		if D: acenv.end("")
 		return x
 
 	def computeLangs(self):

@@ -27,8 +27,6 @@ def get(name):
 	"""
 		Returns component of given name. Manages components cache.
 	"""
-	if not name:
-		name="json"
 	module=TE_CACHE.get(name,None)
 	if module:
 		return module

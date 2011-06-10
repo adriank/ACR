@@ -19,6 +19,6 @@ def loads(s,object_hook=None):
 		raise Error(str(e)+" "+s)
 
 load=json.load
-def dumps(s,default):
-	json.dumps(s,default=default, separators=(',',':'))
+def dumps(s,default=None):
+	return json.dumps(s,default=default, separators=(',',':'))
 dump=json.dump

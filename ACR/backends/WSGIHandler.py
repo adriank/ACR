@@ -46,8 +46,8 @@ def computeMIME(mime,agent):
 	return mime[0]
 
 def application(env,start_response):
-#	for i in env:
-#		print i+": "+str(env[i])
+	#for i in env:
+	#	print i+": "+str(env[i])
 	t=time.time()
 	response=[]
 	D=False
