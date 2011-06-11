@@ -12,7 +12,7 @@
 import sys
 import re
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree,iterators,generator,chain,skip
+from ACR.utils import getStorage, dicttree, iterators, generator, chain, skip
 
 class ProgrammingError(Exception):
 	pass

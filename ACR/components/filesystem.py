@@ -20,6 +20,7 @@ from ACR.components import Component
 from ACR.errors import *
 from ACR.utils import prepareVars, replaceVars
 from ACR.utils.xmlextras import tree2xml
+from ACR.utils import generator
 import os
 import shutil
 import fnmatch
@@ -115,14 +116,18 @@ class FileSystem(Component):
 				os.mkdir(currPath)
 		try:
 			file=open(conf["fullPath"], 'w')
-			#XXX this replace is pretty lame, need to investigate where the hell this \r is from, and do it cross-platform.
-			file.write(conf["content"])#.replace("\r\n","\n"))
+			content=conf["content"]
+			if type(content) in (str,unicode):
+				file.write(content)
+			elif type(content) is generator:
+				for i in content:
+					file.write(i)
 		except (IOError,OSError) ,e:
+			file.close()
 			return {
 				"@status":"error",
 				"@error":e
 			}
-		#FIXME - else or finally or smth else?
 		else:
 			file.close()
 		return {"@status":"ok"}
@@ -195,14 +200,15 @@ class FileSystem(Component):
 		c=config["params"]
 		conf={}
 		for i in c:
-			conf[i]=replaceVars(acenv, c[i], str)
+			conf[i]=replaceVars(acenv, c[i], lambda x: type(x) is generator and x or str(x))
 		if D:
 			if not conf.get("path"):
 				acenv.error("path not suplied")
 			elif conf["path"][0]!='/':
 				acenv.error("missning '/' character at the begginig of 'path' attribute")
 		try:
-			conf["content"]=replaceVars(acenv,config["content"])
+			if type(conf["content"]) is not generator:
+				conf["content"]=replaceVars(acenv,config["content"])
 		except:
 			pass
 		conf["fullPath"]=os.path.join(self.abspath,*conf["path"].split("/"))

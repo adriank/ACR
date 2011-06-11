@@ -24,6 +24,13 @@ from ACR.utils.xmlextras import escapeQuotes,unescapeQuotes
 from ACR import acconfig
 from email.Utils import formatdate
 
+def fileGen(f, chunk_size=200000):
+	while True:
+		chunk=f.read(chunk_size)
+		if not chunk:
+			break
+		yield chunk
+
 #SLOW!!!
 def computePOST(env):
 	post=None
@@ -44,7 +51,7 @@ def computePOST(env):
 			elif form[i].filename is not None:
 				post[i]={
 					"filename":form[i].filename,
-					"content":form[i].value
+					"content":fileGen(form[i].file)
 				}
 			else:
 				post[i]=form[i].value
