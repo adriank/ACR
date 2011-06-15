@@ -3,7 +3,7 @@ from ACR.utils.xmlextras import tree2xml
 
 name="ObjectML (Python ver)"
 def serialize(env):
-	xml=tree2xml(env.generations,True)
+	xml=tree2xml(env.generations)
 	xslt=""
 	if env.output["XSLTFile"]:
 		xslt="""<?xml-stylesheet type="text/xsl" href="http://%s/xslt/%s"?>\n"""%(env.domain,env.output["XSLTFile"])

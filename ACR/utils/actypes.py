@@ -63,6 +63,13 @@ class Default(object):
 		self._value=None
 
 	def validate(self,value,config=None):
+		if config:
+			ml=config.get("minLenght")
+			if ml and len(value)<int(ml):
+				raise Error("ValueTooShort", "Value should be string of at least %s but is '%s'",len(value),type(value))
+			ml=config.get("maxLenght")
+			if ml and len(value)>int(ml):
+				raise Error("ValueTooLong", "Value should be string of at most %s but is '%s'",len(value),type(value))
 		return True
 
 	def _prepareValue(self,value):

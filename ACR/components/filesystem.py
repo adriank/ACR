@@ -89,7 +89,7 @@ class FileSystem(Component):
 				}
 				if showMIME:
 					try:
-						f['@type']=mimetypes.types_map['.'+i.split(".").pop()].replace("/","_")
+						f['@type']=mimetypes.types_map['.'+i.split(".").pop()].replace("/","_").replace("-","_")
 					except:
 						f["@type"]="unknown"
 				ret.append(f)
