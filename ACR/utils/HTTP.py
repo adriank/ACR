@@ -51,6 +51,7 @@ def computePOST(env):
 			elif form[i].filename is not None:
 				post[i]={
 					"filename":form[i].filename,
+					"extension":form[i].filename.split(".").pop(),
 					"content":fileGen(form[i].file)
 				}
 			else:
