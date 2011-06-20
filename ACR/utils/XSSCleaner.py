@@ -140,6 +140,3 @@ class XssCleaner(HTMLParser):
 					tg += ' %s=""' % y
 			tg += "> "
 		return xssescape(tg.strip())
-
-def clean(s):
-

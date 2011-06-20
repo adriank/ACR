@@ -86,10 +86,11 @@ XSSCleaner=None
 class safeHTML(Default):
 	RE_ESCAPE=re.compile(r'<|(j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:|\s*iframe|\s*frame|)',re.IGNORECASE | re.MULTILINE )
 	def _prepareValue(self,value):
+		global XSSCleaner
 		if not XSSCleaner:
-			from ACR.utils.XSScleaner import XssCleaner
+			from ACR.utils.XSSCleaner import XssCleaner
 			XSSCleaner=XssCleaner()
-		return XssCleaner.strip(value)
+		return XSSCleaner.strip(value)
 
 class Text(Default):
 	def validate(self,value,config=None):
