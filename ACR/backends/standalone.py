@@ -63,6 +63,7 @@ def serve_static(env,start_response):
 	return response
 
 def standalone_server(env,start_response):
+
 	try:
 		extension=env["PATH_INFO"].split(".").pop()
 	except:

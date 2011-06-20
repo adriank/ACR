@@ -84,7 +84,7 @@ def tree2xml(root,esc=False):
 		tab.append("<"+node[0])
 		if node[1]:
 			for i in node[1].iteritems():
-				tab.append(" %s=\"%s\""%i)
+				tab.append(" %s=\"%s\""%(i[0],escapeQuotes(i[1])))
 		if node[2]:
 			tab.append(">")
 			for i in node[2]:
@@ -100,7 +100,7 @@ def tree2xml(root,esc=False):
 			tag="object"
 			for i in node.keys():
 				if i[0]=='@':
-					attrs[i[1:]]=node.pop(i)
+					attrs[i[1:]]=escapeQuotes(str(node.pop(i)))
 		elif nodetype is list:
 			tag="list"
 		else:
@@ -126,7 +126,7 @@ def tree2xml(root,esc=False):
 		tab.append("<"+tag)
 		if attrs and len(attrs)>0:
 			for i in attrs.iteritems():
-				tab.append(" %s=\"%s\""%i)
+				tab.append(" %s=\"%s\""%(i[0],escapeQuotes(i[1])))
 		nodes=[]
 		if not node:
 			tab.append("/>")

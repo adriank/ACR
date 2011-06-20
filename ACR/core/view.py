@@ -402,6 +402,8 @@ class View(object):
 							if type(generation) is Tree:
 								generation.current=i
 								g=generation.execute(acenv)
+							else:
+								g=generation
 							if D: acenv.info("Setting %s to %s in %s",action["name"],g,action["path"])
 							i[action["name"]]=g
 				#	pointer=generation

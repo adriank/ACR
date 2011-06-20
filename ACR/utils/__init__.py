@@ -151,5 +151,6 @@ typesMap={
 	"empty":types.Empty,
 	"nonempty":types.NonEmpty,
 	"hexcolor":types.HEXColor,
-	"file":types.File
+	"file":types.File,
+	"safehtml":types.safeHTML
 }

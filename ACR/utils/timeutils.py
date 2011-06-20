@@ -25,6 +25,8 @@ def round9_10(n):
 		return i+1
 	return i
 
+#TODO its 31 minuta, should be 31 minut
+
 def age(date,lang="en"):
 	td=now()-date
 	days=float(td.days)
