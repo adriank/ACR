@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.#@marcin: docstrings
 
 from types import GeneratorType as generator
+from itertools import chain
 
 def get(d,path,falseOnNotFound=True,acenv=False):
 	"""
@@ -60,12 +61,12 @@ def set(d, path, o):
 
 def flatten(fragment,skip=False):
 	def rec(frg):
-		dtype=type(frg)
-		if dtype in (list,generator):
+		typefrg=type(frg)
+		if typefrg in (list,generator,chain):
 			for i in frg:
 				for j in rec(i):
 					yield j
-		elif dtype is dict:
+		elif typefrg is dict:
 			yield frg
 			for i in frg.iteritems():
 				for j in rec(i[1]):

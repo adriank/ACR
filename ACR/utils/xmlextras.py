@@ -25,6 +25,10 @@ from xml.sax.saxutils import escape,unescape
 from ACR.errors import Error
 import re
 from datetime import datetime
+from types import GeneratorType as generator
+from itertools import chain
+
+iterators=[list,generator,chain]
 
 RE_ATTR=re.compile("'([^']+)': '?([^',]*)'?,*")
 unescapeDict={"&apos;":"'","&quot;":"\""}
@@ -95,13 +99,16 @@ def tree2xml(root,esc=False):
 
 	def rec(node,name=None):
 		attrs={}
+		if type(node) is chain:
+			print list(node)
+			print
 		nodetype=type(node)
 		if nodetype is dict:
 			tag="object"
 			for i in node.keys():
 				if i[0]=='@':
 					attrs[i[1:]]=escapeQuotes(str(node.pop(i)))
-		elif nodetype is list:
+		elif nodetype in iterators:
 			tag="list"
 		else:
 			if nodetype is datetime:
@@ -132,13 +139,12 @@ def tree2xml(root,esc=False):
 			tab.append("/>")
 		else:
 			tab.append(">")
-			#print node
 			if type(node) is dict:
 				for i in node.iteritems():
 					rec(i[1],i[0])
-			if type(node) is list:
+			if type(node) in iterators:
 				for i in node:
-					if type(i) in (dict,list):
+					if type(i) in [dict]+iterators:
 						rec(i)
 					else:
 						i=str(i)

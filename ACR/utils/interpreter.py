@@ -159,7 +159,7 @@ infix("in", 60); infix("not", 60) # not in
 infix("is", 60);
 infix("<", 60); infix("<=", 60)
 infix(">", 60); infix(">=", 60)
-#infix("<>", 60); infix("!=", 60); infix("==", 60)
+#infix("	", 60); infix("!=", 60); infix("==", 60)
 #infix("|", 70); infix("^", 80); infix("&", 90)
 #infix("<<", 100); infix(">>", 100)
 infix("+", 110); infix("-", 110)
@@ -433,12 +433,20 @@ class Tree(object):
 				if len(node)>2:
 					fst=exe(node[1])
 					snd=exe(node[2])
+					if fst is None:
+						return snd
+					if snd is None:
+						return fst
 					typefst=type(fst)
 					if typefst is dict:
 						fst.update(snd)
 						return fst
 					typesnd=type(snd)
 					if typefst in ITER_TYPES or typesnd in ITER_TYPES:
+						if typefst not in ITER_TYPES:
+							fst=[fst]
+						elif typesnd not in ITER_TYPES:
+							snd=[snd]
 						return chain(fst,snd)
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
@@ -616,7 +624,10 @@ class Tree(object):
 								else:
 									fst=list(fst)
 							else:
-								return fst[n]
+								try:
+									return fst[n]
+								except:
+									return None
 						return exe((".",fst,snd))
 					else:
 						try:
@@ -656,6 +667,8 @@ class Tree(object):
 					return float(args)
 				elif fnName=="str":
 					return str(args)
+				elif fnName=="list":
+					return list(args)
 				#string
 				elif fnName=="escape":
 					global escape,escapeDict
@@ -675,9 +688,19 @@ class Tree(object):
 					return re.sub(args[1],args[2],args[0])
 				#array
 				elif fnName=="sort":
+					if not args:
+						return args
+					if len(args)>1:
+						key=args[1]
+						a={"key":lambda x: x.get(key)}
+						args=args[0]
+					else:
+						a={}
 					if type(args) in (generator,chain):
 						args=list(args)
-					args.sort()
+					if type(args) is not list:
+						return args
+					args.sort(**a)
 					return args
 				elif fnName=="reverse":
 					if type(args) in (generator,chain):

@@ -55,7 +55,7 @@ def age(date,lang="en"):
 		else:
 			return (days, days is 1 and "day" or "days")
 	seconds=float(td.seconds)
-	if seconds:
+	if seconds is not None:
 		hours=round9_10(seconds/3600)
 		if hours:
 			if lang=="pl":
@@ -73,7 +73,7 @@ def age(date,lang="en"):
 			return (seconds, seconds is 1 and "sekunda" or 1<seconds%10<5 and "sekundy" or "sekund")
 		else:
 			return (seconds, seconds is 1 and "second" or "seconds")
-	return (0,"now")
+	#return (0,"seconds")
 
 def now():
 	return datetime.datetime.now()
