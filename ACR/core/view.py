@@ -27,13 +27,16 @@ import os,re
 
 NODE="node"
 SET="set"
+UNSET="unset"
 PUSH="push"
 INSERT="insert"
-WRITE_COMMANDS=[SET,PUSH,INSERT]
-ACTIONS=WRITE_COMMANDS+[NODE]
+
 COMMAND="command"
 INHERITS="inherits"
 IMPORT="import"
+
+WRITE_COMMANDS=[UNSET,SET,PUSH,INSERT]
+ACTIONS=WRITE_COMMANDS+[NODE]
 
 #there is no particular reason to do it outside the View class
 def parsePosts(nodes):
@@ -418,6 +421,16 @@ class View(object):
 				elif action["type"]==SET:
 					if D: acenv.info("Setting %s with: %s",action["name"],generation)
 					getStorage(acenv,"rs")[action["name"]]=generation
+				else:
+					pointer=getStorage(acenv,"rs")
+			if action["type"]==UNSET:
+				if type(pointer) not in iterators+[dict]:
+					raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
+				if type(pointer) is dict:
+					pointer.pop(action["name"])
+				elif type(pointer) in iterators:
+					for i in pointer:
+						i.pop(action["name"])
 		if acenv.output:
 			acenv.output.update(self.output)
 
