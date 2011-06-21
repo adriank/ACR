@@ -692,7 +692,7 @@ class Tree(object):
 						return args
 					if len(args)>1:
 						key=args[1]
-						a={"key":lambda x: x.get(key),"reverse":True}
+						a={"key":lambda x: x.get(key)}
 						args=args[0]
 					else:
 						a={}
