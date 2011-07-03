@@ -131,11 +131,11 @@ def str2obj(s):
 		returns: object which was converted or the same string's object representation as in input
 	"""
 	r=s.strip().lower()
-	if r in ["true","t","y","yes"]:
+	if r in ("true","t","y","yes"):
 		return True
-	elif r in ["false","f","no"]:
+	elif r in ("false","f","no"):
 		return False
-	elif r in ["none","nil","null"]:
+	elif r in ("none","nil","null"):
 		return None
 	return s
 
