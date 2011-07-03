@@ -23,8 +23,7 @@ from ACR.utils import replaceVars, num2words as n2w, prepareVars
 
 class Num2Words(Component):
 	def num2words(self,env,config):
-		print config
-		return n2w.liczba_slownie(config["number"])
+		return n2w.liczba_slownie(replaceVars(env,config["number"]))
 
 	def generate(self,env,config):
 		return self.__getattribute__(config["command"].split(":").pop())(env,config)
