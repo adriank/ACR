@@ -62,10 +62,15 @@ def application(env,start_response):
 		app=Application(path)
 		APP_CACHE[path]=app
 	acenv=Environment(app)
+	D=acenv.doDebug
 	acenv.requestStorage["__clientIP__"]=env.get("REMOTE_ADDR","unknown")
 	acenv.mime=map(str.strip, env.get("HTTP_ACCEPT","application/xml").split(";",1)[0].split(","))
 	acenv.UA=env.get("HTTP_USER_AGENT")
+	if D:
+		acenv.debug("MIME is: %s",acenv.mime)
+		acenv.debug("UA is: %s",acenv.UA)
 	acenv.output["format"]=computeMIME(acenv.mime,acenv.UA)
+	if D: acenv.debug("Computed output format is: %s",acenv.output["format"])
 	if env.get('HTTP_COOKIE'):
 		acenv.cookies=HTTP.parseCookies(acenv,env['HTTP_COOKIE'])
 	acenv.setLang(str(env.get("HTTP_ACCEPT_LANGUAGE","").split(",",1)[0].split("-",1)[0]))
