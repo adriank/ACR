@@ -173,10 +173,10 @@ class FileSystem(Component):
 		return {"@status":"ok"}
 
 	def exists(self,acenv,conf):
-		return os.path.exists(conf["fullpath"])
+		return os.path.exists(conf["fullPath"])
 
 	def get(self,acenv,conf):
-		fullpath=conf["fullpath"]
+		fullpath=conf["fullPath"]
 		try:
 			file=open(fullpath,"r")
 			content=file.read()
