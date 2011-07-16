@@ -20,7 +20,6 @@
 from ACR import acconfig
 from ACR.utils import mail,replaceVars
 from ACR.components import *
-#from ACR.utils.xmlextras import dom2tree
 from ACR.errors import *
 import os
 import re
