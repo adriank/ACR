@@ -21,30 +21,40 @@ from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 
+EXEC_CMD=("exec","execute","expr")
+
 class Default(Component):
 	def generate(self, env, config):
+		if config.get("command"):
+			return self.execute(env,config)
 		D=env.doDebug
 		if D: env.debug("START default:generation with %s", config)
 		ret=replaceVars(env, config["string"],str)
 		if D: env.debug("END default component generation with: '%s...'", ret)
 		return ret
 
-	#def execute(self, acenv, conf):
-	#	D=acenv.doDebug
-	#	if D: acenv.debug("START Interpreter with: '%s'", conf["expression"].tree)
-	#	try:
-	#		ret=conf["expression"].execute(acenv)
-	#		if D: acenv.debug("END Interpreter with: '%s'", ret)
-	#		return ret
-	#	except Exception,e:
-	#		if D: acenv.error("Execution failed with error: %s", str(e))
-	#		return {
-	#			"@status":"error",
-	#			"@error":"ExecutionFailed",
-	#			"@message":str(e)
-	#		}
+	def execute(self, acenv, conf):
+		D=acenv.doDebug
+		if D: acenv.debug("START default:Interpreter with: '%s'", conf["expr"].tree)
+		try:
+			ret=conf["expr"].execute(acenv)
+			if D: acenv.debug("END default:Interpreter with: '%s'", ret)
+			return ret
+		except Exception,e:
+			if D: acenv.error("Execution failed with error: %s", str(e))
+			return {
+				"@status":"error",
+				"@error":"ExecutionFailedError",
+				"@message":str(e)
+			}
 
 	def parseAction(self,config):
+		cmd=config.get("command")
+		if cmd in EXEC_CMD:
+			return {
+				"expr":make_tree("".join(config["content"]).strip()),
+				"command":"exec"
+			}
 		s=[]
 		for elem in config["content"]:
 			if type(elem) is tuple:
