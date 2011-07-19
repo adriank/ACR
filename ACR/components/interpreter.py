@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#######################
+#  	  DEPRECATED      #
+#######################
+
 from ACR.utils.interpreter import make_tree
 from ACR.components import Component
 

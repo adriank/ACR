@@ -20,6 +20,7 @@ from ACR.utils import replaceVars,prepareVars
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
+from ACR.utils.interpreter import make_tree
 
 EXEC_CMD=("exec","execute","expr")
 
