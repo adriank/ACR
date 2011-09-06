@@ -47,9 +47,9 @@ try:
 	while True:
 		#try:
 			if len(sys.argv) is 2:
-				tree=make_tree(sys.argv[1])
+				tree=makeTree(sys.argv[1])
 			else:
-				tree=make_tree(raw_input(">>> "))
+				tree=makeTree(raw_input(">>> "))
 			if fakeEnv.doDebug:
 				print tree.tree
 			r=tree.execute(fakeEnv)

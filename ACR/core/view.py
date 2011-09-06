@@ -22,7 +22,7 @@ from ACR import acconfig
 from ACR import components
 from ACR.errors import *
 from ACR.utils import getStorage,prepareVars,typesMap,str2obj,iterators
-from ACR.utils.interpreter import make_tree,Tree
+from ACR.utils.interpreter import makeTree,Tree
 import os,re
 
 NODE="node"
@@ -48,7 +48,7 @@ def parsePosts(nodes):
 		attrs=i[1]
 		typ=typesMap.get(attrs.get("type","default").lower())()
 		if attrs.has_key("default"):
-			typ.setDefault(make_tree(attrs["default"]))
+			typ.setDefault(makeTree(attrs["default"]))
 		else:
 			postCount+=1
 		ret[attrs["name"]]=typ
@@ -66,7 +66,7 @@ def parseInputs(nodes):
 		except TypeError:
 			raise Error("WrongInputTypeName","Input type '%s' is not supported."%attrs.get("type","default"))
 		if attrs.has_key("default"):
-			typ.setDefault(make_tree(attrs["default"]))
+			typ.setDefault(makeTree(attrs["default"]))
 		ret.append({
 			"name":attrs["name"],
 			"type":typ
@@ -170,7 +170,7 @@ class View(object):
 				attrs={"name":"unnamedCondition"}
 			ret.append({
 				"name":attrs.get("name","unnamedCondition"),
-				"value":make_tree(attrs.get("value","".join(i[2]).strip()))
+				"value":makeTree(attrs.get("value","".join(i[2]).strip()))
 			})
 		return ret
 
@@ -240,11 +240,11 @@ class View(object):
 				"config":self.app.getComponent(componentName).parseAction(self.parseAction(action)),
 			}
 			if attrs.has_key("default"):
-				o["default"]=make_tree(attrs["default"])
+				o["default"]=makeTree(attrs["default"])
 			if attrs.has_key("path"):
-				o["path"]=make_tree(attrs["path"])
+				o["path"]=makeTree(attrs["path"])
 			if attrs.has_key("condition"):
-				o["condition"]=make_tree(attrs["condition"])
+				o["condition"]=makeTree(attrs["condition"])
 			# positions the action in the list of actions
 			before=attrs.get("before")
 			after=attrs.get("after")

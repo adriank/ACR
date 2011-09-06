@@ -21,7 +21,7 @@
 #  	  DEPRECATED      #
 #######################
 
-from ACR.utils.interpreter import make_tree
+from ACR.utils.interpreter import makeTree
 from ACR.components import Component
 
 class Interpreter(Component):
@@ -44,7 +44,7 @@ class Interpreter(Component):
 		if config["command"] not in ["execute","exec"]:
 			raise Exception("Bad command %s" % config["command"])
 		return {
-			"expression":make_tree("".join(config["content"]).strip())
+			"expression":makeTree("".join(config["content"]).strip())
 			#"command":config["command"]
 		}
 

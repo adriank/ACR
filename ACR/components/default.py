@@ -20,7 +20,7 @@ from ACR.utils import replaceVars,prepareVars
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
-from ACR.utils.interpreter import make_tree
+from ACR.utils.interpreter import makeTree
 
 EXEC_CMD=("exec","execute","expr")
 
@@ -53,7 +53,7 @@ class Default(Component):
 		cmd=config.get("command")
 		if cmd in EXEC_CMD:
 			return {
-				"expr":make_tree("".join(config["content"]).strip()),
+				"expr":makeTree("".join(config["content"]).strip()),
 				"command":"exec"
 			}
 		s=[]

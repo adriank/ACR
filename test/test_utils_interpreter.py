@@ -8,18 +8,33 @@ import sys, unittest, os
 sys.setrecursionlimit(20000)
 
 class FakeEnv(object):
-	#doDebug=True
 	doDebug=False
 	def __init__(self,rs):
 		self.requestStorage=rs
-	def debug(*a):
-		print a
-	def start(*a):
-		print a
-	def end(*a):
-		print a
-	def info(*a):
-		print a
+	def debug(self,*a):
+		print "DEBUG",
+		try:
+			print a[0]%a[1:]
+		except:
+			print a
+	def start(self,*a):
+		print "START",
+		try:
+			print a[0]%a[1:]
+		except:
+			print a
+	def end(self,*a):
+		print "END",
+		try:
+			print a[0]%a[1:]
+		except:
+			print a
+	def info(self,*a):
+		print "INFO",
+		try:
+			print a[0]%a[1:]
+		except:
+			print a
 
 env1=FakeEnv({
 	"__lang__":"en",
@@ -41,6 +56,7 @@ env1=FakeEnv({
 		]
 	}
 })
+
 env2=FakeEnv({
 	"store": {
 		"book": [
@@ -73,12 +89,14 @@ env2=FakeEnv({
 		}
 	}
 })
+#env1.doDebug=True
+#env2.doDebug=True
 
 def execute(expr):
-	return make_tree(expr).execute(env1)
+	return makeTree(expr).execute(env1)
 
 def execute2(expr):
-	return make_tree(expr).execute(env2)
+	return makeTree(expr).execute(env2)
 
 class Utils_interpreter(unittest.TestCase):
 	def test_simple_types(self):
@@ -213,6 +231,7 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("int(1)"), 1)
 		self.assertEqual(execute("int(1.0)"), 1)
 		self.assertEqual(execute("int('1')"), 1)
+		#Python can't handle that
 		#self.assertEqual(execute("int('1.0')"), 1)
 		self.assertEqual(execute("float(1.0)"), 1.0)
 		self.assertEqual(execute("float(1)"), 1.0)
@@ -269,12 +288,15 @@ class Utils_Paths(unittest.TestCase):
 		self.assertEqual(execute("$..l.._id"), [3,4])
 		#self.assertEqual(execute2("$.store.*"), env2.requestStorage["store"])
 		self.assertEqual(execute2("$.store.book.author"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
+		self.assertEqual(execute2("$.store.book.*[author]"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
+		self.assertEqual(execute2("$.store.book.*['author']"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
 		self.assertEqual(execute2("$.store.book"), env2.requestStorage["store"]["book"])
 		self.assertEqual(execute2("$..author"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
 
 	def test_selectors(self):
 		self.assertEqual(len(execute("$..*[_id>2]")), 2)
-		#self.assertEqual(execute2("$..*[_id>1 and _id<3]"), [2])
+		self.assertEqual(execute("$..*[3 in @.l._id]")[0], env1.requestStorage['test'])
+		self.assertEqual(execute("$..*[@._id>1 and @._id<3][0]"), {'_id': 2})
 
 	## tests invalid expressions
 	#def test_invalidExpression(self):
@@ -294,3 +316,4 @@ testcase1=unittest.TestLoader().loadTestsFromTestCase(Utils_interpreter)
 testcase2=unittest.TestLoader().loadTestsFromTestCase(Utils_Paths)
 
 utils_interpreter=unittest.TestSuite([testcase1,testcase2])
+#utils_interpreter=unittest.TestSuite([testcase2])

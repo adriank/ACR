@@ -63,12 +63,10 @@ class symbol_base(object):
 					return False
 				elif self.value=="None":
 					return None
-		#XXX this is crap - don't know where I've took this from
-		out=[self.id, self.fst, self.snd, self.third]
-		ret=[]
+		ret=[self.id]
 		ret_append=ret.append
-		L=[dict,tuple,list]
-		for i in filter(None, out):
+		L=(dict,tuple,list)
+		for i in filter(None, [self.fst, self.snd, self.third]):
 			if type(i) is str:
 				ret_append(i)
 			elif type(i) in L:
@@ -84,17 +82,18 @@ class symbol_base(object):
 						t_append(j.getTree())
 					except:
 						t_append(j)
-				if self.id is "(":
-					if len(t) is 1:
-						t=t[0]
-					return (self.id,ret[1],t)
 				#TODO check if this is ever used?
 				if self.id is "[":
 					return t
+				else:
+					ret.extend(t)
 				#ret_append(t)
 				#return (self.id,ret[1:])
 			else:
 				ret_append(i.getTree())
+		if self.id is "(":
+			#this will produce ("fn","fnName",arg1,arg2,...argN)
+			return tuple(["fn",ret[1][1]]+ret[2:])
 		return tuple(ret)
 
 	def __repr__(self):
@@ -232,6 +231,7 @@ symbol(",")
 #this is for built-in functions
 @method(symbol("("))
 def led(self, left):
+	#self.id="fn"
 	self.fst=left
 	self.snd=[]
 	if token.id is not ")":
@@ -377,7 +377,7 @@ def expression(rbp=0):
 		left=t.led(left)
 	return left
 
-def make_tree(expr):
+def makeTree(expr):
 	if type(expr) is not str:
 		return Tree(expr)
 	expr=expr.strip()
@@ -388,7 +388,7 @@ def make_tree(expr):
 	token=next()
 	return Tree(expression().getTree())
 
-SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":"]
+SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":","and","or"]
 #it must be list because of further concatenations
 NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
@@ -411,7 +411,7 @@ class Tree(object):
 				node[0] - operator name
 				node[1:] - params
 			"""
-			if D: acenv.debug("executing node '%s'", node)
+			if D: acenv.start("executing node '%s'", node)
 			type_node=type(node)
 			if node is None or type_node in (str,int,float,long,bool,generator,chain):
 				return node
@@ -442,15 +442,20 @@ class Tree(object):
 						fst.update(snd)
 						return fst
 					typesnd=type(snd)
+					if typefst is list and typesnd is list:
+						if D: acenv.debug("both sides are lists, returning '%s'",fst+snd)
+						return fst+snd
 					if typefst in ITER_TYPES or typesnd in ITER_TYPES:
 						if typefst not in ITER_TYPES:
 							fst=[fst]
 						elif typesnd not in ITER_TYPES:
 							snd=[snd]
+						if D: acenv.debug("at least one side is generator and other is iterable, returning chain")
 						return chain(fst,snd)
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 						return str(fst)+str(snd)
+					if D: acenv.debug("standard addition, returning '%s'",fst+snd)
 					return fst + snd
 				else:
 					return exe(node[1])
@@ -467,6 +472,7 @@ class Tree(object):
 			elif op=="/":
 				return exe(node[1]) / float(exe(node[2]))
 			elif op==">":
+				if D: acenv.debug("%s > %s", exe(node[1]),exe(node[2]))
 				return exe(node[1]) > exe(node[2])
 			elif op=="<":
 				return exe(node[1]) < exe(node[2])
@@ -531,6 +537,7 @@ class Tree(object):
 			elif op=="(storage)":
 				return getStorage(acenv,node[1])
 			elif op=="(current)":
+				if D: acenv.debug("setting current to %s",self.current)
 				return self.current
 			elif op=="name":
 				return node[1]
@@ -541,6 +548,7 @@ class Tree(object):
 				typefst=type(fst)
 				if D: acenv.debug("left is '%s'",fst)
 				if node[2][0]=="*":
+					if D: acenv.end("returning '%s'",typefst in ITER_TYPES and fst or [fst])
 					return typefst in ITER_TYPES and fst or [fst]
 				snd=exe(node[2])
 				if D: acenv.debug("right is '%s'",snd)
@@ -552,14 +560,18 @@ class Tree(object):
 							ret_append(i[snd])
 						except:
 							pass
+					if D: acenv.end(". returning '%s'",ret)
 					return ret
 				try:
+					if D: acenv.end(". returning '%s'",fst.get(snd))
 					return fst.get(snd)
 				except:
+					if D: acenv.end(". returning '%s'",fst)
 					return fst
 			elif op=="..":
 				fst=dicttree.flatten(exe(node[1]))
 				if node[2][0]=="*":
+					if D: acenv.debug("returning '%s'",fst)
 					return fst
 				ret=[]
 				snd=exe(node[2])
@@ -568,6 +580,7 @@ class Tree(object):
 						ret.append(i[snd])
 					except:
 						pass
+				if D: acenv.debug("returning '%s'",ret)
 				return ret
 			#TODO move it to tree generation phase
 			elif op=="{":
@@ -585,13 +598,17 @@ class Tree(object):
 					return map(exe,node[1])
 				if len_node is 3: # operator []
 					fst=exe(node[1])
+					# check against None
 					if not fst:
 						return fst
 					s=node[2]
 					if type(s) is tuple and s[0] in SELECTOR_OPS:
 						nodeList=[]
 						nodeList_append=nodeList.append
+						if type(fst) is dict:
+							fst=[fst]
 						for i in fst:
+							if D: acenv.debug("setting self.current to '%s'",i)
 							self.current=i
 							#TODO move it to tree building phase
 							if type(s[1]) is tuple and s[1][0]=="name":
@@ -613,8 +630,9 @@ class Tree(object):
 					snd=exe(node[2])
 					tfst=type(fst)
 					if tfst in [tuple]+ITER_TYPES+STR_TYPES:
+						type_snd=type(snd)
 						# nodes[N]
-						if type(snd) in NUM_TYPES or snd.isdigit():
+						if type_snd in NUM_TYPES or type_snd is str and snd.isdigit():
 							n=int(snd)
 							if tfst in (generator,chain):
 								if n>0:
@@ -628,6 +646,7 @@ class Tree(object):
 									return fst[n]
 								except:
 									return None
+						# $.*['string']==$.string
 						return exe((".",fst,snd))
 					else:
 						try:
@@ -635,51 +654,52 @@ class Tree(object):
 						except:
 							return []
 				raise ProgrammingError("Wrong usage of '[' operator")
-			elif op=="(":
+			elif op=="fn":
 				""" Built-in functions """
-				fnName=node[1][1]
+				fnName=node[1]
 				args=None
 				try:
-					args=exe(node[2])
-				except:
+					args=map(exe,node[2:])
+				except IndexError:
 					pass
 				#arithmetic
 				if fnName=="sum":
+					args=args[0]
 					if type(args) in NUM_TYPES:
 						return args
 					return sum(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
 				elif fnName=="max":
+					args=args[0]
 					if type(args) in NUM_TYPES:
 						return args
 					return max(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
 				elif fnName=="min":
+					args=args[0]
 					if type(args) in NUM_TYPES:
 						return args
 					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
 				elif fnName=="round":
-					if type(args) is list:
-						return round(*args)
-					return round(args)
+					return round(*args)
 				#casting
 				elif fnName=="int":
-					return int(args)
+					return int(args[0])
 				elif fnName=="float":
-					return float(args)
+					return float(args[0])
 				elif fnName=="str":
-					return str(args)
+					return str(args[0])
 				elif fnName=="list":
-					return list(args)
+					return list(args[0])
 				#string
 				elif fnName=="escape":
 					global escape,escapeDict
 					if not escape:
 						from ACR.utils.xmlextras import escape, escapeDict
-					return escape(args,escapeDict)
+					return escape(args[0],escapeDict)
 				elif fnName=="unescape":
 					global unescape,unescapeDict
 					if not unescape:
 						from ACR.utils.xmlextras import unescape, unescapeDict
-					return unescape(args,unescapeDict)
+					return unescape(args[0],unescapeDict)
 				elif fnName=="replace":
 					if type(args[0]) is unicode:
 						args[0]=args[0].encode("utf8")
@@ -688,27 +708,30 @@ class Tree(object):
 					return re.sub(args[1],args[2],args[0])
 				#array
 				elif fnName=="sort":
+					if D: acenv.debug("doing sort on '%s'",args)
 					if not args:
 						return args
+					if type(args) in (generator,chain):
+						args=list(args)
 					if len(args)>1:
 						key=args[1]
 						a={"key":lambda x: x.get(key)}
 						args=args[0]
 					else:
 						a={}
-					if type(args) in (generator,chain):
-						args=list(args)
+						args=args[0]
 					if type(args) is not list:
 						return args
 					args.sort(**a)
 					return args
 				elif fnName=="reverse":
+					args=args[0]
 					if type(args) in (generator,chain):
 						args=list(args)
-					#reversed() is not help here since either way all data should be put in RAM and then reversed
 					args.reverse()
 					return args
 				elif fnName in ("count","len"):
+					args=args[0]
 					if args in (True,False,None):
 						return args
 					if type(args) in ITER_TYPES:
@@ -722,8 +745,9 @@ class Tree(object):
 					if fnName=="now":
 						return timeutils.now()
 					if fnName=="age":
-						return timeutils.age(args,getStorage(acenv,"rs")["__lang__"])
+						return timeutils.age(args[0],getStorage(acenv,"rs")["__lang__"])
 				elif fnName=="toMillis":
+					args=args[0]
 					if args.utcoffset() is not None:
 						args=args-args.utcoffset()
 					global calendar
@@ -732,7 +756,7 @@ class Tree(object):
 					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsnd / 1000)
 				#misc
 				elif fnName=="type":
-					ret=type(args)
+					ret=type(args[0])
 					if ret in ITER_TYPES:
 						return "array"
 					if ret is dict:
@@ -747,7 +771,10 @@ class Tree(object):
 					global ObjectId
 					if not ObjectId:
 						from bson.objectid import ObjectId
-					return ObjectId(args)
+					try:
+						return ObjectId(args[0])
+					except:
+						return ObjectId(None)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")
 			else:

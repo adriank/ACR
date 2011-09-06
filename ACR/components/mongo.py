@@ -22,7 +22,7 @@ from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
 import pymongo
 from bson import objectid
-from ACR.utils.interpreter import make_tree
+from ACR.utils.interpreter import makeTree
 import time
 
 class Mongo(Component):
@@ -154,7 +154,7 @@ class Mongo(Component):
 		for elem in config["content"]:
 			if type(elem) is tuple:
 				if elem[0]=="where":
-					pars["where"]=make_tree("".join(elem[2]))
+					pars["where"]=makeTree("".join(elem[2]))
 				elif elem[0]=="field":
 					fields[elem[1]["name"]]=bool(str2obj(elem[1]["show"]))
 				else:
@@ -167,7 +167,7 @@ class Mongo(Component):
 			pars["fields"]=fields
 		return {
 			"command":config["command"],
-			"content":make_tree("".join(s)),
+			"content":makeTree("".join(s)),
 			"params":pars
 		}
 
