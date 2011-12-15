@@ -48,12 +48,18 @@ def serve_static(env,start_response):
 	except:
 		status="404 Not Found"
 		extension="html"
-		f=open(os.path.join(staticDir,"errorpages","404.html"))
+		print "Warning! File", os.path.join(staticDir,*env["PATH_INFO"].split("/")), "not found!"
+		try:
+			f=open(os.path.join(staticDir,"errorPages","404.html"))
+		except:
+			print "Warning! 404 Error Page at",os.path.join(staticDir,"errorPages","404.html"),"not found!"
 	try:
 		for line in f:
 			response.append(line)
 			length+=len(line)
-	finally:
+	except:
+		pass
+	else:
 		f.close()
 	headers=[
 		('Content-type', mimetypes.types_map['.'+extension]),

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ACR.utils import replaceVars,prepareVars, str2obj
+from ACR.utils import replaceVars,prepareVars, str2obj, dicttree
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
 from xml.sax.saxutils import escape,unescape
@@ -145,6 +145,12 @@ class Mongo(Component):
 	def generate(self, acenv,config):
 		D=acenv.doDebug
 		if D: acenv.debug("START Mongo:%s with %s",config["command"].split(":").pop(), config)
+		db=acenv.app.storage
+		params=config["params"]
+		collName=params.get("coll",self.DEFAULT_COLL)
+		if type(collName) in (str,unicode):
+			coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+		coll=dicttree.get(acenv.app.storage,params.get("coll",self.DEFAULT_COLL))
 		return self.__getattribute__(config["command"].split(":").pop())(acenv,config)
 
 	def parseAction(self,config):
@@ -161,7 +167,12 @@ class Mongo(Component):
 					pars[elem[0]]=(elem[1],elem[2])
 			elif type(elem) is str:
 				s.append(elem.strip())
-		if not pars.has_key("coll"):
+		try:
+			coll=pars["coll"].split(".")
+			if len(coll) is 1:
+				coll=coll[0]
+			pars["coll"]=coll
+		except KeyError:
 			raise Error("no coll parameter specified")
 		if fields:
 			pars["fields"]=fields

@@ -35,8 +35,8 @@ import locale
 try:
 	import pymongo
 except:
-	pass
-	#print "No MongoDB driver found. Please install pymongo."
+	#pass
+	print "No MongoDB driver found. Please install pymongo."
 
 pjoin=os.path.join
 pexists=os.path.exists
@@ -96,8 +96,8 @@ class Application(object):
 			self.deploymentMode=True
 		try:
 			self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
-		except:
-			pass
+		except Exception,e:
+			raise Error("MongoError",str(e))
 		if config.get("/debug"):
 			self.dbg={
 				"enabled":str2obj(config.get("/debug[@enable]")),

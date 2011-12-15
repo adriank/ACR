@@ -87,7 +87,9 @@ def application(env,start_response):
 	if acenv.doRedirect:
 		status="301 Redirected"
 	start_response(status, headers)
-	if not acenv.doRedirect:
+	if acenv.doRedirect:
+		response.append("")
+	else:
 		response.append(output)
 	if acenv.doProfiling:
 		whole=round((time.time()-t)*1000,2)
