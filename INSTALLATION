@@ -1,13 +1,13 @@
 1. Requirements
 
 You need to have following software on your box:
-- Python in version 2.5 or newer - 3 branch is not working right now!
-- MongoDB 1.6 or newer - ACR is tested on versions 1.4 to 1.8.1
-- pymongo Python driver for MongoDB
+- Python in version 2.5 or newer (latest highly recommended) - Python 3 is not supported right now
+- MongoDB 1.6 or newer - ACR is tested on versions 1.4 to 2.0.1
+- pymongo Python driver for MongoDB (check which version is best for your MongoDB installation)
 
-Mongo is not required, but without it the functionality is limited to manipulating file system, sending emails and ObjectPath functionality.
+Mongo is not required, but without it the functionality is limited to manipulating file system, sending emails and testing ObjectPath.
 
-Additionally you can have following Python modules (if ACF can't load them, there will be information about it in debug mode - see below)
+Additionally you can have following Python modules (if ACR can't load them, there will be information about it in debug mode - see below)
 - simplejson or json - install it if you want output in JSON. CJSON is not supported as of now.
 
 2. Installation
@@ -30,8 +30,8 @@ Your site will be available at http://localhost:9999/.
 
 Docs are available on
 
-http://doc.asyncode.com/
+http://docs.asyncode.com/
 
 6. Support
 
-Commercial support is available by Asyncode Ltd. Check http://asyncode.com/
+Commercial support is available from Asyncode Ltd. Check http://asyncode.com/
