@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns="http://asyncode.com/View"
+	xmlns:mg="http://asyncode.com/Mongo"
+	xmlns:op="http://asyncode.com/Interpreter"
+	xmlns:h="http://asyncode.com/Headers"
+	xmlns:e="http://asyncode.com/Email">
+
+	<!--
+		Slightly Different Version proposal
+
+		URL's and Views relation is 1:1, but sometimes the behavior of view depends on various conditions so here is a proposal how to handle it.
+		BLSL follows programming by definition/configuration approach, so we don't want to add statements like if, switch or loop.
+		In this file we will write two separate behaviors for logged in user and not logged in user. First will add n1 to n2 and return their sum, second will get error.
+	-->
+	<param name="toAdd" type="number"/>
+
+	<variant name="loggedIn" condition="$ss.loggedIn">
+		<set name="sum" path="$ss" command="op:exec">
+			$ss.sum + $.toAdd
+		</set>
+
+		<node name="sum" command="op:exec">
+			$ss.sum
+		</node>
+	</variant>
+
+	<variant name="notLoggedIn" condition="not $ss.loggedIn">
+		<node name="sum" command="op:exec">
+			$.toAdd
+		</node>
+		<error name="NotLoggedInError"/>
+		<error name="NumberNotAddedToSessionError"/>
+	</variant>
+
+	<set name="redirect" command="h:redirect" h:location="/showMsg/{$.redirect}/" condition="not $.fromMail and $.redirect"/>
+
+	<set name="redirect" command="h:redirect" h:location="/" condition="not $.fromMail and not $.redirect"/>
+
+	<!--<output XSLTFile="none"/>-->
+</view>

@@ -17,7 +17,7 @@ What about Windows? It works, but it is not supported as of now.
 Where is the documentation?
 ---------------------------
 
-http://docs.Asyncode.com/
+http://docs.asyncode.com/
 
 Current state of the art
 ------------------------
