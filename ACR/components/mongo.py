@@ -124,6 +124,7 @@ class Mongo(Component):
 		if P: t=time.time()
 		if count:
 			ret=coll.find(**p).count()
+			if D:acenv.debug("Objects matching count is: %s",ret)
 		elif one:
 			ret=list(coll.find(**p).limit(-1))
 			ret=ret and ret[0] or None
@@ -139,8 +140,11 @@ class Mongo(Component):
 			if D:acenv.debug("END Mongo.find with %s",ret)
 			return ret
 		else:
+			if count:
+				if D:acenv.debug("END Mongo.count with 0")
+				return ret
 			if D:acenv.debug("END Mongo.find with no object")
-			return {"@status":"nodata"}
+			return {"@status":"noData"}
 
 	def generate(self, acenv,config):
 		D=acenv.doDebug
