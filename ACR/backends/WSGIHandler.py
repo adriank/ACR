@@ -85,7 +85,7 @@ def application(env,start_response):
 	headers.append(("Content-Type",acenv.output["format"]))
 	status='200 OK'
 	if acenv.doRedirect:
-		status="301 Redirected"
+		status="303 See other"
 	start_response(status, headers)
 	if acenv.doRedirect:
 		response.append("")
