@@ -27,4 +27,4 @@ def doTests():
 	##print '\nutils/HTTP.py'
 	#unittest.TextTestRunner(verbosity = 2).run(utils_http)
 	print '\nutils/interpreter.py'
-	#unittest.TextTestRunner(verbosity = 2).run(utils_interpreter)
+	unittest.TextTestRunner(verbosity = 2).run(utils_interpreter)
