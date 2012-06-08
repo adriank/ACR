@@ -25,7 +25,7 @@ def round9_10(n):
 		return i+1
 	return i
 
-#TODO its 31 minuta, should be 31 minut
+#TODO its 31 minuta, should be 31 minut - probably done
 
 def age(date,lang="en"):
 	td=now()-date
@@ -65,7 +65,7 @@ def age(date,lang="en"):
 		minutes=round9_10(seconds/60)
 		if minutes:
 			if lang=="pl":
-				return (minutes, minutes%10 is 1 and "minuta" or 1<minutes%10<5 and "minuty" or "minut")
+				return (minutes, minutes is 1 and "minuta" or minutes%10 is 1 and "minuta" or 1<minutes%10<5 and "minuty" or "minut")
 			else:
 				return (minutes, minutes is 1 and "minute" or "minutes")
 		seconds=int(seconds)
@@ -75,5 +75,54 @@ def age(date,lang="en"):
 			return (seconds, seconds is 1 and "second" or "seconds")
 	#return (0,"seconds")
 
-def now():
-	return datetime.datetime.now()
+now=datetime.datetime.now
+
+def date(d):
+	if d:
+		d=d[0]
+		t=type(d)
+		if t is datetime.datetime:
+			return datetime.date(d.year,d.month,d.day)
+		if t in (tuple,list):
+			return datetime.date(*d)
+	return datetime.date.today()
+
+def time(d):
+	if not d:
+		d=now()
+	else:
+		d=d[0]
+		t=type(d)
+		if t in (tuple,list):
+			return datetime.time(*d)
+	return datetime.time(d.hour,d.minute,d.second,d.microsecond)
+
+def dateTime(arg):
+	# d may be:
+	# - datetime()
+	# - [y,m,d,h,m,ms]
+	# - [date(),time()]
+	# - [[y,m,d],[h,m,s,ms]]
+	# and permutations of above
+	l=len(arg)
+	if l is 1:
+		dt=arg[0]
+		typed=type(dt)
+		if typed is datetime.datetime:
+			return dt
+		if typed in (tuple,list) and len(dt) in [5,7]:
+			return datetime.datetime(*dt)
+	if l is 2:
+		date=None
+		time=None
+		if type(arg[0]) is datetime.date:
+			d=arg[0]
+			date=[d.year,d.month,d.day]
+		if type(arg[0]) in (tuple,list):
+			date=arg[0]
+		if type(arg[1]) is datetime.time:
+			t=arg[1]
+			time=[t.hour,t.minute,t.second,t.microsecond]
+		if type(arg[1]) in (tuple,list):
+			time=arg[1]
+		return datetime.datetime(*date+time)

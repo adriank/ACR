@@ -47,7 +47,9 @@ class Default(object):
 		# "" is valid so is not None is needed!
 		if value is not None:
 			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
-			return self._prepareValue(value)
+			v=self._prepareValue(value)
+			self.validate(v) # raises Error on invalid
+			return v
 		try:
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
 			return self.value
@@ -103,7 +105,8 @@ class Text(Default):
 
 class Number(Default):
 	def validate(self,value,config=None):
-		if not value.isdigit():
+		tv=type(value)
+		if tv not in [int,float] or tv in [str,unicode] and not value.isdigit():
 			raise Error("NotNumber", "Should be number, but is %s",value)
 		return True
 
@@ -155,6 +158,16 @@ class HEXColor(Default):
 		if not (len(value) in [3,6] and self.COLOR_RE.match(value)):
 			raise Error("NotValidHEXColor", "Should be valid HEX color (xxx or xxxxxx where x is 1-9 or a-f)")
 		return True
+
+#DATETIME
+class date(Default):
+	def validate(self,value,config=None):
+		if type(str2obj(value)) in [str,unicode]:
+			raise Error("NotNumber", "Should be number, but is %s",value)
+		return True
+
+	def _prepareValue(self,value):
+		return datetime.date(value.y,value.m,value.d)
 
 #COMPLEX TYPES
 

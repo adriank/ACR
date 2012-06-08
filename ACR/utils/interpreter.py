@@ -452,6 +452,10 @@ class Tree(object):
 							snd=[snd]
 						if D: acenv.debug("at least one side is generator and other is iterable, returning chain")
 						return chain(fst,snd)
+					if typefst in (int,float):
+						try:
+							return fst+float(snd)
+						except: pass
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 						return str(fst)+str(snd)
@@ -566,6 +570,10 @@ class Tree(object):
 					if D: acenv.end(". returning '%s'",fst.get(snd))
 					return fst.get(snd)
 				except:
+					if isinstance(fst,object):
+						try:
+							return fst.__getattribute__(snd)
+						except: pass
 					if D: acenv.end(". returning '%s'",fst)
 					return fst
 			elif op=="..":
@@ -687,8 +695,22 @@ class Tree(object):
 					return float(args[0])
 				elif fnName=="str":
 					return str(args[0])
-				elif fnName=="list":
-					return list(args[0])
+				elif fnName in ("list","array"):
+					try:
+						a=args[0]
+					except:
+						return []
+					targs=type(a)
+					global timeutils
+					if not timeutils:
+						from ACR.utils import timeutils
+					if targs is timeutils.datetime.datetime:
+						return [a.year,a.month,a.day,a.hour,a.minute,a.second,a.microsecond]
+					if targs is timeutils.datetime.date:
+						return [a.year,a.month,a.day]
+					if targs is timeutils.datetime.time:
+						return [a.hour,a.minute,a.second,a.microsecond]
+					return list(a)
 				#string
 				elif fnName=="escape":
 					global escape,escapeDict
@@ -738,12 +760,18 @@ class Tree(object):
 						return len(list(args))
 					return len(args)
 				#time
-				elif fnName in ("now","age"):
+				elif fnName in ("now","age","time","date","dateTime"):
 					global timeutils
 					if not timeutils:
 						from ACR.utils import timeutils
 					if fnName=="now":
 						return timeutils.now()
+					if fnName=="date":
+						return timeutils.date(args)
+					if fnName=="time":
+						return timeutils.time(args)
+					if fnName=="dateTime":
+						return timeutils.dateTime(args)
 					if fnName=="age":
 						return timeutils.age(args[0],getStorage(acenv,"rs")["__lang__"])
 				elif fnName=="toMillis":

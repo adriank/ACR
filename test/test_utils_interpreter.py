@@ -221,6 +221,7 @@ class Utils_interpreter(unittest.TestCase):
 	def test_concatenation(self):
 		self.assertEqual(execute("'a'+'b'+\"c\""), 'abc')
 		self.assertEqual(execute("'5'+5"), '55')
+		self.assertEqual(execute("5+'5'"), 10)
 		self.assertEqual(list(execute("[1,2,4] + [3,5]")), [1,2,4,3,5])
 		self.assertEqual(execute('{"a":1,"b":2} + {"a":2,"c":3}'), {"a":2,"b":2,"c":3})
 
@@ -237,6 +238,12 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("float(1)"), 1.0)
 		self.assertEqual(execute("float('1')"), 1.0)
 		self.assertEqual(execute("float('1.0')"), 1.0)
+		self.assertEqual(execute("array()"), [])
+		self.assertEqual(execute("array([])"), [])
+		self.assertEqual(execute("array('abc')"), ['a','b','c'])
+		self.assertEqual(execute("array(dateTime([2011,4,8,12,0]))"), [2011,4,8,12,0,0,0])
+		self.assertEqual(execute("array(date([2011,4,8]))"), [2011,4,8])
+		self.assertEqual(execute("array(time([12,12,30]))"), [12,12,30,0])
 
 	def test_builtin_arithmetic(self):
 		self.assertEqual(execute("sum([1,2,3,4])"), sum([1,2,3,4]))
@@ -257,9 +264,23 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("len([1,2,3,4]+[2,4])"), 6)
 
 	def test_builtin_time(self):
-		from datetime import datetime
-		self.assertIsInstance(execute("now()"),datetime)
+		import datetime
+		self.assertIsInstance(execute("now()"),datetime.datetime)
 		self.assertIsInstance(execute("age(now())"),tuple)
+		self.assertIsInstance(execute("date()"), datetime.date)
+		self.assertIsInstance(execute("date(now())"), datetime.date)
+		self.assertIsInstance(execute("date([2001,12,30])"), datetime.date)
+		self.assertIsInstance(execute("time()"), datetime.time)
+		self.assertIsInstance(execute("time(now())"), datetime.time)
+		self.assertIsInstance(execute("time([12,23])"), datetime.time)
+		self.assertIsInstance(execute("time([12,23,21,777777])"), datetime.time)
+		self.assertIsInstance(execute("dateTime(now())"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime([2001,12,30,12,23])"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime([2001,12,30,12,23,21,777777])"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime(date(),time())"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime(date(),[12,23])"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime(date(),[12,23,21,777777])"), datetime.datetime)
+		self.assertIsInstance(execute("dateTime([2001,12,30],time())"), datetime.datetime)
 
 	def test_builtin_misc(self):
 		from pymongo.objectid import ObjectId
@@ -281,6 +302,7 @@ class Utils_Paths(unittest.TestCase):
 		self.assertEqual(execute("$.test.l._id"), [3, 4])
 		self.assertEqual(execute("$.*[test][0].o._id"), 2)
 		self.assertEqual(execute("$.*['test'][0].o._id"), 2)
+		self.assertIsInstance(execute("now().year"),int)
 
 	def test_complex_paths(self):
 		self.assertEqual(execute("$.._id"), [1, 2, 3, 4])
