@@ -43,6 +43,11 @@ class Utils_xmlextras(unittest.TestCase):
 		import datetime
 		x=["root",{"dt":datetime.datetime.now()},None]
 		self.assertTrue(type(tree2xml(x)) == str)
+		x=["root",{"dt":datetime.datetime.now().date()},None]
+		self.assertTrue(type(tree2xml(x)) == str)
+		x=["root",{"dt":datetime.datetime.now().time()},None]
+		print tree2xml(x)
+		self.assertTrue(type(tree2xml(x)) == str)
 
 	def test_NS2Tuple(self):
 		self.assertTrue(NS2Tuple('xmlns:sthsthsth') == ('xmlns', 'sthsthsth'))

@@ -125,14 +125,10 @@ def tree2xml(root,esc=False):
 					d.update(dt)
 				except: pass
 				try:
-					if node.hour:
-						d["hour"]=node.hour
-					if node.minute:
-						d["minute"]=node.minute
-					if node.second:
-						d["second"]=node.second
-					if node.microsecond:
-						d["ms"]=node.microsecond
+					d["hour"]=node.hour
+					d["minute"]=node.minute
+					d["second"]=node.second
+					d["ms"]=node.microsecond
 				except: pass
 				#raise Exception(list(d.iteritems())[0][1])
 				tab.append("<"+name+" "+" ".join(map(lambda i: i[0]+"=\""+str(i[1])+"\"",d.iteritems()))+"/>")
