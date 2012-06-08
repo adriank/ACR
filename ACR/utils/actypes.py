@@ -106,7 +106,7 @@ class Text(Default):
 class Number(Default):
 	def validate(self,value,config=None):
 		tv=type(value)
-		if tv not in [int,float] or tv in [str,unicode] and not value.isdigit():
+		if tv not in (int,float) or tv in (str,unicode) and not value.isdigit():
 			raise Error("NotNumber", "Should be number, but is %s",value)
 		return True
 

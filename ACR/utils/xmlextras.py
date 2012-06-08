@@ -21,13 +21,14 @@
 #@marcin: functions docstrings
 
 from xml.sax import make_parser, handler
-from xml.sax.saxutils import escape,unescape
+from xml.sax.saxutils import escape, unescape
 from ACR.errors import Error
 import re
-from datetime import datetime
+from datetime import datetime, date, time
 from types import GeneratorType as generator
 from itertools import chain
 
+#DONTDO do not change that to tuple
 iterators=[list,generator,chain]
 
 RE_ATTR=re.compile("'([^']+)': '?([^',]*)'?,*")
@@ -99,9 +100,9 @@ def tree2xml(root,esc=False):
 
 	def rec(node,name=None):
 		attrs={}
-		if type(node) is chain:
-			print list(node)
-			print
+		#if type(node) is chain:
+		#	print list(node)
+		#	print
 		nodetype=type(node)
 		if nodetype is dict:
 			tag="object"
@@ -111,15 +112,32 @@ def tree2xml(root,esc=False):
 		elif nodetype in iterators:
 			tag="list"
 		else:
-			if nodetype is datetime:
+			if nodetype in (datetime,date,time):
 				d={
-					"name":name,
-					"date":str(node.date()),
-					"time":str(node.time()).split(".")[0]
+					"type":nodetype.__name__
 				}
-				tab.append("<%(name)s-date>%(date)s</%(name)s-date><%(name)s-time>%(time)s</%(name)s-time>"%d)
+				try:
+					dt={
+						"year":node.year,
+						"month":node.month,
+						"day":node.day
+					}
+					d.update(dt)
+				except: pass
+				try:
+					if node.hour:
+						d["hour"]=node.hour
+					if node.minute:
+						d["minute"]=node.minute
+					if node.second:
+						d["second"]=node.second
+					if node.microsecond:
+						d["ms"]=node.microsecond
+				except: pass
+				#raise Exception(list(d.iteritems())[0][1])
+				tab.append("<"+name+" "+" ".join(map(lambda i: i[0]+"=\""+str(i[1])+"\"",d.iteritems()))+"/>")
 				return
-			if nodetype not in [str,unicode]:
+			if nodetype not in (str,unicode):
 				node=str(node)
 			if esc:
 				node=escapeQuotes(node)
@@ -147,7 +165,10 @@ def tree2xml(root,esc=False):
 					if type(i) in [dict]+iterators:
 						rec(i)
 					else:
-						i=str(i)
+						try:
+							i=str(i)
+						except:
+							i=i.encode("utf8")
 						if esc:
 							i=escapeQuotes(i)
 						tab.append("<item>%s</item>"%i)
@@ -158,7 +179,7 @@ def tree2xml(root,esc=False):
 		tab=["<list>"]
 		#this is an exception. We want to have <object/>'s with name in root subnodes.
 		for i in root.iteritems():
-			if type(i[1]) in [str,unicode]:
+			if type(i[1]) in (str,unicode):
 				tab.append('<object name="%s">%s</object>'%i)
 			else:
 				rec(i[1],i[0])
@@ -286,9 +307,9 @@ def tpath(root,path, default=None):
 
 def NS2Tuple(s,delimiter=":"):
 	"""
-	Distance namespace from its other part.
-	input: xml-like namespace in a string
-	returns: tuple (namespace: rest)
+	Splits tag to namespace and name.
+	input: tag name in format "ns:name"
+	returns: tuple (namespace, name)
 	"""
 	try:
 		ns,action=s.split(delimiter,1)
