@@ -119,15 +119,15 @@ def tree2xml(root,esc=False):
 				try:
 					dt={
 						"year":node.year,
-						"month":node.month,
-						"day":node.day
+						"month":node.month>9 and node.month or '0'+str(node.month),
+						"day":node.day>9 and node.day or '0'+str(node.day)
 					}
 					d.update(dt)
 				except: pass
 				try:
 					d["hour"]=node.hour
-					d["minute"]=node.minute
-					d["second"]=node.second
+					d["minute"]=node.minute>9 and node.minute or '0'+str(node.minute)
+					d["second"]=node.second>9 and node.second or '0'+str(node.second)
 					d["ms"]=node.microsecond
 				except: pass
 				#raise Exception(list(d.iteritems())[0][1])
