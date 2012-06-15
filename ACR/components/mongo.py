@@ -135,7 +135,7 @@ class Mongo(Component):
 			ret=list(coll.find(**p))
 			if ret and params.has_key("sort") and ret[0].has_key(params['sort']) and type(ret[0][params['sort']]) in (str,unicode):
 				if D:acenv.debug("Doing additional Python sort")
-				pars={"key":lambda k: k[params['sort']]}
+				pars={"key":lambda k: k[params['sort']].lower()}
 				if params.has_key("direction")=="descending":
 					pars["reverse"]=True
 				ret=sorted(ret, **pars)

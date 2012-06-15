@@ -543,7 +543,9 @@ class Tree(object):
 				return getStorage(acenv,node[1])
 			elif op=="(current)":
 				if D: acenv.debug("setting current to %s",self.current)
-				return self.current
+				try:
+					return self.current
+				except: return None
 			elif op=="name":
 				return node[1]
 			elif op==".":

@@ -88,7 +88,7 @@ def date(d):
 	return datetime.date.today()
 
 def time(d):
-	if not d:
+	if not d or not d[0]:
 		d=now()
 	else:
 		d=d[0]

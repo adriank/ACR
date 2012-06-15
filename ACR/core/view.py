@@ -393,17 +393,21 @@ class View(object):
 					if D: acenv.info("Appending %s to %s",generation,action["path"])
 					pointer.append(generation)
 				elif action["type"]==SET:
+					acenv.debug("Starting SET with path %s",pointer)
 					if type(pointer) not in iterators+[dict]:
 						raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
 					typePointer=type(pointer)
-					if typePointer is dict:
+					if typePointer is dict and pointer.get("@status") is not "noData":
 						if type(generation) is Tree:
+							#TODO check if it is neccessary
+							generation.current=pointer
 							generation=generation.execute(acenv)
 						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
 						pointer[action["name"]]=generation
 					elif typePointer in iterators:
 						for i in pointer:
 							if type(generation) is Tree:
+								if D: acenv.debug("Setting current to %s",i)
 								generation.current=i
 								g=generation.execute(acenv)
 							else:
