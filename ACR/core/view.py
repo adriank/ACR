@@ -395,12 +395,13 @@ class View(object):
 				elif action["type"]==SET:
 					if type(pointer) not in iterators+[dict]:
 						raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
-					if type(pointer) is dict:
+					typePointer=type(pointer)
+					if typePointer is dict:
 						if type(generation) is Tree:
 							generation=generation.execute(acenv)
 						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
 						pointer[action["name"]]=generation
-					elif type(pointer) in iterators:
+					elif typePointer in iterators:
 						for i in pointer:
 							if type(generation) is Tree:
 								generation.current=i

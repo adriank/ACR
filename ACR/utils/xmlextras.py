@@ -130,7 +130,7 @@ def tree2xml(root,esc=False):
 					d["second"]=node.second>9 and node.second or '0'+str(node.second)
 					d["ms"]=node.microsecond
 				except: pass
-				#raise Exception(list(d.iteritems())[0][1])
+				#maybe it can be done more efficently with datetime fmt functions
 				tab.append("<"+name+" "+" ".join(map(lambda i: i[0]+"=\""+str(i[1])+"\"",d.iteritems()))+"/>")
 				return
 			if nodetype not in (str,unicode):

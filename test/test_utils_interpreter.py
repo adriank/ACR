@@ -86,7 +86,12 @@ env2=FakeEnv({
 		"bicycle": {
 			"color": "red",
 			"price": 19.95
-		}
+		},
+		"k":[
+			{
+				"_id":4
+			}
+		]
 	}
 })
 #env1.doDebug=True
@@ -318,20 +323,8 @@ class Utils_Paths(unittest.TestCase):
 	def test_selectors(self):
 		self.assertEqual(len(execute("$..*[_id>2]")), 2)
 		self.assertEqual(execute("$..*[3 in @.l._id]")[0], env1.requestStorage['test'])
+		self.assertEqual(execute2("$.store..*[4 in @.k._id]")[0], env2.requestStorage['store'])
 		self.assertEqual(execute("$..*[@._id>1 and @._id<3][0]"), {'_id': 2})
-
-	## tests invalid expressions
-	#def test_invalidExpression(self):
-	#	try: execute("not 1 not 2")
-	#	except Exception: pass
-	#	else: return False
-	#	try: execute("{$sesion::a.b.c}")
-	#	except Exception: pass
-	#	else: return False
-	#	try: execute("{$session:a.b.c}")
-	#	except Exception: pass
-	#	else: return False
-	#	return True
 
 #testcase2=unittest.FunctionTestCase(test_efficiency(2))
 testcase1=unittest.TestLoader().loadTestsFromTestCase(Utils_interpreter)

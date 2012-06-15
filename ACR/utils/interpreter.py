@@ -454,8 +454,9 @@ class Tree(object):
 						return chain(fst,snd)
 					if typefst in (int,float):
 						try:
+							return fst+snd
+						except:
 							return fst+float(snd)
-						except: pass
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 						return str(fst)+str(snd)

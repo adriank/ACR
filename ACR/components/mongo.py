@@ -111,16 +111,19 @@ class Mongo(Component):
 		for i in params:
 			if type(params[i]) is list:
 				params[i]=replaceVars(acenv,params[i])
-		if params.has_key("fields"):
+		try:
 			p["fields"]=params["fields"]
+		except: pass
 		if not one:
-			if params.has_key("skip"):
+			try:
 				p["skip"]=int(params["skip"])
-			if params.has_key("limit"):
+			except: pass
+			try:
 				p["limit"]=int(params["limit"])
+			except: pass
 			if params.has_key("sort"):
-				dir=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
-				p["sort"]=[(params["sort"],dir)]
+				direction=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
+				p["sort"]=[(params["sort"],direction)]
 		if P: t=time.time()
 		if count:
 			ret=coll.find(**p).count()
@@ -130,6 +133,12 @@ class Mongo(Component):
 			ret=ret and ret[0] or None
 		else:
 			ret=list(coll.find(**p))
+			if ret and params.has_key("sort") and ret[0].has_key(params['sort']) and type(ret[0][params['sort']]) in (str,unicode):
+				if D:acenv.debug("Doing additional Python sort")
+				pars={"key":lambda k: k[params['sort']]}
+				if params.has_key("direction")=="descending":
+					pars["reverse"]=True
+				ret=sorted(ret, **pars)
 		if P:
 			acenv.profiler["dbtimer"]+=time.time()-t
 			acenv.profiler["dbcounter"]+=1
