@@ -35,6 +35,16 @@ RE_ATTR=re.compile("'([^']+)': '?([^',]*)'?,*")
 unescapeDict={"&apos;":"'","&quot;":"\""}
 escapeDict={"'":"&apos;","\"":"&quot;"}
 
+def py2JSON(o):
+	if o is True:
+		return 'true'
+	if o is False:
+		return 'false'
+	if o is None:
+		return 'null'
+	return str(o)
+
+
 class ObjectTree(tuple):
 	def __init__(self,seq):
 		tuple.__init__(seq)
@@ -77,7 +87,7 @@ def tree2xml(root,esc=False):
 	"""
 	def tuplerec(node):
 		if type(node) is not tuple:
-			node=str(node)
+			node=py2JSON(node)
 		if type(node) is str:
 			if esc:
 				node=escapeQuotes(node)
@@ -134,7 +144,7 @@ def tree2xml(root,esc=False):
 				tab.append("<"+name+" "+" ".join(map(lambda i: i[0]+"=\""+str(i[1])+"\"",d.iteritems()))+"/>")
 				return
 			if nodetype not in (str,unicode):
-				node=str(node)
+				node=py2JSON(node)
 			if esc:
 				node=escapeQuotes(node)
 			if name:
@@ -162,7 +172,7 @@ def tree2xml(root,esc=False):
 						rec(i)
 					else:
 						try:
-							i=str(i)
+							i=py2JSON(i)
 						except:
 							i=i.encode("utf8")
 						if esc:
