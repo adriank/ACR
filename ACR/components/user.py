@@ -23,6 +23,7 @@ from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
 from ACR.session.mongoSession import MongoSession
+import re
 
 """
 	Users are stored in the Mongo:
@@ -44,10 +45,12 @@ class User(Component):
 	ROLE="user"
 	APPROVED=False
 	MAIN=False
+	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
+
 
 	def login(self,acenv,conf):
 		D=acenv.doDebug
-		email=replaceVars(acenv,conf["email"])
+		email=replaceVars(acenv,conf["email"]).lower()
 		usersColl=acenv.app.storage.users
 		try:
 			user=list(usersColl.find({"email":email}))[0]
@@ -84,9 +87,17 @@ class User(Component):
 
 	def register(self,acenv,conf):
 		usersColl=acenv.app.storage.users
-		email=replaceVars(acenv,conf["email"])
+		email=replaceVars(acenv,conf["email"]).lower()
+		if not (len(email)>5 and self.EMAIL_RE.match(email)):
+			return {
+				"@status":"error",
+				"@error":"NotValidEmailAddress",
+				"@message":"Suplied value is not a valid e-mail address"
+			}
 		if list(usersColl.find({"email":email})):
-			return {"@error":"EmailAdressAllreadySubscribed"}
+			return {
+				"@error":"EmailAdressAllreadySubscribed"
+			}
 		key=generateID()
 		d={
 			"email":email,
@@ -96,7 +107,11 @@ class User(Component):
 			"privileges":[]
 		}
 		id=usersColl.save(d,safe=True)
-		return {"@status":"ok","@id":id,"@approvalKey":key}
+		return {
+			"@status":"ok",
+			"@id":id,
+			"@approvalKey":key
+		}
 
 	def generate(self,acenv,conf):
 		return self.__getattribute__(conf["command"].split(":").pop())(acenv,conf)

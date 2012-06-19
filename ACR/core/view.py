@@ -432,7 +432,10 @@ class View(object):
 				if type(pointer) not in iterators+[dict]:
 					raise Error("NotObjectError", "Path did not return object or array of objects in %s."%action["name"])
 				if type(pointer) is dict:
-					pointer.pop(action["name"])
+					try:
+						pointer.pop(action["name"])
+					except:
+						pass
 				elif type(pointer) in iterators:
 					for i in pointer:
 						i.pop(action["name"])

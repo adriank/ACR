@@ -46,6 +46,10 @@ class Default(object):
 		if D:acenv.start("Type.get")
 		# "" is valid so is not None is needed!
 		if value is not None:
+			try:
+				value=value.strip()
+			except:
+				pass
 			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			v=self._prepareValue(value)
 			self.validate(v) # raises Error on invalid
