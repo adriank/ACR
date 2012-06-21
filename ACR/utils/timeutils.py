@@ -103,6 +103,33 @@ def time(d):
 def time2list(t):
 	return [t.hour,t.minute,t.second,t.microsecond]
 
+def subTimes(fst,snd):
+	l1=time2list(fst)
+	l2=time2list(snd)
+	t=[l1[0]-l2[0],l1[1]-l2[1],l1[2]-l2[2],l1[3]-l2[3]]
+	t2=[]
+	one=0
+	ms=t[3]
+	if ms<0:
+		t2.append(10000+ms)
+		one=1
+	else:
+		t2.append(ms)
+	for i in reversed(t[1:-1]):
+		i=i-one
+		one=0
+		if i>=0:
+			t2.append(i)
+		else:
+			t2.append(60+i)
+			one=1
+	hour=t[0]-one
+	if hour<0:
+		t2.append(24+hour)
+	else:
+		t2.append(hour)
+	return datetime.time(*reversed(t2))
+
 def dateTime(arg):
 	"""
 	d may be:

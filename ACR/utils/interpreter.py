@@ -479,10 +479,7 @@ class Tree(object):
 							from ACR.utils import timeutils
 						timeType=timeutils.datetime.time
 						if typefst is timeType and typesnd is timeType:
-							l1=timeutils.time2list(fst)
-							l2=timeutils.time2list(snd)
-							#FIXME this is lame, do not work with negative results
-							return timeutils.datetime.time(l1[0]-l2[0],l1[1]-l2[1],l1[2]-l2[2],l1[3]-l2[3])
+							return timeutils.subTimes(fst,snd)
 				else:
 					return - exe(node[1])
 			elif op=="*":
