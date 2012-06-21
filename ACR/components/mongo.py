@@ -121,9 +121,10 @@ class Mongo(Component):
 			try:
 				p["limit"]=int(params["limit"])
 			except: pass
-			if params.has_key("sort"):
-				direction=pymongo.__dict__.get(params.get("direction",self.DIRECTION).upper())
-				p["sort"]=[(params["sort"],direction)]
+			try:
+				p["sort"]=params["sort"]
+			except:
+				pass
 		if P: t=time.time()
 		if count:
 			ret=coll.find(**p).count()
@@ -187,6 +188,17 @@ class Mongo(Component):
 			pars["coll"]=coll
 		except KeyError:
 			raise Error("no coll parameter specified")
+		try:
+			sort=pars["sort"].split(",")
+			directions=pars["direction"].split(",")
+			if len(directions)>=len(sort):
+				return zip(sort,directions)
+			for i in directions:
+				directions[i]=pymongo.__dict__.get(i.upper())
+			import itertools
+			pars["sort"]=list(itertools.izip_longest(sort,direction,fillvalue=sort[-1]))
+		except:
+			pass
 		if fields:
 			pars["fields"]=fields
 		return {

@@ -286,6 +286,8 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertIsInstance(execute("dateTime(date(),[12,23])"), datetime.datetime)
 		self.assertIsInstance(execute("dateTime(date(),[12,23,21,777777])"), datetime.datetime)
 		self.assertIsInstance(execute("dateTime([2001,12,30],time())"), datetime.datetime)
+		self.assertEqual(execute("array(time([12,30])-time([8,00]))"), [4,30,0,0])
+		self.assertEqual(execute("array(time([12,12,12,12])-time([8,8,8,8]))"), [4,4,4,4])
 
 	def test_builtin_misc(self):
 		from pymongo.objectid import ObjectId

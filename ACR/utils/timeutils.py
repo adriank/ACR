@@ -87,6 +87,9 @@ def date(d):
 			return datetime.date(*d)
 	return datetime.date.today()
 
+def date2list(d):
+	return [d.year,d.month,d.day]
+
 def time(d):
 	if not d or not d[0]:
 		d=now()
@@ -96,6 +99,9 @@ def time(d):
 		if t in (tuple,list):
 			return datetime.time(*d)
 	return datetime.time(d.hour,d.minute,d.second,d.microsecond)
+
+def time2list(t):
+	return [t.hour,t.minute,t.second,t.microsecond]
 
 def dateTime(arg):
 	"""

@@ -399,7 +399,7 @@ class View(object):
 					typePointer=type(pointer)
 					if typePointer is dict and pointer.get("@status") is not "noData":
 						if type(generation) is Tree:
-							#TODO check if it is neccessary
+							#TODO check if it is necessary
 							generation.current=pointer
 							generation=generation.execute(acenv)
 						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])

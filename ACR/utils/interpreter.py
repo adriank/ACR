@@ -467,7 +467,22 @@ class Tree(object):
 			elif op=="-":
 				#TODO move -N to tree builder!
 				if len(node)>2:
-					return exe(node[1]) - exe(node[2])
+					fst=exe(node[1])
+					snd=exe(node[2])
+					try:
+						return fst-snd
+					except:
+						typefst=type(fst)
+						typesnd=type(snd)
+						global timeutils
+						if not timeutils:
+							from ACR.utils import timeutils
+						timeType=timeutils.datetime.time
+						if typefst is timeType and typesnd is timeType:
+							l1=timeutils.time2list(fst)
+							l2=timeutils.time2list(snd)
+							#FIXME this is lame, do not work with negative results
+							return timeutils.datetime.time(l1[0]-l2[0],l1[1]-l2[1],l1[2]-l2[2],l1[3]-l2[3])
 				else:
 					return - exe(node[1])
 			elif op=="*":
@@ -545,7 +560,8 @@ class Tree(object):
 				if D: acenv.debug("setting current to %s",self.current)
 				try:
 					return self.current
-				except: return None
+				except:
+					return None
 			elif op=="name":
 				return node[1]
 			elif op==".":
@@ -708,11 +724,11 @@ class Tree(object):
 					if not timeutils:
 						from ACR.utils import timeutils
 					if targs is timeutils.datetime.datetime:
-						return [a.year,a.month,a.day,a.hour,a.minute,a.second,a.microsecond]
+						return timeutils.date2list(a)+timeutils.time2list(a)
 					if targs is timeutils.datetime.date:
-						return [a.year,a.month,a.day]
+						return timeutils.date2list(a)
 					if targs is timeutils.datetime.time:
-						return [a.hour,a.minute,a.second,a.microsecond]
+						return timeutils.time2list(a)
 					return list(a)
 				#string
 				elif fnName=="escape":
