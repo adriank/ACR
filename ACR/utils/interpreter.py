@@ -744,6 +744,8 @@ class Tree(object):
 					return args[0].capitalize()
 				elif fnName=="title":
 					return args[0].title()
+				elif fnName=="split":
+					return args[0].split(*args[1:])
 				elif fnName=="unescape":
 					global unescape,unescapeDict
 					if not unescape:

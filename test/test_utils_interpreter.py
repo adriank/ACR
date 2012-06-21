@@ -262,6 +262,12 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("""escape('&lt;')"""), "&amp;lt;")
 		self.assertEqual(execute("""escape('<"&>')"""), "&lt;&quot;&amp;&gt;")
 		self.assertEqual(execute("""unescape('&lt;&quot;&amp;&gt;')"""), "<\"&>")
+		self.assertEqual(execute("upper('aaa')"),"AAA")
+		self.assertEqual(execute("lower('AAA')"),"aaa")
+		self.assertEqual(execute("title('AAA aaa')"),"Aaa Aaa")
+		self.assertEqual(execute("capitalize('AAA Aaa')"),"Aaa aaa")
+		self.assertEqual(execute("split('aaa aaa')"),["aaa","aaa"])
+		self.assertEqual(execute("split('aaaxaaa','x')"),["aaa","aaa"])
 
 	def test_builtin_arrays(self):
 		self.assertEqual(execute("sort([1,2,3,4]+[2,4])"), [1,2,2,3,4,4])
