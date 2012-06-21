@@ -25,6 +25,8 @@ from bson import objectid
 from ACR.utils.interpreter import makeTree
 import time
 
+STR_TYPES=(str,unicode)
+
 class Mongo(Component):
 	SERVER='localhost'
 	PORT=27017
@@ -109,7 +111,8 @@ class Mongo(Component):
 		}
 		if D:acenv.debug("Finding objects matching:\n%s",p["spec"])
 		for i in params:
-			if type(params[i]) is list:
+			#FIXME lame exception
+			if type(params[i]) is list and i!='sort':
 				params[i]=replaceVars(acenv,params[i])
 		try:
 			p["fields"]=params["fields"]
@@ -134,12 +137,22 @@ class Mongo(Component):
 			ret=ret and ret[0] or None
 		else:
 			ret=list(coll.find(**p))
-			if ret and params.has_key("sort") and ret[0].has_key(params['sort']) and type(ret[0][params['sort']]) in (str,unicode):
-				if D:acenv.debug("Doing additional Python sort")
-				pars={"key":lambda k: k[params['sort']].lower()}
-				if params.has_key("direction")=="descending":
-					pars["reverse"]=True
-				ret=sorted(ret, **pars)
+			if ret and params.has_key("sort") and len(params["sort"]) is 1:
+				sortBy=params['sort'][0][0]
+				if ret[0].has_key(sortBy)\
+				and type(ret[0][sortBy]) in STR_TYPES\
+				or ret[-1].has_key(sortBy)\
+				and type(ret[-1][sortBy]) in STR_TYPES:
+					if D:acenv.debug("Doing additional Python sort")
+					def sortedKey(k):
+						try:
+							return k[sortBy].lower()
+						except:
+							return ''
+					pars={"key":sortedKey}
+					if params['sort'][0][1] is pymongo.DESCENDING:
+						pars["reverse"]=True
+					ret=sorted(ret, **pars)
 		if P:
 			acenv.profiler["dbtimer"]+=time.time()-t
 			acenv.profiler["dbcounter"]+=1
@@ -190,13 +203,13 @@ class Mongo(Component):
 			raise Error("no coll parameter specified")
 		try:
 			sort=pars["sort"].split(",")
-			directions=pars["direction"].split(",")
+			directions=pars.get("direction",self.DIRECTION).split(",")
+			directions=map(lambda x: pymongo.__dict__.get(x.upper()),directions)
 			if len(directions)>=len(sort):
-				return zip(sort,directions)
-			for i in directions:
-				directions[i]=pymongo.__dict__.get(i.upper())
-			import itertools
-			pars["sort"]=list(itertools.izip_longest(sort,direction,fillvalue=sort[-1]))
+				pars["sort"]=zip(sort,directions)
+			else:
+				import itertools
+				pars["sort"]=list(itertools.izip_longest(sort,directions,fillvalue=directions[-1]))
 		except:
 			pass
 		if fields:

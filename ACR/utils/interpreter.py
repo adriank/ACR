@@ -736,6 +736,14 @@ class Tree(object):
 					if not escape:
 						from ACR.utils.xmlextras import escape, escapeDict
 					return escape(args[0],escapeDict)
+				elif fnName=="upper":
+					return args[0].upper()
+				elif fnName=="lower":
+					return args[0].lower()
+				elif fnName=="capitalize":
+					return args[0].capitalize()
+				elif fnName=="title":
+					return args[0].title()
 				elif fnName=="unescape":
 					global unescape,unescapeDict
 					if not unescape:
