@@ -108,9 +108,9 @@ class Mongo(Component):
 			lastError=coll.remove(o,safe=True)
 		else:
 			return {
-				"status":"error",
-				"error":"DataNotRemoved",
-				"message":"Empty object results in removal of all data. For safety this functionality is blocked here, please use removeAll command instead."
+				"@status":"error",
+				"@error":"DataNotRemoved",
+				"@message":"Empty object results in removal of all data. For safety this functionality is blocked here, please use removeAll command instead."
 			}
 		if D and not lastError:acenv.debug("removed:\n%s",o)
 		#leaving space for debugging and profiling info
