@@ -16,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+This component is pretty lame, because we translate text to python objects, sent them to pymongo which converts it back to the pretty same text representation as the input data. We do it for the sake of simplicity and security, but we are not happy with the result.
+
+TODO:
+- make component work also with one database using subcollections eg. rather than using db.database.collection, using db.oneDB.rootColl,collection. It saves space and the security layer is here so we don't need to rely on Mongo's own approach to users.
+"""
+
 from ACR.utils import replaceVars,prepareVars, str2obj, dicttree
 from ACR.components import *
 from ACR.utils.xmlextras import tree2xml
@@ -49,7 +56,14 @@ class Mongo(Component):
 		if D:
 			acenv.debug("where clause is %s",where)
 			acenv.debug("update object is %s",o)
-		coll.update(where,o,safe=True,multi=True)
+		try:
+			return coll.update(where,o,safe=True,multi=True)
+		except pymongo.errors.OperationFailure,e:
+			return {
+				"status":"error",
+				"error":"NotUpdated",
+				"message":str(e)
+			}
 
 	def insert(self,acenv,config):
 		D=acenv.doDebug
@@ -90,10 +104,25 @@ class Mongo(Component):
 		coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		o=config["content"].execute(acenv)
 		if D: acenv.debug("doing %s",coll.insert)
-		lastError=coll.remove(o,safe=True)
-		if D:acenv.debug("removed:\n%s",o)
+		if o:
+			lastError=coll.remove(o,safe=True)
+		else:
+			return {
+				"status":"error",
+				"error":"DataNotRemoved",
+				"message":"Empty object results in removal of all data. For safety this functionality is blocked here, please use removeAll command instead."
+			}
+		if D and not lastError:acenv.debug("removed:\n%s",o)
 		#leaving space for debugging and profiling info
-		return {}
+		return lastError or {"status":"ok"}
+
+	def removeAll(self,acenv,config):
+		D=acenv.doDebug
+		if D: acenv.debug("START Mongo.removeAll with: %s", config)
+		lastError=coll.remove({},safe=True)
+		if D and not lastError:acenv.debug("removed:\n%s",o)
+		#leaving space for debugging and profiling info
+		return lastError or {"status":"ok"}
 
 	def count(self,acenv,config):
 		return self.find(acenv,config,count=True)
