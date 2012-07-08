@@ -347,7 +347,6 @@ class View(object):
 		#if D: acenv.debug("Executing with env=%s",acenv)
 		self.fillInputs(acenv)
 		self.fillPosts(acenv)
-		acenv.requestStorage["__lang__"]=acenv.lang
 		self.checkConditions(acenv)
 		for action in self.actions:
 			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])

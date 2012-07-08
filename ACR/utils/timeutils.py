@@ -19,6 +19,8 @@
 
 import datetime
 
+HOURS_IN_DAY=24
+
 def round9_10(n):
 	i=int(n)
 	if n-i>0.9:
@@ -103,6 +105,36 @@ def time(d):
 def time2list(t):
 	return [t.hour,t.minute,t.second,t.microsecond]
 
+def addTimes(fst,snd):
+	l1=time2list(fst)
+	l2=time2list(snd)
+	t=[l1[0]+l2[0],l1[1]+l2[1],l1[2]+l2[2],l1[3]+l2[3]]
+	t2=[]
+	one=0
+	ms=t[3]
+	if ms>=10000:
+		t2.append(ms-10000)
+		one=1
+	else:
+		t2.append(ms)
+	for i in (t[2],t[1]):
+		i=i+one
+		one=0
+		if i>=60:
+			t2.append(i-60)
+			one=1
+		#elif i==60:
+		#	t2.append(0)
+		#	one=1
+		else:
+			t2.append(i)
+	hour=t[0]+one
+	if hour>=HOURS_IN_DAY:
+		t2.append(hour-HOURS_IN_DAY)
+	else:
+		t2.append(hour)
+	return datetime.time(*reversed(t2))
+
 def subTimes(fst,snd):
 	l1=time2list(fst)
 	l2=time2list(snd)
@@ -115,7 +147,7 @@ def subTimes(fst,snd):
 		one=1
 	else:
 		t2.append(ms)
-	for i in reversed(t[1:-1]):
+	for i in (t[2],t[1]):
 		i=i-one
 		one=0
 		if i>=0:
@@ -125,7 +157,7 @@ def subTimes(fst,snd):
 			one=1
 	hour=t[0]-one
 	if hour<0:
-		t2.append(24+hour)
+		t2.append(HOURS_IN_DAY+hour)
 	else:
 		t2.append(hour)
 	return datetime.time(*reversed(t2))

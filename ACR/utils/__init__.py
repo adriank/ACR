@@ -43,6 +43,8 @@ def getStorage(env,s):
 			return False
 		if D: env.end("getStorage with: session storage")
 		return env.sessionStorage.data
+	if s=="env" or s=="env":
+		return env.env
 	#elif s=="app" or s=="as":
 	#	return
 	#TODO cookie storage

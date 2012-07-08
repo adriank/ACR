@@ -9,6 +9,7 @@ sys.setrecursionlimit(20000)
 
 class FakeEnv(object):
 	doDebug=False
+	env={"lang":"en"}
 	def __init__(self,rs):
 		self.requestStorage=rs
 	def debug(self,*a):
@@ -294,9 +295,13 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertIsInstance(execute("dateTime([2001,12,30],time())"), datetime.datetime)
 		self.assertEqual(execute("array(time([12,30])-time([8,00]))"), [4,30,0,0])
 		self.assertEqual(execute("array(time([12,12,12,12])-time([8,8,8,8]))"), [4,4,4,4])
+		self.assertEqual(execute("array(time([12,12,12,12])-time([1,2,3,4]))"), [11,10,9,8])
 		self.assertEqual(execute("array(time([12,00])-time([1,10]))"), [10,50,0,0])
 		self.assertEqual(execute("array(time([1,00])-time([1,10]))"), [23,50,0,0])
 		self.assertEqual(execute("array(time([0,00])-time([0,0,0,1]))"), [23,59,59,9999])
+		self.assertEqual(execute("array(time([0,0])+time([1,1,1,1]))"), [1,1,1,1])
+		self.assertEqual(execute("array(time([0,0])+time([1,2,3,4]))"), [1,2,3,4])
+		self.assertEqual(execute("array(time([23,59,59,9999])+time([0,0,0,1]))"), [0,0,0,0])
 
 	def test_builtin_misc(self):
 		from pymongo.objectid import ObjectId

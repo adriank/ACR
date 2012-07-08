@@ -28,7 +28,6 @@ class Environment(Debugger):
 	"""
 	viewName=""
 	appName=""
-	agent=""
 	inputs=None
 	cookies=None
 	outputHeaders=None
@@ -40,9 +39,18 @@ class Environment(Debugger):
 	appStorage=None
 	lang=None
 	langs=None
+	agent=""
 	URL=""
 	UA=""
-	IP=""
+	env={
+		"URL":"",
+		"UA":"",
+		"lang":None,
+		"langs":None,
+		"clientIP":"",
+		"cookies":None,
+		"agent":""
+	}
 	output=None
 	outputConfig="config"
 	prefix="ACR_"
@@ -74,7 +82,7 @@ class Environment(Debugger):
 			pass
 		self.requestStorage={}
 		self.outputHeaders=[]
-		self.cookies={}
+		self.cookies=self.env["cookies"]={}
 		self.inputs=[]
 		self.posts={}
 		self.app=app
@@ -88,6 +96,7 @@ class Environment(Debugger):
 			l=lang.split(",",1)[0].split("-",1)[0]
 			if l in self.app.langs:
 				self.lang=l
+		self.env["lang"]=self.lang
 
 	def __str__(self):
 		s=[]

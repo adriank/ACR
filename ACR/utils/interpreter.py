@@ -460,6 +460,15 @@ class Tree(object):
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 						return str(fst)+str(snd)
+					#try:
+					global timeutils
+					if not timeutils:
+						from ACR.utils import timeutils
+					timeType=timeutils.datetime.time
+					if typefst is timeType and typesnd is timeType:
+						return timeutils.addTimes(fst,snd)
+					#except:
+					#	pass
 					if D: acenv.debug("standard addition, returning '%s'",fst+snd)
 					return fst + snd
 				else:
@@ -799,7 +808,7 @@ class Tree(object):
 					if fnName=="dateTime":
 						return timeutils.dateTime(args)
 					if fnName=="age":
-						return timeutils.age(args[0],getStorage(acenv,"rs")["__lang__"])
+						return timeutils.age(args[0],getStorage(acenv,"env")["lang"])
 				elif fnName=="toMillis":
 					args=args[0]
 					if args.utcoffset() is not None:
