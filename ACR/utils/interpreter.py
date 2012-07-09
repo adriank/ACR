@@ -463,7 +463,7 @@ class Tree(object):
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 						if typefst is unicode:
 							fst=fst.encode("utf-8")
-						if typefst is unicode:
+						if typesnd is unicode:
 							snd=snd.encode("utf-8")
 						return str(fst)+str(snd)
 					try:
