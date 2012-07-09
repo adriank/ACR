@@ -394,9 +394,11 @@ NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
 ITER_TYPES=iterators
 
+from ACR.utils import timeutils
+
 #setting external modules to 0, thus enabling lazy loading. 0 ensures that Pythonic types are never matched.
 #this way is efficient because if statement is fast and once loaded these variables are pointing to libraries.
-timeutils=ObjectId=generateID=calendar=escape=escapeDict=unescape=unescapeDict=0
+ObjectId=generateID=calendar=escape=escapeDict=unescape=unescapeDict=0
 
 class Tree(object):
 	def __init__(self,tree):
@@ -459,16 +461,17 @@ class Tree(object):
 							return fst+float(snd)
 					if typefst in STR_TYPES or typesnd in STR_TYPES:
 						if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
+						if typefst is unicode:
+							fst=fst.encode("utf-8")
+						if typefst is unicode:
+							snd=snd.encode("utf-8")
 						return str(fst)+str(snd)
-					#try:
-					global timeutils
-					if not timeutils:
-						from ACR.utils import timeutils
-					timeType=timeutils.datetime.time
-					if typefst is timeType and typesnd is timeType:
-						return timeutils.addTimes(fst,snd)
-					#except:
-					#	pass
+					try:
+						timeType=timeutils.datetime.time
+						if typefst is timeType and typesnd is timeType:
+							return timeutils.addTimes(fst,snd)
+					except:
+						pass
 					if D: acenv.debug("standard addition, returning '%s'",fst+snd)
 					return fst + snd
 				else:
@@ -483,9 +486,6 @@ class Tree(object):
 					except:
 						typefst=type(fst)
 						typesnd=type(snd)
-						global timeutils
-						if not timeutils:
-							from ACR.utils import timeutils
 						timeType=timeutils.datetime.time
 						if typefst is timeType and typesnd is timeType:
 							return timeutils.subTimes(fst,snd)
@@ -726,9 +726,6 @@ class Tree(object):
 					except:
 						return []
 					targs=type(a)
-					global timeutils
-					if not timeutils:
-						from ACR.utils import timeutils
 					if targs is timeutils.datetime.datetime:
 						return timeutils.date2list(a)+timeutils.time2list(a)
 					if targs is timeutils.datetime.date:
@@ -796,9 +793,6 @@ class Tree(object):
 					return len(args)
 				#time
 				elif fnName in ("now","age","time","date","dateTime"):
-					global timeutils
-					if not timeutils:
-						from ACR.utils import timeutils
 					if fnName=="now":
 						return timeutils.now()
 					if fnName=="date":
