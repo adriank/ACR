@@ -179,8 +179,8 @@ def nud(self):
 	self.id="(current)"
 	return self
 
-symbol("#")
-@method(symbol("#"))
+symbol("!")
+@method(symbol("!"))
 def nud(self):
 	self.id="(node)"
 	return self
@@ -337,7 +337,7 @@ def tokenize_python(program):
 			#change this to output python values in correct type
 			yield type_map[t[0]], t[1]
 		except KeyError:
-			if t[0] == tokenizer.NL:
+			if t[0] in [tokenizer.NL, tokenizer.COMMENT]:
 				continue
 			if t[0] == tokenizer.ENDMARKER:
 				break
