@@ -386,6 +386,7 @@ class View(object):
 				pointer=action["path"].execute(acenv)
 				if action_type==PUSH:
 					if type(generation) is Tree:
+						generation.node=pointer
 						generation=generation.execute(acenv)
 					if type(pointer) not in iterators:
 						raise Error("NotArrayError", "Path did not return array %s."%action["name"])
@@ -399,7 +400,7 @@ class View(object):
 					if typePointer is dict and pointer.get("@status") is not "noData":
 						if type(generation) is Tree:
 							#TODO check if it is necessary
-							generation.current=pointer
+							generation.node=pointer
 							generation=generation.execute(acenv)
 						if D: acenv.info("Setting %s to %s in %s",action["name"],generation,action["path"])
 						pointer[action["name"]]=generation
@@ -407,7 +408,7 @@ class View(object):
 						for i in pointer:
 							if type(generation) is Tree:
 								if D: acenv.debug("Setting current to %s",i)
-								generation.current=i
+								generation.node=i
 								g=generation.execute(acenv)
 							else:
 								g=generation

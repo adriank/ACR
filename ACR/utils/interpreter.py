@@ -569,7 +569,7 @@ class Tree(object):
 					return int(node[1])
 			elif op=="(root)":# this is $
 				return getStorage(acenv,node[1])
-			elif op=="(node)":# this is #
+			elif op=="(node)":# this is !
 				if D: acenv.debug("returning node %s",self.node)
 				return self.node
 			elif op=="(current)":# this is @
