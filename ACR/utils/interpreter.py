@@ -179,6 +179,12 @@ def nud(self):
 	self.id="(current)"
 	return self
 
+symbol("#")
+@method(symbol("#"))
+def nud(self):
+	self.id="(node)"
+	return self
+
 @method(symbol("("))
 def nud(self):
 	expr=expression()
@@ -203,13 +209,13 @@ def led(self, left):
 	advance()
 	return self
 
-#handling storages; e.g $.a.b.c or $ss.a.b.c
-#default storage is request storage
+#handling namespaces; e.g $.a.b.c or $ss.a.b.c
+#default storage is the request namespace
 symbol("$")
 @method(symbol("$"))
 def nud(self):
 	global token
-	self.id="(storage)"
+	self.id="(root)"
 	if token.id is ".":
 		self.fst="rs"
 	else:
@@ -403,6 +409,7 @@ ObjectId=generateID=calendar=escape=escapeDict=unescape=unescapeDict=0
 class Tree(object):
 	def __init__(self,tree):
 		self.tree=tree
+		self.current=self.node=None
 
 	def execute(self,acenv):
 		D=acenv.doDebug
@@ -560,14 +567,14 @@ class Tree(object):
 					return node[1][1:-1]
 				elif fstLetter.isdigit:
 					return int(node[1])
-			elif op=="(storage)":
+			elif op=="(root)":# this is $
 				return getStorage(acenv,node[1])
-			elif op=="(current)":
-				if D: acenv.debug("setting current to %s",self.current)
-				try:
-					return self.current
-				except:
-					return None
+			elif op=="(node)":# this is #
+				if D: acenv.debug("returning node %s",self.node)
+				return self.node
+			elif op=="(current)":# this is @
+				if D: acenv.debug("returning current node %s",self.current)
+				return self.current
 			elif op=="name":
 				return node[1]
 			elif op==".":
