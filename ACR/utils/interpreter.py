@@ -765,6 +765,12 @@ class Tree(object):
 					if type(args[0]) is unicode:
 						args[0]=args[0].encode("utf8")
 					return str.replace(args[0],args[1],args[2])
+				elif fnName=="join":
+					try:
+						joiner=args[1]
+					except:
+						joiner=""
+					return joiner.join(args[0])
 				elif fnName=="REsub":
 					return re.sub(args[1],args[2],args[0])
 				#array

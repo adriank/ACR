@@ -269,6 +269,8 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("capitalize('AAA Aaa')"),"Aaa aaa")
 		self.assertEqual(execute("split('aaa aaa')"),["aaa","aaa"])
 		self.assertEqual(execute("split('aaaxaaa','x')"),["aaa","aaa"])
+		self.assertEqual(execute("join(['aaą','aaę'],'ć')"),"aaąćaaę")
+		self.assertEqual(execute("join(['aaa','aaa'])"),"aaaaaa")
 
 	def test_builtin_arrays(self):
 		self.assertEqual(execute("sort([1,2,3,4]+[2,4])"), [1,2,2,3,4,4])
