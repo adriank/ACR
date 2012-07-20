@@ -554,8 +554,16 @@ class Tree(object):
 				elif typefst is dict and typesnd is dict:
 					ret=fst==snd
 				else:
-					if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
-					ret=fst is snd
+					global ObjectId
+					if not ObjectId:
+						from bson.objectid import ObjectId
+					if typefst is ObjectId or typesnd is ObjectId:
+						print "\n",str(fst)
+						print str(snd),"\n\n"
+						ret=str(fst)==str(snd)
+					else:
+						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
+						ret=fst is snd
 				if op=="is not":
 					if D: acenv.info("'is not' found. Returning %s",not ret)
 					return not ret

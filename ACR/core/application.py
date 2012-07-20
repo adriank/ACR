@@ -210,8 +210,9 @@ class Application(object):
 					"@message":e
 				}
 			}
+			#FIXME - what is this for???
 			try:
-				acenv.output["XSLTFile"]=view.output.get("XSLTFile")
+				acenv.output["XSLTFile"]=view.output.get("XSLTFile","error.xsl")
 			except:
 				pass
 		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
@@ -245,10 +246,10 @@ class Application(object):
 			t=time.time()
 		x=s.serialize(acenv)
 		if P:
-			serializertime=round((time.time()-t)*1000,5)
-			acenv.profiler["pytime"]=pytime+serializertime
-			acenv.profiler["alltime"]=all+serializertime
-			print "%s serializer took\n	%sms"%(s.name,serializertime)
+			serializerTime=round((time.time()-t)*1000,5)
+			acenv.profiler["pytime"]=pytime+serializerTime
+			acenv.profiler["alltime"]=all+serializerTime
+			print "%s serializer took\n	%sms"%(s.name,serializerTime)
 			print("Asyncode Runtime took %s"%(acenv.profiler["pytime"]))
 		if D: acenv.end("")
 		return x

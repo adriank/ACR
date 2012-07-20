@@ -309,6 +309,9 @@ class Utils_interpreter(unittest.TestCase):
 		from pymongo.objectid import ObjectId
 		self.assertIsInstance(execute("generateID()"),str)
 		self.assertIsInstance(execute("objectID()"),ObjectId)
+		self.assertEqual(execute("objectID('500502efb27bd3731a000020') is objectID('500502efb27bd3731a000020')"), True)
+		self.assertEqual(execute("'500502efb27bd3731a000020' is objectID('500502efb27bd3731a000020')"), True)
+		self.assertEqual(execute("objectID('500502efb27bd3731a000020') is '500502efb27bd3731a000020'"), True)
 
 	def test_builtin_type(self):
 		self.assertEqual(execute("type([1,2,3,4]+[2,4])"), "array")
