@@ -558,8 +558,7 @@ class Tree(object):
 					if not ObjectId:
 						from bson.objectid import ObjectId
 					if typefst is ObjectId or typesnd is ObjectId:
-						print "\n",str(fst)
-						print str(snd),"\n\n"
+						if D: acenv.info("doing objectid comparison '%s' is '%s'",fst,snd)
 						ret=str(fst)==str(snd)
 					else:
 						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
