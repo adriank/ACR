@@ -547,18 +547,20 @@ class Tree(object):
 					if D: acenv.info("doing float comparison '%s' is '%s'",fst,snd)
 					ret=fst==float(snd)
 				elif typefst is int:
-					if D: acenv.info("doing float comparison '%s' is '%s'",fst,snd)
+					if D: acenv.info("doing integer comparison '%s' is '%s'",fst,snd)
 					ret=fst==int(snd)
 				elif typefst is list and typesnd is list:
+					if D: acenv.info("doing array comparison '%s' is '%s'",fst,snd)
 					ret=fst==snd
 				elif typefst is dict and typesnd is dict:
+					if D: acenv.info("doing object comparison '%s' is '%s'",fst,snd)
 					ret=fst==snd
 				else:
 					global ObjectId
 					if not ObjectId:
 						from bson.objectid import ObjectId
 					if typefst is ObjectId or typesnd is ObjectId:
-						if D: acenv.info("doing objectid comparison '%s' is '%s'",fst,snd)
+						if D: acenv.info("doing MongoDB objectID comparison '%s' is '%s'",fst,snd)
 						ret=str(fst)==str(snd)
 					else:
 						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
