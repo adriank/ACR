@@ -683,8 +683,8 @@ class Tree(object):
 										nodeList_append(i)
 										if D: acenv.debug("appended")
 									if D: acenv.debug("discarded")
-								except:
-									if D: acenv.debug("discarded")
+								except Exception,e:
+									if D: acenv.debug("discarded, Exception: %s",e)
 							else:
 								try:
 									#TODO optimize an event when @ is not used. exe(s[1]) can be cached
