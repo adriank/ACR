@@ -638,20 +638,24 @@ class Tree(object):
 				len_node=len(node)
 				#TODO move it to tree generation phase
 				if len_node is 1: # empty list
+					if D: env.debug("returning an empty list")
 					return []
 				if len_node is 2: # list - preserved to catch possible event of leaving it as '[' operator
 					#TODO yielding is not possible here
 					#if type(node[1]) in (generator,chain):
 					#	for i in node[1]:
 					#		yield exe(i)
+					if D: env.debug("doing list mapping")
 					return map(exe,node[1])
 				if len_node is 3: # operator []
 					fst=exe(node[1])
 					# check against None
 					if not fst:
 						return fst
-					s=node[2]
-					if type(s) is tuple and s[0] in SELECTOR_OPS:
+					selector=node[2]
+					if D: env.debug("found '%s' selector for '%s'",selector,fst)
+					if type(selector) is tuple and selector[0] in SELECTOR_OPS:
+						if D: env.debug("found '%s' operator in selector",selector[0])
 						nodeList=[]
 						nodeList_append=nodeList.append
 						if type(fst) is dict:
@@ -660,30 +664,34 @@ class Tree(object):
 							if D: acenv.debug("setting self.current to '%s'",i)
 							self.current=i
 							#TODO move it to tree building phase
-							if type(s[1]) is tuple and s[1][0]=="name":
-								s=(s[0],s[1][1],s[2])
-							if type(s[1]) in STR_TYPES:
+							if type(selector[1]) is tuple and selector[1][0]=="name":
+								selector=(selector[0],selector[1][1],selector[2])
+							if type(selector[1]) in STR_TYPES:
 								try:
-									if exe((s[0],i[s[1]],s[2])):
+									if exe((selector[0],i[selector[1]],selector[2])):
 										nodeList_append(i)
 								except:
 									pass
 							else:
 								try:
 									#TODO optimize an event when @ is not used. exe(s[1]) can be cached
-									if exe((s[0],exe(s[1]),exe(s[2]))):
+									if exe((selector[0],exe(selector[1]),exe(selector[2]))):
 										nodeList_append(i)
+										if D: acenv.debug("appended")
+									if D: acenv.debug("discarded")
 								except:
-									pass
+									if D: acenv.debug("discarded")
+						if D: acenv.debug("returning '%s' objects: '%s'",len(nodeList),nodeList)
 						return nodeList
 					snd=exe(node[2])
-					tfst=type(fst)
-					if tfst in [tuple]+ITER_TYPES+STR_TYPES:
-						type_snd=type(snd)
+					typefst=type(fst)
+					if typefst in [tuple]+ITER_TYPES+STR_TYPES:
+						typesnd=type(snd)
 						# nodes[N]
-						if type_snd in NUM_TYPES or type_snd is str and snd.isdigit():
+						if typesnd in NUM_TYPES or typesnd is str and snd.isdigit():
 							n=int(snd)
-							if tfst in (generator,chain):
+							if D: acenv.debug("getting %sth element from '%s'",n,snd)
+							if typefst in (generator,chain):
 								if n>0:
 									return skip(fst,n)
 								elif n==0:
@@ -699,8 +707,11 @@ class Tree(object):
 						return exe((".",fst,snd))
 					else:
 						try:
+							if D: acenv.debug("returning '%s'",fst[snd])
 							return fst[snd]
 						except:
+							#CHECK - is it ok to do that or should it be ProgrammingError?
+							if D: acenv.debug("returning an empty list")
 							return []
 				raise ProgrammingError("Wrong usage of '[' operator")
 			elif op=="fn":
