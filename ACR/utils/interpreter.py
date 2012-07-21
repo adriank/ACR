@@ -565,6 +565,8 @@ class Tree(object):
 					else:
 						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
 						ret=fst is snd
+				if D: acenv.info("'%s' is '%s'='%s'",fst,snd,fst is snd)
+				if D: acenv.info("types '%s' is '%s'",typefst,typesnd)
 				if op=="is not":
 					if D: acenv.info("'is not' found. Returning %s",not ret)
 					return not ret
