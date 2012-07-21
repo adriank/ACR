@@ -540,6 +540,7 @@ class Tree(object):
 				snd=exe(node[2])
 				typefst=type(fst)
 				typesnd=type(snd)
+				if D: acenv.debug("type fst: '%s', type snd: '%s'",typefst,typesnd)
 				if typefst in STR_TYPES:
 					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 					ret=fst==str(snd)
@@ -565,12 +566,12 @@ class Tree(object):
 					else:
 						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
 						ret=fst is snd
-				if D: acenv.info("'%s' is '%s'='%s'",fst,snd,fst is snd)
-				if D: acenv.info("types '%s' is '%s'",typefst,typesnd)
+					if D: acenv.error("WTF???")
 				if op=="is not":
 					if D: acenv.info("'is not' found. Returning %s",not ret)
 					return not ret
 				else:
+					if D: acenv.info("returning '%s' is '%s'='%s'",fst,snd,ret)
 					return ret
 			elif op=="(literal)":
 				fstLetter=node[1][0]
