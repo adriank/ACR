@@ -670,8 +670,10 @@ class Tree(object):
 								try:
 									if exe((selector[0],i[selector[1]],selector[2])):
 										nodeList_append(i)
+										if D: acenv.debug("appended")
+									if D: acenv.debug("discarded")
 								except:
-									pass
+									if D: acenv.debug("discarded")
 							else:
 								try:
 									#TODO optimize an event when @ is not used. exe(s[1]) can be cached
