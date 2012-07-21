@@ -539,12 +539,12 @@ class Tree(object):
 				try:
 					fst=exe(node[1])
 				except Exception,e:
-					if D: acenv.debug("Can't execute node[1] '%s', error: ''. Falling back to orginal value.",node[1],str(e))
+					if D: acenv.debug("Can't execute node[1] '%s', error: '%s'. Falling back to orginal value.",node[1],str(e))
 					fst=node[1]
 				try:
 					snd=exe(node[2])
 				except Exception,e:
-					if D: acenv.debug("Can't execute node[2] '%s', error: ''. Falling back to orginal value.",node[2],str(e))
+					if D: acenv.debug("Can't execute node[2] '%s', error: '%s'. Falling back to orginal value.",node[2],str(e))
 					snd=node[2]
 				typefst=type(fst)
 				typesnd=type(snd)
