@@ -638,14 +638,14 @@ class Tree(object):
 				len_node=len(node)
 				#TODO move it to tree generation phase
 				if len_node is 1: # empty list
-					if D: env.debug("returning an empty list")
+					if D: acenv.debug("returning an empty list")
 					return []
 				if len_node is 2: # list - preserved to catch possible event of leaving it as '[' operator
 					#TODO yielding is not possible here
 					#if type(node[1]) in (generator,chain):
 					#	for i in node[1]:
 					#		yield exe(i)
-					if D: env.debug("doing list mapping")
+					if D: acenv.debug("doing list mapping")
 					return map(exe,node[1])
 				if len_node is 3: # operator []
 					fst=exe(node[1])
@@ -653,9 +653,9 @@ class Tree(object):
 					if not fst:
 						return fst
 					selector=node[2]
-					if D: env.debug("found '%s' selector for '%s'",selector,fst)
+					if D: acenv.debug("found '%s' selector for '%s'",selector,fst)
 					if type(selector) is tuple and selector[0] in SELECTOR_OPS:
-						if D: env.debug("found '%s' operator in selector",selector[0])
+						if D: acenv.debug("found '%s' operator in selector",selector[0])
 						nodeList=[]
 						nodeList_append=nodeList.append
 						if type(fst) is dict:
