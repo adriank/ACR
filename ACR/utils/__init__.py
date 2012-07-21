@@ -5,7 +5,7 @@ import sys,time,random,base64,re
 from datetime import datetime, timedelta
 from ACR.errors import *
 from ACR.utils.hashcompat import md5_constructor
-from ACR.utils.xmlextras import escapeQuotes
+from ACR.utils.xmlextras import escapeQuotes, py2JSON
 from ACR.utils import dicttree
 from ACR.utils.timeutils import now
 from ACR import acconfig
@@ -71,7 +71,7 @@ def replaceVars(env,l,fn=None):
 		if type(i) is tuple:
 			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
-			v=dicttree.get(storage,i[1],acenv=env)
+			v=py2JSON(dicttree.get(storage,i[1],acenv=env))
 			if fn is not None:
 				if type(v) is unicode:
 					v=v.encode("utf8")

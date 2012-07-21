@@ -13,6 +13,7 @@ import sys
 import re
 from cStringIO import StringIO
 from ACR.utils import getStorage, dicttree, iterators, generator, chain, skip
+from ACR.utils.xmlextras import py2JSON
 
 class ProgrammingError(Exception):
 	pass
@@ -539,12 +540,12 @@ class Tree(object):
 				try:
 					fst=exe(node[1])
 				except Exception,e:
-					if D: acenv.debug("Can't execute node[1] '%s', error: '%s'. Falling back to orginal value.",node[1],str(e))
+					if D: acenv.debug("NOT ERROR! Can't execute node[1] '%s', error: '%s'. Falling back to orginal value.",node[1],str(e))
 					fst=node[1]
 				try:
 					snd=exe(node[2])
 				except Exception,e:
-					if D: acenv.debug("Can't execute node[2] '%s', error: '%s'. Falling back to orginal value.",node[2],str(e))
+					if D: acenv.debug("NOT ERROR! Can't execute node[2] '%s', error: '%s'. Falling back to orginal value.",node[2],str(e))
 					snd=node[2]
 				typefst=type(fst)
 				typesnd=type(snd)
@@ -574,7 +575,6 @@ class Tree(object):
 					else:
 						if D: acenv.info("doing standard comparison '%s' is '%s'",fst,snd)
 						ret=fst is snd
-					if D: acenv.error("WTF???")
 				if op=="is not":
 					if D: acenv.info("'is not' found. Returning %s",not ret)
 					return not ret
@@ -733,8 +733,8 @@ class Tree(object):
 				args=None
 				try:
 					args=map(exe,node[2:])
-				except IndexError:
-					pass
+				except IndexError, e:
+					if D: acenv.debug("NOT ERROR: can't map '%s' with '%s'",node[2:],exe)
 				#arithmetic
 				if fnName=="sum":
 					args=args[0]
@@ -759,7 +759,7 @@ class Tree(object):
 				elif fnName=="float":
 					return float(args[0])
 				elif fnName=="str":
-					return str(args[0])
+					return py2JSON(args[0])
 				elif fnName in ("list","array"):
 					try:
 						a=args[0]

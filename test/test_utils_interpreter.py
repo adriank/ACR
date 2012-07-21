@@ -235,6 +235,7 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("str('foo')"), 'foo')
 		self.assertEqual(execute("str(1)"), '1')
 		self.assertEqual(execute("str(1.0)"), '1.0')
+		self.assertEqual(execute("str(1 is 1)"), 'true')
 		self.assertEqual(execute("int(1)"), 1)
 		self.assertEqual(execute("int(1.0)"), 1)
 		self.assertEqual(execute("int('1')"), 1)
