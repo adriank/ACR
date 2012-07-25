@@ -434,10 +434,10 @@ class Tree(object):
 				return ret
 			op=node[0]
 			if op=="or":
-				if D: acenv.debug("%s or %s", exe(node[1]),exe(node[2]))
+				if D: acenv.debug("%s or %s", node[1]),exe(node[2])
 				return exe(node[1]) or exe(node[2])
 			elif op=="and":
-				if D: acenv.debug("%s and %s", exe(node[1]),exe(node[2]))
+				if D: acenv.debug("%s and %s", node[1]),exe(node[2])
 				return exe(node[1]) and exe(node[2])
 			elif op=="+":
 				if len(node)>2:
@@ -506,7 +506,7 @@ class Tree(object):
 			elif op=="/":
 				return exe(node[1]) / float(exe(node[2]))
 			elif op==">":
-				if D: acenv.debug("%s > %s", exe(node[1]),exe(node[2]))
+				if D: acenv.debug("%s > %s", node[1],node[2])
 				return exe(node[1]) > exe(node[2])
 			elif op=="<":
 				return exe(node[1]) < exe(node[2])
@@ -531,7 +531,7 @@ class Tree(object):
 				if D: acenv.debug("doing not '%s'",fst)
 				return not fst
 			elif op=="in":
-				if D: acenv.debug("doing '%s' in '%s'",exe(node[1]),exe(node[2]))
+				if D: acenv.debug("doing '%s' in '%s'",node[1],node[2])
 				return exe(node[1]) in exe(node[2])
 			elif op=="not in":
 				return exe(node[1]) not in exe(node[2])

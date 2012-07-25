@@ -42,7 +42,10 @@ def py2JSON(o):
 		return 'false'
 	if o is None:
 		return 'null'
-	return str(o)
+	try:
+		return str(o)
+	except:
+		return o.encode("utf8")
 
 
 class ObjectTree(tuple):
