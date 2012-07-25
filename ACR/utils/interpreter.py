@@ -434,10 +434,10 @@ class Tree(object):
 				return ret
 			op=node[0]
 			if op=="or":
-				if D: acenv.debug("%s or %s", node[1]),exe(node[2])
+				if D: acenv.debug("%s or %s", node[1],node[2])
 				return exe(node[1]) or exe(node[2])
 			elif op=="and":
-				if D: acenv.debug("%s and %s", node[1]),exe(node[2])
+				if D: acenv.debug("%s and %s", node[1],node[2])
 				return exe(node[1]) and exe(node[2])
 			elif op=="+":
 				if len(node)>2:
