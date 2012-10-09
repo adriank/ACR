@@ -42,11 +42,16 @@ def py2JSON(o):
 		return 'false'
 	if o is None:
 		return 'null'
+	if type(o) is tuple:
+		list(o)
+	if type(o) in iterators+[str,int]:
+		return o
 	try:
 		return str(o)
-	except:
+	except UnicodeEncodeError:
 		return o.encode("utf8")
-
+	except:
+		return o
 
 class ObjectTree(tuple):
 	def __init__(self,seq):
@@ -58,7 +63,7 @@ class ObjectTree(tuple):
 #TO-C
 def escapeQuotes(s):
 	"""
-	Escapes characters '<', '>', '\'', '"', '&' in s
+	Escapes characters '<', '>', '\'', '"', '&' to HTML entities.
 	input: string
 	returns: string with escaped characters
 	"""
@@ -66,7 +71,7 @@ def escapeQuotes(s):
 
 def unescapeQuotes(s):
 	"""
-	Unescapes characters to '<', '>', '\'', '"', '&' in s
+	Unescapes HTML entities to '<', '>', '\'', '"', '&'
 	input: string
 	returns: string with escaped characters
 	"""

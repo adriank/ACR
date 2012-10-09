@@ -22,7 +22,7 @@ from itertools import chain
 
 def get(d,path,falseOnNotFound=True,acenv=False):
 	"""
-	Returns value from dict/object hierarchy.
+	Returns value from dict/object.
 	input: dict, path which is a list eg ['an', 'example', 'path'],
 	returns: False or deepest dict/object found
 	"""

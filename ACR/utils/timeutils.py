@@ -43,13 +43,13 @@ def age(date,lang="en"):
 		months=round9_10(days/30)
 		if months:
 			if langIsPL:
-				return (months, months is 1 and "miesiąc" or months<5 and "miesiące" or "miesięcy")
+				return (months, months is 1 and "miesiąc" or 1<months<5 and "miesiące" or "miesięcy")
 			else:
 				return (months, months is 1 and "month" or "months")
 		weeks=round9_10(days/7)
 		if weeks:
 			if langIsPL:
-				return (weeks, weeks is 1 and "tydzień" or "tygodnie")
+				return (weeks, weeks is 1 and "tydzień" or weeks%10 in [0,1,5,6,7,8,9] and "tygodni" or "tygodnie")
 			else:
 				return (weeks, weeks is 1 and "week" or "weeks")
 		days=int(days)
@@ -62,18 +62,18 @@ def age(date,lang="en"):
 		hours=round9_10(seconds/3600)
 		if hours:
 			if langIsPL:
-				return (hours, hours is 1 and "godzina" or hours<5 and "godziny" or "godzin")
+				return (hours, hours is 1 and "godzina" or 1<hours<5 and "godziny" or "godzin")
 			else:
 				return (hours, hours is 1 and "hour" or "hours")
 		minutes=round9_10(seconds/60)
 		if minutes:
 			if langIsPL:
-				return (minutes, minutes is 1 and "minuta" or minutes%10 is 1 and "minuta" or 1<minutes%10<5 and "minuty" or "minut")
+				return (minutes, minutes is 1 and "minuta" or 1<minutes<5 and "minuty" or "minut")
 			else:
 				return (minutes, minutes is 1 and "minute" or "minutes")
 		seconds=int(seconds)
 		if langIsPL:
-			return (seconds, seconds is 1 and "sekunda" or 1<seconds%10<5 and "sekundy" or "sekund")
+			return (seconds, seconds is 1 and "sekunda" or 1<seconds<5 and "sekundy" or "sekund")
 		else:
 			return (seconds, seconds is 1 and "second" or "seconds")
 	#return (0,"seconds")

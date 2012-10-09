@@ -759,7 +759,7 @@ class Tree(object):
 				elif fnName=="float":
 					return float(args[0])
 				elif fnName=="str":
-					return py2JSON(args[0])
+					return str(py2JSON(args[0]))
 				elif fnName in ("list","array"):
 					try:
 						a=args[0]

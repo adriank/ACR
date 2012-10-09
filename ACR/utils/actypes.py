@@ -119,7 +119,7 @@ class Number(Default):
 
 class Boolean(Default):
 	def validate(self,value,config=None):
-		if type(str2obj(value)) in [str,unicode]:
+		if type(str2obj(value)) in (str,unicode):
 			raise Error("NotNumber", "Should be number, but is %s",value)
 		return True
 

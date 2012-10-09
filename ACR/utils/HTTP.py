@@ -46,7 +46,7 @@ def computePOST(env):
 			if type(form[i]) is list:
 				l=[]
 				for item in form[i]:
-					l.append(urllib.unquote_plus(item.value))
+					l.append(urllib.unquote_plus(item.value).strip())
 				post[i]=l
 			elif form[i].filename is not None:
 				post[i]={
@@ -55,7 +55,7 @@ def computePOST(env):
 					"content":fileGen(form[i].file)
 				}
 			else:
-				post[i]=form[i].value
+				post[i]=form[i].value.strip()
 	return post
 
 def parseurlencoded(s):
@@ -69,7 +69,7 @@ def parseurlencoded(s):
 	d={}
 	for i in t:
 		t2=i.split("=")
-		d[t2[0]]=urllib.unquote_plus(t2[1])
+		d[t2[0]]=urllib.unquote_plus(t2[1]).strip()
 	return d
 
 def parseMultipart(f,tag):
