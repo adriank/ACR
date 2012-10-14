@@ -837,6 +837,9 @@ class Tree(object):
 					if type(args) in ITER_TYPES:
 						return len(list(args))
 					return len(args)
+				elif fnName=="localize":
+					if type(args[0]) is timeutils.datetime.datetime:
+						return timeutils.UTC2local(*args)
 				#time
 				elif fnName in ("now","age","time","date","dateTime"):
 					if fnName=="now":

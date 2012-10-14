@@ -18,6 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+try:
+	import pytz
+	# TODO - make it dynamic:
+	# milestone 1: through timezone project config setting
+	# milestone 2: through HTTP Cookie (just like language settings)
+	TIMEZONE_CACHE={
+		"UTC":pytz.utc
+	}
+except:
+	print "WARNING! pytz is not installed. Localized times are not supported."
 
 HOURS_IN_DAY=24
 
@@ -193,3 +203,14 @@ def dateTime(arg):
 		if type(arg[1]) in (tuple,list):
 			time=arg[1]
 		return datetime.datetime(*date+time)
+
+# dt - dateTime, tzName is e.g. 'Europe/Warsaw'
+def UTC2local(dt,tzName="UTC"):
+	try:
+		if TIMEZONE_CACHE.has_key(tzName):
+			tz=TIMEZONE_CACHE[tzName]
+		else:
+			tz=TIMEZONE_CACHE[tzName]=pytz.timezone(tzName)
+		return TIMEZONE_CACHE["UTC"].localize(dt).astimezone(tz)
+	except:
+		return dt

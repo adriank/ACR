@@ -10,26 +10,31 @@ sys.setrecursionlimit(20000)
 class FakeEnv(object):
 	doDebug=False
 	env={"lang":"en"}
+
 	def __init__(self,rs):
 		self.requestStorage=rs
+
 	def debug(self,*a):
 		print "DEBUG",
 		try:
 			print a[0]%a[1:]
 		except:
 			print a
+
 	def start(self,*a):
 		print "START",
 		try:
 			print a[0]%a[1:]
 		except:
 			print a
+
 	def end(self,*a):
 		print "END",
 		try:
 			print a[0]%a[1:]
 		except:
 			print a
+
 	def info(self,*a):
 		print "INFO",
 		try:
@@ -305,6 +310,10 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("array(time([0,0])+time([1,1,1,1]))"), [1,1,1,1])
 		self.assertEqual(execute("array(time([0,0])+time([1,2,3,4]))"), [1,2,3,4])
 		self.assertEqual(execute("array(time([23,59,59,9999])+time([0,0,0,1]))"), [0,0,0,0])
+
+	def test_localize(self):
+		self.assertEqual(execute("array(localize(dateTime(2000,1,1,10,10,1)))"), [2000,1,1,12,10,1,0])
+		self.assertEqual(execute("array(localize(dateTime(2000,1,1,10,10,1)))"), [2000,1,1,11,10,1,0])
 
 	def test_builtin_misc(self):
 		from pymongo.objectid import ObjectId

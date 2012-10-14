@@ -37,6 +37,7 @@ class Environment(Debugger):
 	sessionStorage=None
 	requestStorage=None
 	appStorage=None
+	globalStorage=None
 	lang=None
 	langs=None
 	agent=""

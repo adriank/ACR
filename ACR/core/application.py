@@ -47,6 +47,7 @@ class Application(object):
 	dbg=None
 	prefix="ACR_"
 	storage=None
+	appStorage=None
 	appDir=""
 	lang="en"
 	immutable=False
