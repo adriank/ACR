@@ -33,15 +33,7 @@ class Email(Component):
 			if type(headers[h]) is list:
 				headers[h]=", ".join(headers[h])
 		if D:acenv.debug("Computed headers: %s",headers)
-		recipients=headers["To"]
 		content=replaceVars(acenv,content)
-		#typ=type(recipients)
-		#if typ is list:
-		#	if D:acenv.debug("Recipient is list.")
-		#	for i in recipients:
-		#		headers["To"]=i
-		#		mail.send(headers,content)
-		#elif typ in [str,unicode]:
 		try:
 			mail.send(headers,content)
 		except Exception,e:

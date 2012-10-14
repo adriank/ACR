@@ -42,9 +42,10 @@ def py2JSON(o):
 		return 'false'
 	if o is None:
 		return 'null'
+	#TODO - check if that is correct
 	if type(o) is tuple:
-		list(o)
-	if type(o) in iterators+[str,int]:
+		return list(o)
+	elif type(o) in iterators+[list,str]:
 		return o
 	try:
 		return str(o)

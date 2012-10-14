@@ -44,7 +44,7 @@ class Default(object):
 	def get(self,acenv=None,value=None):
 		D=acenv and acenv.doDebug
 		if D:acenv.start("Type.get")
-		# "" is valid so is not None is needed!
+		# "" is valid so "is not None" is needed!
 		if value is not None:
 			try:
 				value=value.strip()
@@ -111,7 +111,7 @@ class Number(Default):
 	def validate(self,value,config=None):
 		tv=type(value)
 		if tv not in (int,float) or tv in (str,unicode) and not value.isdigit():
-			raise Error("NotNumber", "Should be number, but is %s",value)
+			raise Error("NotNumber", "Should be number, but is %s"%value)
 		return True
 
 	def _prepareValue(self,value):
