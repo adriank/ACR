@@ -30,6 +30,8 @@ def send(headers, content):
 		v=headers[i]
 		if type(k) is unicode:
 			k=k.encode("utf8")
+		if type(v) is list:
+			v=", ".join(headers[i])
 		if type(v) is unicode:
 			v=v.encode("utf8")
 		m.append(k+": "+v+"\n")
