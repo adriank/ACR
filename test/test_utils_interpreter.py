@@ -312,8 +312,10 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("array(time([23,59,59,9999])+time([0,0,0,1]))"), [0,0,0,0])
 
 	def test_localize(self):
-		self.assertEqual(execute("array(localize(dateTime(2000,1,1,10,10,1)))"), [2000,1,1,12,10,1,0])
-		self.assertEqual(execute("array(localize(dateTime(2000,1,1,10,10,1)))"), [2000,1,1,11,10,1,0])
+		#test of non-DST time
+		self.assertEqual(execute("array(localize(dateTime([2000,1,1,10,10,1,0]),'Europe/Warsaw'))"), [2000,1,1,11,10,1,0])
+		#test of DST time
+		self.assertEqual(execute("array(localize(dateTime([2000,7,1,10,10,1,0]),'Europe/Warsaw'))"), [2000,7,1,12,10,1,0])
 
 	def test_builtin_misc(self):
 		from pymongo.objectid import ObjectId
