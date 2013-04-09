@@ -28,7 +28,7 @@ class XssCleaner(HTMLParser):
 			'a',
 			'b','strong',
 			'blockquote',
-			'br',
+			#'br', #FIXME creates <br>'s
 			'i',
 			'u',
 			's',

@@ -43,7 +43,7 @@ def getStorage(env,s):
 			return False
 		if D: env.end("getStorage with: session storage")
 		return env.sessionStorage.data
-	if s=="env" or s=="env":
+	if s=="env":
 		return env.env
 	#elif s=="app" or s=="as":
 	#	return
@@ -154,5 +154,8 @@ typesMap={
 	"nonempty":types.NonEmpty,
 	"hexcolor":types.HEXColor,
 	"file":types.File,
-	"safehtml":types.safeHTML
+	"safehtml":types.safeHTML,
+	"csv":types.CSV,
+	"array":types.List,
+	"json":types.JSON
 }

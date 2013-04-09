@@ -289,13 +289,13 @@ class View(object):
 		if D:
 			acenv.debug("postSchemas is %s",self.postSchemas)
 			acenv.debug("posts is %s",acenv.posts)
-		list=acenv.posts or {}
-		if len(list)<self.postCount:
-			raise Error("NotEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
+		List=acenv.posts or {}
+		if len(List)<self.postCount:
+			raise Error("NotEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(List),self.postCount))
 		postSchemas=self.postSchemas
 		try:
 			for i in postSchemas:
-				value=list.get(i)
+				value=List.get(i)
 				typ=postSchemas[i]
 				acenv.requestStorage[i]=typ.get(acenv,value)
 		except Error, e:

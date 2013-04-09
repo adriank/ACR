@@ -40,7 +40,7 @@ def computeMIME(mime,agent):
 			return "application/xml"
 		else:
 			return "text/html"
-	elif "application/json" in mime and len(mime)==1:
+	elif len(mime)==1 and "application/json" in mime:
 		return "application/json"
 	return mime[0]
 

@@ -40,52 +40,59 @@ def round9_10(n):
 #TODO its 31 minuta, should be 31 minut - probably done
 
 def age(date,lang="en"):
-	td=now()-date
+	now2=now()
+	if now2<date:
+		td=date-now2
+		sign=-1
+	else:
+		td=now2-date
+		sign=1
 	days=float(td.days)
+	print "days",td
 	langIsPL=lang=="pl"
 	if days:
 		years=round9_10(days/356)
 		if years:
 			if langIsPL:
-				return (years, years is 1 and "rok" or years<5 and "lata" or "lat")
+				return (years*sign, years is 1 and "rok" or years<5 and "lata" or "lat")
 			else:
-				return (years, years is 1 and "year" or "years")
+				return (years*sign, years is 1 and "year" or "years")
 		months=round9_10(days/30)
 		if months:
 			if langIsPL:
-				return (months, months is 1 and "miesiąc" or 1<months<5 and "miesiące" or "miesięcy")
+				return (months*sign, months is 1 and "miesiąc" or 1<months<5 and "miesiące" or "miesięcy")
 			else:
-				return (months, months is 1 and "month" or "months")
+				return (months*sign, months is 1 and "month" or "months")
 		weeks=round9_10(days/7)
 		if weeks:
 			if langIsPL:
-				return (weeks, weeks is 1 and "tydzień" or weeks%10 in [0,1,5,6,7,8,9] and "tygodni" or "tygodnie")
+				return (weeks*sign, weeks is 1 and "tydzień" or weeks%10 in [0,1,5,6,7,8,9] and "tygodni" or "tygodnie")
 			else:
-				return (weeks, weeks is 1 and "week" or "weeks")
+				return (weeks*sign, weeks is 1 and "week" or "weeks")
 		days=int(days)
 		if langIsPL:
-			return (days, days is 1 and "dzień" or "dni")
+			return (days*sign, days is 1 and "dzień" or "dni")
 		else:
-			return (days, days is 1 and "day" or "days")
+			return (days*sign, days is 1 and "day" or "days")
 	seconds=float(td.seconds)
 	if seconds is not None:
 		hours=round9_10(seconds/3600)
 		if hours:
 			if langIsPL:
-				return (hours, hours is 1 and "godzina" or 1<hours<5 and "godziny" or "godzin")
+				return (hours*sign, hours is 1 and "godzina" or 1<hours<5 and "godziny" or "godzin")
 			else:
-				return (hours, hours is 1 and "hour" or "hours")
+				return (hours*sign, hours is 1 and "hour" or "hours")
 		minutes=round9_10(seconds/60)
 		if minutes:
 			if langIsPL:
-				return (minutes, minutes is 1 and "minuta" or 1<minutes<5 and "minuty" or "minut")
+				return (minutes*sign, minutes is 1 and "minuta" or 1<minutes<5 and "minuty" or "minut")
 			else:
-				return (minutes, minutes is 1 and "minute" or "minutes")
+				return (minutes*sign, minutes is 1 and "minute" or "minutes")
 		seconds=int(seconds)
 		if langIsPL:
-			return (seconds, seconds is 1 and "sekunda" or 1<seconds<5 and "sekundy" or "sekund")
+			return (seconds*sign, seconds is 1 and "sekunda" or 1<seconds<5 and "sekundy" or "sekund")
 		else:
-			return (seconds, seconds is 1 and "second" or "seconds")
+			return (seconds*sign, seconds is 1 and "second" or "seconds")
 	#return (0,"seconds")
 
 now=datetime.datetime.now

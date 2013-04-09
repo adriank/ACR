@@ -76,7 +76,7 @@ class Mongo(Component):
 		except Exception,e:
 			return {
 				"@status":"error",
-				"@error":type(e),
+				"@error":str(x.__class__.__name__),
 				"@message":str(e)
 			}
 		if D:acenv.info("inserted: %s",o)
@@ -205,7 +205,7 @@ class Mongo(Component):
 		params=config["params"]
 		collName=params.get("coll",self.DEFAULT_COLL)
 		if type(collName) in (str,unicode):
-			coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
+			coll=acenv.app.storage[collName]
 		coll=dicttree.get(acenv.app.storage,params.get("coll",self.DEFAULT_COLL))
 		return self.__getattribute__(config["command"].split(":").pop())(acenv,config)
 

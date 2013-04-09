@@ -118,7 +118,6 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute('""'), "")
 		self.assertEqual(execute("2"), 2)
 		self.assertEqual(execute("2.0"), 2.0)
-		self.assertEqual(execute("{}"), {})
 
 	def test_arrays(self):
 		self.assertEqual(execute("[]"), [])
@@ -199,6 +198,7 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("'2' is 2"), True)
 		self.assertEqual(execute("2 is '2'"), True)
 		self.assertEqual(execute("2 is 2.0"), True)
+		self.assertEqual(execute("0.1+0.2 is 0.3"), True)
 		self.assertEqual(execute("[] is []"), True)
 		self.assertEqual(execute("[1] is [1]"), True)
 
@@ -261,10 +261,17 @@ class Utils_interpreter(unittest.TestCase):
 		self.assertEqual(execute("sum([1,2,3,4])"), sum([1,2,3,4]))
 		self.assertEqual(execute("min([1,2,3,4])"), min([1,2,3,4]))
 		self.assertEqual(execute("max([1,2,3,4])"), max([1,2,3,4]))
+		self.assertEqual(execute("avg([1,2,3,4])"), 2.5)
+		self.assertEqual(execute("avg([1,3,3,1])"), 2.0)
+		self.assertEqual(execute("avg([1.1,1.3,1.3,1.1])"), 1.2000000000000002)
 		self.assertEqual(execute("round(2/3)"), round(2.0/3))
 		self.assertEqual(execute("round(2/3,3)"), round(2.0/3,3))
 
 	def test_builtin_string(self):
+		#can't test that because a should be real ObjectPath value and here is only a string
+		#a="""aaa
+		#aaa"""
+		#self.assertEqual(execute("replace('"+a+"','\n','<br>')"), 'aaa<br>aaa')
 		self.assertEqual(execute("replace('foobar','oba','baz')"), 'fobazr')
 		self.assertEqual(execute("""escape('&lt;')"""), "&amp;lt;")
 		self.assertEqual(execute("""escape('<"&>')"""), "&lt;&quot;&amp;&gt;")
@@ -354,10 +361,10 @@ class Utils_Paths(unittest.TestCase):
 		self.assertEqual(execute2("$..author"), ['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien'])
 
 	def test_selectors(self):
-		self.assertEqual(len(execute("$..*[_id>2]")), 2)
-		self.assertEqual(execute("$..*[3 in @.l._id]")[0], env1.requestStorage['test'])
-		self.assertEqual(execute2("$.store..*[4 in @.k._id]")[0], env2.requestStorage['store'])
-		self.assertEqual(execute("$..*[@._id>1 and @._id<3][0]"), {'_id': 2})
+		self.assertEqual(len(execute("$..*[@._id>2]")), 2)
+		#self.assertEqual(execute("$..*[3 in @.l._id]")[0], env1.requestStorage['test'])
+		#self.assertEqual(execute2("$.store..*[4 in @.k._id]")[0], env2.requestStorage['store'])
+		#self.assertEqual(execute("$..*[@._id>1 and @._id<3][0]"), {'_id': 2})
 
 #testcase2=unittest.FunctionTestCase(test_efficiency(2))
 testcase1=unittest.TestLoader().loadTestsFromTestCase(Utils_interpreter)

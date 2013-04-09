@@ -50,9 +50,9 @@ class Default(object):
 				value=value.strip()
 			except:
 				pass
-			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			v=self._prepareValue(value)
 			self.validate(v) # raises Error on invalid
+			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			return v
 		try:
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
@@ -115,19 +115,17 @@ class Number(Default):
 		return True
 
 	def _prepareValue(self,value):
-		return int(value)
+		return value=='' and None or int(value)
 
 class Boolean(Default):
 	def validate(self,value,config=None):
-		if type(str2obj(value)) in (str,unicode):
-			raise Error("NotNumber", "Should be number, but is %s",value)
-		return True
+		return value in (True,False)
 
 	def _prepareValue(self,value):
 		return str2obj(value)
 
 class Email(Default):
-	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
+	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-\+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
@@ -178,12 +176,12 @@ class date(Default):
 class List(Default):
 	RE_DELIMITER=re.compile("\s*,\s*")
 	def validate(self,value,config=None):
-		if not type(value) is str:
-			raise Error("NotString", "Should be string but is %s",type(value))
+		#if not type(value) is str:
+		#	raise Error("NotList", "Should be List but is '%s'",type(value))
 		return True
 
 	def _prepareValue(self,value):
-		return RE_DELIMITER.split(value)
+		return self.RE_DELIMITER.split(value)
 
 class CSV(List):
 	RE_DELIMITER=re.compile("\s*,\s*")
@@ -200,3 +198,16 @@ class File(Default):
 
 	def _prepareValue(self,value):
 		return value
+
+#JSON type
+from ACR.utils.json_compat import loads
+
+class JSON(Default):
+	def set(self,value):
+		self.value=self._prepareValue(value)
+
+	def validate(self,value,config=None):
+		return True
+
+	def _prepareValue(self,value):
+		return loads(value)

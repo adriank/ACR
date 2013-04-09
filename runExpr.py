@@ -27,6 +27,7 @@ class FakeEnv(object):
 		}
 	}
 	doDebug=False
+	env={"lang":"pl"}
 	def debug(*a):
 		print a[1]%tuple(a[2:])
 	def start(*a):
@@ -54,7 +55,7 @@ try:
 				print tree.tree
 			r=tree.execute(fakeEnv)
 			if type(r) in (generator,chain):
-				if debug:
+				if fakeEnv.doDebug:
 					print "returning",type(r).__name__
 				print list(r)
 			else:
