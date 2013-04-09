@@ -50,9 +50,9 @@ class Default(object):
 				value=value.strip()
 			except:
 				pass
+			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			v=self._prepareValue(value)
 			self.validate(v) # raises Error on invalid
-			if D: acenv.end("Type.get value was set, returning with: '%s'",value)
 			return v
 		try:
 			if D and self.value: acenv.debug("END Type.get with self.value: '%s'",self.value)
@@ -110,12 +110,15 @@ class Text(Default):
 class Number(Default):
 	def validate(self,value,config=None):
 		tv=type(value)
-		if tv not in (int,float) or tv in (str,unicode) and not value.isdigit():
+		if value is None or tv not in (int,float) or tv in (str,unicode) and not value.isdigit():
 			raise Error("NotNumber", "Should be number, but is %s"%value)
 		return True
 
 	def _prepareValue(self,value):
-		return value=='' and None or int(value)
+		if value=='':
+			return 0
+		else:
+			return int(value)
 
 class Boolean(Default):
 	def validate(self,value,config=None):
@@ -176,8 +179,8 @@ class date(Default):
 class List(Default):
 	RE_DELIMITER=re.compile("\s*,\s*")
 	def validate(self,value,config=None):
-		#if not type(value) is str:
-		#	raise Error("NotList", "Should be List but is '%s'",type(value))
+#		if not type(value) in :
+#			raise Error("NotList", "Should be List but is '%s'",type(value))
 		return True
 
 	def _prepareValue(self,value):
@@ -198,7 +201,6 @@ class File(Default):
 
 	def _prepareValue(self,value):
 		return value
-
 #JSON type
 from ACR.utils.json_compat import loads
 

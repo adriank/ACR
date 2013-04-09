@@ -9,7 +9,6 @@ except:
 	except:
 		raise Error("JSONNotFound")
 
-load=json.load
 def loads(s,object_hook=None):
 	if s.find("u'")!=-1:
 		s=s.replace("u'","'")
@@ -19,6 +18,7 @@ def loads(s,object_hook=None):
 	except ValueError,e:
 		raise Error(str(e)+" "+s)
 
+load=json.load
 def dumps(s,default=None):
 	return json.dumps(s,default=default, separators=(',',':'))
 dump=json.dump

@@ -369,7 +369,7 @@ def tokenize(program):
 				s=symbol()
 				s.value=value
 			else:
-				raise SyntaxError("Unknown operator >%s<, >%s<" % (id,value))
+				raise SyntaxError("Unknown operator '%s', '%s'" % (id,value))
 		yield s
 
 # parser engine
@@ -400,7 +400,6 @@ SELECTOR_OPS=["is",">","<","is not",">=","<=","in","not in",":","and","or"]
 NUM_TYPES=[int,float,long]
 STR_TYPES=[str,unicode]
 ITER_TYPES=iterators
-EPSILON=0.0000000000000001 #this is used in float comparison
 
 from ACR.utils import timeutils
 
@@ -481,6 +480,8 @@ class Tree(object):
 							return timeutils.addTimes(fst,snd)
 					except:
 						pass
+					if typefst is timeutils.datetime.datetime and typesnd is int:
+						return fst+timeutils.datetime.timedelta(snd)
 					if D: acenv.debug("standard addition, returning '%s'",fst+snd)
 					return fst + snd
 				else:
@@ -552,13 +553,13 @@ class Tree(object):
 				typesnd=type(snd)
 				if D: acenv.debug("type fst: '%s', type snd: '%s'",typefst,typesnd)
 				if typefst in STR_TYPES:
-					if D: acenv.info("doing string comparison '\"%s\" is \"%s\"'",fst,snd)
+					if D: acenv.info("doing string comparison '%s' is '%s'",fst,snd)
 					ret=fst==str(snd)
 				elif typefst is float:
-					if D: acenv.info("doing float comparison '%s is %s'",fst,snd)
-					ret=abs(fst-float(snd))<EPSILON
+					if D: acenv.info("doing float comparison '%s' is '%s'",fst,snd)
+					ret=fst==float(snd)
 				elif typefst is int:
-					if D: acenv.info("doing integer comparison '%s is %s'",fst,snd)
+					if D: acenv.info("doing integer comparison '%s' is '%s'",fst,snd)
 					ret=fst==int(snd)
 				elif typefst is list and typesnd is list:
 					if D: acenv.info("doing array comparison '%s' is '%s'",fst,snd)
@@ -688,7 +689,7 @@ class Tree(object):
 									if D: acenv.debug("discarded, Exception: %s",e)
 							else:
 								try:
-									#TODO optimize an event when @ is not used. exe(selector[1]) can be cached
+									#TODO optimize an event when @ is not used. exe(s[1]) can be cached
 									if exe((selector[0],exe(selector[1]),exe(selector[2]))):
 										nodeList_append(i)
 										if D: acenv.debug("appended")
@@ -752,13 +753,10 @@ class Tree(object):
 					if type(args) in NUM_TYPES:
 						return args
 					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
-				elif fnName=="avg":
-					args=args[0]
-					if type(args) in NUM_TYPES:
-						return args
-					return sum(args)/float(len(args))
 				elif fnName=="round":
 					return round(*args)
+				elif fnName=="abs":
+					return abs(args[0])
 				#casting
 				elif fnName=="int":
 					return int(args[0])
@@ -778,6 +776,8 @@ class Tree(object):
 						return timeutils.date2list(a)
 					if targs is timeutils.datetime.time:
 						return timeutils.time2list(a)
+					if targs is timeutils.datetime.timedelta:
+						return timeutils.timedelta2list(a)
 					return list(a)
 				#string
 				elif fnName=="escape":
@@ -803,7 +803,15 @@ class Tree(object):
 				elif fnName=="replace":
 					if type(args[0]) is unicode:
 						args[0]=args[0].encode("utf8")
+#					raise Exception(">"+args[1]+"<")
+					args[1]=str.replace(args[1],"\\n","\n")
 					return str.replace(args[0],args[1],args[2])
+				elif fnName=="join":
+					try:
+						joiner=args[1]
+					except:
+						joiner=""
+					return joiner.join(args[0])
 				elif fnName=="REsub":
 					return re.sub(args[1],args[2],args[0])
 				#array
@@ -837,15 +845,11 @@ class Tree(object):
 					if type(args) in ITER_TYPES:
 						return len(list(args))
 					return len(args)
-				elif fnName=="join":
-					try:
-						joiner=args[1]
-					except:
-						joiner=""
-					try:
-						return joiner.join(args[0])
-					except:
-						return args[0]
+#				elif fnName=="map":
+#					return map()
+				elif fnName=="localize":
+					if type(args[0]) is timeutils.datetime.datetime:
+						return timeutils.UTC2local(*args)
 				#time
 				elif fnName in ("now","age","time","date","dateTime"):
 					if fnName=="now":
@@ -866,9 +870,6 @@ class Tree(object):
 					if not calendar:
 						import calendar
 					return int(calendar.timegm(args.timetuple()) * 1000 + args.microsnd / 1000)
-				elif fnName=="localize":
-					if type(args[0]) is timeutils.datetime.datetime:
-						return timeutils.UTC2local(*args)
 				#misc
 				elif fnName=="type":
 					ret=type(args[0])
@@ -891,7 +892,7 @@ class Tree(object):
 						a=type(a) is list and a or [a]
 						r=map(ObjectId,a)
 						return len(r) is 1 and r[0] or r
-					except:
+					except Exception,e:
 						return ObjectId(None)
 				else:
 					raise ProgrammingError("Function '"+fnName+"' does not exist.")

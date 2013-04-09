@@ -59,7 +59,8 @@ class Email(Component):
 			raise Error("SubjectNotSpecified", "'Subject' should be specified")
 		params=conf["params"]
 		for i in params:
-			params[i]=prepareVars(params[i])
+			if params[i]:
+				params[i]=prepareVars(params[i])
 		try:
 			conf['content']=prepareVars("".join(conf['content']))
 		except:

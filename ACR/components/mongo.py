@@ -76,7 +76,7 @@ class Mongo(Component):
 		except Exception,e:
 			return {
 				"@status":"error",
-				"@error":str(x.__class__.__name__),
+				"@error":str(e.__class__.__name__),
 				"@message":str(e)
 			}
 		if D:acenv.info("inserted: %s",o)
@@ -196,7 +196,8 @@ class Mongo(Component):
 				if D:acenv.debug("END Mongo.count with 0")
 				return ret
 			if D:acenv.debug("END Mongo.find with no object")
-			return {"@status":"noData"}
+			return []
+#			return {"@status":"noData"}
 
 	def generate(self, acenv,config):
 		D=acenv.doDebug
@@ -205,7 +206,7 @@ class Mongo(Component):
 		params=config["params"]
 		collName=params.get("coll",self.DEFAULT_COLL)
 		if type(collName) in (str,unicode):
-			coll=acenv.app.storage[collName]
+			coll=acenv.app.storage[params.get("coll",self.DEFAULT_COLL)]
 		coll=dicttree.get(acenv.app.storage,params.get("coll",self.DEFAULT_COLL))
 		return self.__getattribute__(config["command"].split(":").pop())(acenv,config)
 

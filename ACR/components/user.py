@@ -53,7 +53,12 @@ class User(Component):
 		email=replaceVars(acenv,conf["email"]).lower()
 		usersColl=acenv.app.storage.users
 		try:
-			user=list(usersColl.find({"email":email}))[0]
+			user=list(usersColl.find({
+				"email":email,
+				"suspended":{
+					"$exists":False
+				}
+			}))[0]
 		except IndexError:
 			if D: acenv.error("Account not found")
 			return {

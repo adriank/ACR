@@ -74,11 +74,12 @@ class FileSystem(Component):
 		path=conf["path"]
 		if dirs:
 			for i in dirs:
-				ret.append({
-					"@name":i,
-					"@path":path,
-					"@type":"dir"
-				})
+				if not i== "lost+found":
+					ret.append({
+						"@name":i,
+						"@path":path,
+						"@type":"dir"
+					})
 		if files and not onlyDirs:
 			for i in files:
 				#TODO change type to mimetype
@@ -89,7 +90,17 @@ class FileSystem(Component):
 				}
 				if showMIME:
 					try:
-						f['@type']=mimetypes.types_map['.'+i.split(".").pop()].replace("/","_").replace("-","_")
+						extMap={
+							"docx":"doc"
+						}
+						ext=i.split(".").pop()
+						try:
+							ext=extMap[ext]
+						except:
+							pass
+						f['@type']=mimetypes.types_map['.'+ext].replace("/","-")
+						if f['@type'].startswith("image"):
+							f["@type"]="image-x-generic"
 					except:
 						f["@type"]="unknown"
 				ret.append(f)
@@ -115,21 +126,21 @@ class FileSystem(Component):
 			if not os.path.isdir(currPath):
 				os.mkdir(currPath)
 		try:
-			file=open(conf["fullPath"], 'w')
+			File=open(conf["fullPath"], 'w')
 			content=conf["content"]
 			if type(content) in (str,unicode):
-				file.write(content)
+				File.write(content)
 			elif type(content) is generator:
 				for i in content:
-					file.write(i)
+					File.write(i)
 		except (IOError,OSError) ,e:
-			file.close()
+			#File.close()
 			return {
 				"@status":"error",
 				"@error":e
 			}
 		else:
-			file.close()
+			File.close()
 		return {"@status":"ok"}
 
 	def update(self,acenv,conf):
@@ -189,8 +200,14 @@ class FileSystem(Component):
 		else:
 			file.close()
 		return {
-			"content":"".join(["<![CDATA[",content.replace("]]>","]]>]]&gt;<![CDATA["),"]]>"])
+			"content":content,
+			"fileName":conf["path"].split("/")[-1]
 		}
+		#{
+#			"content":"".join(["<![CDATA[",
+#			content
+#			.replace("]]>","]]>]]&gt;<![CDATA["),"]]>"])
+#		}
 
 	def generate(self, acenv, config):
 		D=acenv.doDebug

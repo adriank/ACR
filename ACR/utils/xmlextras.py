@@ -95,6 +95,8 @@ def tree2xml(root,esc=False):
 	returns: an xml fragment
 	"""
 	def tuplerec(node):
+		if node in (None,False):
+			return
 		if type(node) is not tuple:
 			node=py2JSON(node)
 		if type(node) is str:
@@ -118,6 +120,8 @@ def tree2xml(root,esc=False):
 			tab.append("/>")
 
 	def rec(node,name=None):
+		if node in (None,False):
+			return
 		attrs={}
 		#if type(node) is chain:
 		#	print list(node)

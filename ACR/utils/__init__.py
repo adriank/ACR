@@ -43,7 +43,7 @@ def getStorage(env,s):
 			return False
 		if D: env.end("getStorage with: session storage")
 		return env.sessionStorage.data
-	if s=="env":
+	if s=="env" or s=="env":
 		return env.env
 	#elif s=="app" or s=="as":
 	#	return
@@ -72,6 +72,8 @@ def replaceVars(env,l,fn=None):
 			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
 			v=py2JSON(dicttree.get(storage,i[1],acenv=env))
+			if v in ("null","false"):
+				continue
 			if fn is not None:
 				if type(v) is unicode:
 					v=v.encode("utf8")
@@ -83,10 +85,11 @@ def replaceVars(env,l,fn=None):
 			if fn is not None:
 				i=fn(i)
 			ret.append(i)
-	if len(ret) is 1:
+	if len(ret) is 1 and ret:
 		if D: env.debug("END replaceVars with: %s",ret[0])
 		return ret[0]
 	try:
+#		ret=filter(map(lambda e: type(e) is unicode and e.encode("utf-8") or e,ret),lambda e:e not in (None,False))
 		ret=map(lambda e: type(e) is unicode and e.encode("utf-8") or e,ret)
 		if D: env.debug("END replaceVars with: %s","".join(ret))
 		return "".join(ret)
@@ -154,8 +157,8 @@ typesMap={
 	"nonempty":types.NonEmpty,
 	"hexcolor":types.HEXColor,
 	"file":types.File,
-	"safehtml":types.safeHTML,
 	"csv":types.CSV,
 	"array":types.List,
+	"safehtml":types.safeHTML,
 	"json":types.JSON
 }

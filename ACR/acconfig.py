@@ -28,5 +28,7 @@ MIMEmapper={
 	"text/xml":"objectml",
 	"application/json":"json",
 	"application/xhtml+xml":"objectml",
-	"text/plain":"text"
+	"text/plain":"text",
+	"binary":"binary",
+	"application/octet-stream":"binary"
 }

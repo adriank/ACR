@@ -40,7 +40,7 @@ def computeMIME(mime,agent):
 			return "application/xml"
 		else:
 			return "text/html"
-	elif len(mime)==1 and "application/json" in mime:
+	elif "application/json" in mime and len(mime)==1:
 		return "application/json"
 	return mime[0]
 
@@ -101,8 +101,8 @@ def application(env,start_response):
 	#print h.heap()
 	return response
 
-#try:
-#	from paste.exceptions.errormiddleware import ErrorMiddleware
-#	application=ErrorMiddleware(application, debug=True)
-#except:
-#	pass
+try:
+	from paste.exceptions.errormiddleware import ErrorMiddleware
+	application=ErrorMiddleware(application, debug=True)
+except:
+	pass

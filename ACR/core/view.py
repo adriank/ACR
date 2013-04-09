@@ -289,13 +289,13 @@ class View(object):
 		if D:
 			acenv.debug("postSchemas is %s",self.postSchemas)
 			acenv.debug("posts is %s",acenv.posts)
-		List=acenv.posts or {}
-		if len(List)<self.postCount:
-			raise Error("NotEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(List),self.postCount))
+		list=acenv.posts or {}
+		if len(list)<self.postCount:
+			raise Error("NotEnoughPostFields","Not enough post fields, is %s and must be %s"%(len(list),self.postCount))
 		postSchemas=self.postSchemas
 		try:
 			for i in postSchemas:
-				value=List.get(i)
+				value=list.get(i)
 				typ=postSchemas[i]
 				acenv.requestStorage[i]=typ.get(acenv,value)
 		except Error, e:
@@ -349,6 +349,7 @@ class View(object):
 		self.fillPosts(acenv)
 		self.checkConditions(acenv)
 		for action in self.actions:
+			if acenv.doRedirect: break
 			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
 			action_type=action["type"]
 			path_set=action.has_key("path")
