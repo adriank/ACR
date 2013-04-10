@@ -9,6 +9,7 @@ class myEnv:
 	def __init__(self):
 		self.requestStorage = False
 		self.sessionStorage = None
+		self.doDebug=False
 
 class Utils_init(unittest.TestCase):
 	def setUp(self):
@@ -29,6 +30,10 @@ class Utils_init(unittest.TestCase):
 	# TODO
 	def test_replaceVars(self):
 		pass
+
+	def test_prepareVars(self):
+		pass
+		#prepareVars("ddd {{aaa}} bbb {$.sss} ccc")
 
 	def test_generateID(self):
 		id = generateID()

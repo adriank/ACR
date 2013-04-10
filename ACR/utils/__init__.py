@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from ACR.errors import *
 from ACR.utils.hashcompat import md5_constructor
 from ACR.utils.xmlextras import escapeQuotes, py2JSON
-from ACR.utils import dicttree
+from ACR.utils import *
+#from ACR.utils import makeTree
 from ACR.utils.timeutils import now
 from ACR import acconfig
 from types import GeneratorType as generator
@@ -21,6 +22,8 @@ else:
 
 RE_PATH=re.compile("{\$([^}]+)}") # {$ foobar}
 RE_PATH_split=re.compile("{\$[^}]+}") # {$ foobar}
+RE_PATH_Mustashes=re.compile("{{(.+?)}}") # {{OPexpr}
+RE_PATH_Mustashes_split=re.compile("{{.+?}}") # {{OPexpr}}
 
 def skip(g,n):
 	if type(n) is not int:
@@ -68,6 +71,8 @@ def replaceVars(env,l,fn=None):
 		return l
 	ret=[]
 	for i in l:
+		if type(i) is interpreter.Tree:
+			ret.append(str(i.execute(env)))
 		if type(i) is tuple:
 			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
@@ -101,13 +106,25 @@ def prepareVars(s):
 	if type(s) is not str:
 		return s
 	splitted=RE_PATH_split.split(s)
-	vars=RE_PATH.findall(s)
+	variables=RE_PATH.findall(s)
+	#print "splitted",splitted
+	#print "variables",variables
 	ret=[]
 	STORAGES=["rs","ss","env","config"]
 	try:
 		while True:
-			ret.append(splitted.pop(0))
-			var=vars.pop(0)
+			string=splitted.pop(0)
+			splittedM=RE_PATH_Mustashes_split.split(string)
+			variablesM=RE_PATH_Mustashes.findall(string)
+			#print "splittedM",splittedM
+			#print "variablesM",variablesM
+			try:
+				while True:
+					ret.append(splittedM.pop(0))
+					ret.append(interpreter.makeTree(variablesM.pop(0)))
+			except IndexError:
+				pass
+			var=variables.pop(0)
 			path=var.split(".")
 			storageName=path.pop(0) or "rs"
 			if storageName not in STORAGES:
