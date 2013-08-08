@@ -55,10 +55,10 @@ class Application(object):
 
 	def __init__(self,domain):
 		domainWOPort=domain.split(':',1)[0]
-		if acconfig.appsDir:
-			appDir=os.path.join(acconfig.appsDir,domainWOPort)
-		else:
+		if acconfig.appDir:
 			appDir=acconfig.appDir
+		else:
+			appDir=os.path.join(acconfig.appsDir,domainWOPort)
 		#if D: log.debug("Creating instance with appDir=%s",appDir)
 		self.configPath=os.path.join(appDir, "config.xml")
 		try:

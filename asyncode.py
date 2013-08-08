@@ -24,10 +24,10 @@ if __name__ == "__main__":
 	parser.set_defaults(port = 9999, host='', appsDir=os.path.join(os.path.expanduser('~'),"projects"), appDir='', ACRconf='')
 	args = parser.parse_args()
 
-	acconfig.appsDir = args.appsDir
+	acconfig.appsDir = os.path.expanduser(args.appsDir)
 	acconfig.ACRconf = args.ACRconf
-	acconfig.appDir = args.appDir
-	
+	acconfig.appDir = os.path.expanduser(args.appDir)
+
 	print "One-threaded server is running on %s:%s"%(args.host or "*", args.port)
 	httpd = WSGIServer((args.host, args.port), Handler)
 	httpd.set_app(standalone_server)
