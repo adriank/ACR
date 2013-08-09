@@ -369,7 +369,7 @@ def tokenize(program):
 				s=symbol()
 				s.value=value
 			else:
-				raise SyntaxError("Unknown operator '%s', '%s'" % (id,value))
+				raise SyntaxError("Unknown operator '%s', '%s' in %s" % (id,value,program))
 		yield s
 
 # parser engine

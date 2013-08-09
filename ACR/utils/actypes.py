@@ -128,7 +128,7 @@ class Boolean(Default):
 		return str2obj(value)
 
 class Email(Default):
-	EMAIL_RE=re.compile("^[a-zA-Z0-9._%-\+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
+	EMAIL_RE=re.compile("^[a-zA-Z0-9._%\-\+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$")
 	def validate(self,value,config=None):
 		if not type(value) is str:
 			raise Error("NotString", "Should be string but is %s",type(value))
@@ -201,6 +201,7 @@ class File(Default):
 
 	def _prepareValue(self,value):
 		return value
+
 #JSON type
 from ACR.utils.json_compat import loads
 

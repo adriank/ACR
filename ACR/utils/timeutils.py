@@ -60,7 +60,7 @@ def age_old(date,lang="en"):
 		if weeks:
 			if langIsPL:
 				return (weeks, weeks is 1 and "tydzień" or weeks%10 in [0,1,5,6,7,8,9] and "tygodni" or "tygodnie")
-			else:	
+			else:
 				return (weeks, weeks is 1 and "week" or "weeks")
 		days=int(days)
 		if langIsPL:
@@ -97,7 +97,7 @@ def age(date,lang="en"):
 		td=now2-date
 		sign=1
 	days=float(td.days)
-	print "days",td
+	#print "days",td
 	langIsPL=lang=="pl"
 	if days:
 		years=round9_10(days/356)
