@@ -29,6 +29,7 @@ MIMEmapper={
 	"application/json":"json",
 	"application/xhtml+xml":"objectml",
 	"text/plain":"text",
+	"html5":"html5",
 	"binary":"binary",
 	"application/octet-stream":"binary"
 }

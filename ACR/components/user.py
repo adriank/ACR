@@ -55,9 +55,10 @@ class User(Component):
 		try:
 			user=list(usersColl.find({
 				"email":email,
-				"suspended":{
-					"$exists":False
-				}
+				'$or': [
+					{'suspended': {'$exists': False}},
+					{'suspended': False}
+				]
 			}))[0]
 		except IndexError:
 			if D: acenv.error("Account not found")
