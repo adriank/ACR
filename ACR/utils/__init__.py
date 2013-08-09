@@ -73,7 +73,7 @@ def replaceVars(env,l,fn=None):
 	for i in l:
 		if type(i) is interpreter.Tree:
 			ret.append(str(i.execute(env)))
-		if type(i) is tuple:
+		elif type(i) is tuple:
 			if D: env.debug("computing '%s'",i)
 			storage=getStorage(env,i[0])
 			v=py2JSON(dicttree.get(storage,i[1],acenv=env))
