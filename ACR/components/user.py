@@ -101,7 +101,9 @@ class User(Component):
 			}
 		if list(usersColl.find({"email":email})):
 			return {
-				"@error":"EmailAdressAllreadySubscribed"
+				"@status":"error",
+				"@error":"EmailAdressAllreadySubscribed",
+				"@message":"User already exists in the system"
 			}
 		key=generateID()
 		d={
