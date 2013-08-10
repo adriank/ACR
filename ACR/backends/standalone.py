@@ -25,6 +25,8 @@ from ACR.backends.WSGIHandler import application
 from ACR import acconfig
 from ACR.utils.xmlextras import xml2tree
 
+mimetypes.types_map['.json']='application/json'
+
 def r(s):
 	raise Exception(s)
 

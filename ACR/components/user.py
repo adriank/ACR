@@ -19,6 +19,7 @@
 
 from ACR.components import *
 from ACR.utils import replaceVars,generateID
+from ACR.utils.interpreter import makeTree
 from ACR import acconfig
 from ACR.errors import Error
 from ACR.utils.hashcompat import md5_constructor
@@ -114,6 +115,8 @@ class User(Component):
 			"approvalKey":key,
 			"privileges":[]
 		}
+		if conf.has_key("data"):
+			d.update(conf["data"].execute(acenv))
 		id=usersColl.save(d,safe=True)
 		return {
 			"@status":"ok",
@@ -130,6 +133,8 @@ class User(Component):
 		if config["command"] in ["register","login"] and not ("email" in config["params"].keys() or  "password" in config["params"].keys()):
 			raise Error("Email or password is not set in %s action."%(config["command"]))
 		ret=config["params"].copy()
+		if ret.has_key("data"):
+			ret["data"]=makeTree(ret["data"])
 		ret["command"]=config["command"]
 		return ret
 
