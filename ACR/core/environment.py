@@ -87,6 +87,7 @@ class Environment(Debugger):
 		self.inputs=[]
 		self.posts={}
 		self.app=app
+		self.env["domain"]=app.domain
 
 	def setLang(self,lang):
 		if not lang:

@@ -52,8 +52,10 @@ class Application(object):
 	lang="en"
 	immutable=False
 	deploymentMode=False
+	domain=""
 
 	def __init__(self,domain):
+		self.domain=domain
 		domainWOPort=domain.split(':',1)[0]
 		if acconfig.appDir:
 			appDir=acconfig.appDir
