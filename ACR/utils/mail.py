@@ -19,12 +19,15 @@
 
 import os
 from subprocess import *
+from email.header import Header
 SENDMAIL = "/usr/sbin/sendmail"
 
 def send(headers, content):
 	m=[]
 	if not headers.has_key("Content-Type"):
 		headers["Content-Type"]="text/plain; charset=UTF-8"
+	if headers.has_key("Subject"):
+		headers["Subject"]=str(Header(headers["Subject"], 'utf8'))
 	for i in headers:
 		k=i.strip()
 		v=headers[i]
