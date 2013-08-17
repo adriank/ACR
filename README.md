@@ -53,3 +53,5 @@ Contact
 
 Website: http://www.asyncode.com/
 E-mail: office@asyncode.com
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a09a968bb861c456520d5aec2e9b83b2 "githalytics.com")](http://githalytics.com/adriank/ACR)
