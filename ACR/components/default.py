@@ -59,7 +59,8 @@ class Default(Component):
 		s=[]
 		for elem in config["content"]:
 			if type(elem) is tuple:
-				s.append(tree2xml(elem,True))
+				html=config["view"].output.get("format","")=="html5"
+				s.append(tree2xml(elem,not html,html=html))
 			elif type(elem) is str:
 				s.append(elem)
 		return {

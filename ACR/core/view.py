@@ -128,12 +128,6 @@ class View(object):
 				postSchemas=filter(lambda x: type(x) is not str, node[2])
 			elif name in ACTIONS:
 				actions.append(node)
-		self.conditions=self.parseConditions(conditions)
-		self.actions=self.parseActions(actions)
-		self.inputSchemas=parseInputs(inputSchemas) or []
-		if self.parent and self.parent.inputSchemas:
-			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
-		self.postSchemas, self.postCount=parsePosts(postSchemas)
 		self.output={}
 		try:
 			self.output["format"]=output[0][1]["format"]
@@ -148,6 +142,12 @@ class View(object):
 			self.outputConfig=output[0][1]["config"]
 		except:
 			outputConfig="config"
+		self.conditions=self.parseConditions(conditions)
+		self.actions=self.parseActions(actions)
+		self.inputSchemas=parseInputs(inputSchemas) or []
+		if self.parent and self.parent.inputSchemas:
+			self.inputSchemas=self.parent.inputSchemas+self.inputSchemas
+		self.postSchemas, self.postCount=parsePosts(postSchemas)
 		# TODO check if it is correct
 		## output inheritance
 		#if self.parent and self.parent.outputFormat:
@@ -201,7 +201,8 @@ class View(object):
 		ret={
 			"command":cmd,
 			"params":params,
-			"content":action[2]
+			"content":action[2],
+			"view":self
 		}
 		if action[0]==NODE:
 			ret["output"]=True

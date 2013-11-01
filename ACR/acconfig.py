@@ -23,13 +23,15 @@ appDir=""
 appsDir=""
 
 MIMEmapper={
-	"text/html":"xslt",
+	"text/html":"html5",
 	"application/xml":"objectml",
 	"text/xml":"objectml",
 	"application/json":"json",
+	"json":"json",
 	"application/xhtml+xml":"objectml",
 	"text/plain":"text",
 	"html5":"html5",
+	"html":"html5",
 	"binary":"binary",
 	"application/octet-stream":"binary"
 }

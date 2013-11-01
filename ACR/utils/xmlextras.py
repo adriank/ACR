@@ -88,7 +88,9 @@ def unescapeQuotes(s):
 #	else:
 #		return str(value)
 
-def tree2xml(root,esc=False):
+HTML_SINGLE_TAGS=["br","link"]
+
+def tree2xml(root,esc=False,html=False):
 	"""
 	Converts dict/list or tuple tree to a xml. Dict/list and tuple trees cannot be mixed at this time.
 	input: (dict|list|tuple) a tree root/a fragment (list of dicts)
@@ -111,7 +113,7 @@ def tree2xml(root,esc=False):
 		if node[1]:
 			for i in node[1].iteritems():
 				tab.append(" %s=\"%s\""%(i[0],escapeQuotes(i[1])))
-		if node[2]:
+		if node[2] or html and node[0] not in HTML_SINGLE_TAGS:
 			tab.append(">")
 			for i in node[2]:
 				tuplerec(i)
@@ -173,7 +175,10 @@ def tree2xml(root,esc=False):
 				tab.append(" %s=\"%s\""%(i[0],escapeQuotes(i[1])))
 		nodes=[]
 		if not node:
-			tab.append("/>")
+			if html:
+				tab.append("></"+tag+">")
+			else:
+				tab.append("/>")
 		else:
 			tab.append(">")
 			if type(node) is dict:
@@ -251,6 +256,8 @@ class Reader(handler.ContentHandler):
 		elif self.newlines and len(data)==1 and data[0]=="\n":
 			self.path[-1][2].append("\n")
 		#TODO make it work with ANY whitespaces in XML files
+		elif len(data)==1 and ord(data[0])==160:
+			self.path[-1][2].append("&#160;")
 		elif len(data)==1 and data[0] not in ["\t","\n"]:
 			self.path[-1][2].append(" ")
 		elif " " in data:
