@@ -1,4 +1,4 @@
-Asyncode Runtime
+Asyncode Runtime dev branch
 ================
 
 What is Asyncode Runtime?
@@ -36,7 +36,7 @@ ACR is licensed under the GNU AGPL v3. Nearly all code is written by Adrian Kalb
 
 Please note that applications written in BLSL (the XML code) have their own licenses and they are not necessairly free. Take a look at the first lines of each file to determine the license. Also no license means that it is proprietary and you can not do anything but read the code, without asking the author for permission . If you find a file in this package without any license in the header, please contact us.
 
-If you want to use the code in a way that goes beyond GNU AGPL v3, a commercial licence is required. 
+If you want to use the code in a way that goes beyond GNU AGPL v3, a commercial licence is required.
 
 Contributions
 -------------

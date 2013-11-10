@@ -168,6 +168,7 @@ typesMap={
 	"xml":types.Default,
 	"html":types.Default,
 	"email":types.Email,
+	"url":types.URL,
 	"number":types.Number,
 	"boolean":types.Boolean,
 	"empty":types.Empty,

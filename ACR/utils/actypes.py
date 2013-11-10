@@ -137,6 +137,24 @@ class Email(Default):
 			raise Error("NotValidEmailAddress", "Suplied value is not a valid e-mail address")
 		return True
 
+class URL(Default):
+	URL_RE=re.compile(
+		"(((https?|ftp)\:)?\/\/)?" + #SCHEME
+    "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"+ #User and Pass
+    "([a-z0-9-.]*)\.([a-z]{2,3})" + # Host or IP
+    "(\:[0-9]{2,5})?" + # Port
+    "(\/([a-z0-9+\$_-]\.?)+)*\/?" + # Path
+    "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?" + # GET Query
+    "(#[a-z_.-][a-z0-9+\$_.-]*)?" # Anchor
+	)
+	def validate(self,value,config=None):
+		if not type(value) is str:
+			raise Error("NotString", "Should be string but is %s",type(value))
+		# shortest is a.pl == 4 letters
+		if not (len(value)>3 and self.URL_RE.match(value)):
+			raise Error("NotValidURL", "Suplied value is not a valid URL")
+		return True
+
 class Empty(Default):
 	def validate(self,value,config=None):
 		if not type(value) is str:
