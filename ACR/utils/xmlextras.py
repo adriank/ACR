@@ -167,7 +167,7 @@ def tree2xml(root,esc=False,html=False):
 			else:
 				tab.append(node)
 			return
-		if type(node) is list and name:
+		if not attrs.has_key("name") and name:
 			attrs["name"]=name
 		tab.append("<"+tag)
 		if attrs and len(attrs)>0:
