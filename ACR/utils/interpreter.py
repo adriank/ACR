@@ -370,6 +370,10 @@ def tokenize(program):
 				s.value=value
 			else:
 				raise SyntaxError("Unknown operator '%s', '%s' in %s" % (id,value,program))
+		# these replaces needs a further research. Check where are double escapes from.
+		if type(s.value) is str:
+			s.value=s.value.replace("\\\\","\\")
+			s.value=s.value.replace("\\n","\n")
 		yield s
 
 # parser engine
