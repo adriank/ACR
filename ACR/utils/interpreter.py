@@ -12,7 +12,7 @@
 import sys
 import re
 from cStringIO import StringIO
-from ACR.utils import getStorage, dicttree, iterators, generator, chain, skip
+from ACR.utils import getStorage, dicttree, iterators, generator, chain, skip, chunks
 from ACR.utils.xmlextras import py2JSON
 
 class ProgrammingError(Exception):
@@ -481,7 +481,7 @@ class Tree(object):
 					except:
 						pass
 					if typefst is timeutils.datetime.datetime and typesnd is int:
-						return fst+timeutils.datetime.timedelta(snd)
+						return fst+timeutils.datetime.timedelta(seconds=snd)
 					if D: acenv.debug("standard addition, returning '%s'",fst+snd)
 					return fst + snd
 				else:
@@ -497,6 +497,8 @@ class Tree(object):
 						typefst=type(fst)
 						typesnd=type(snd)
 						timeType=timeutils.datetime.time
+						if typefst is timeutils.datetime.datetime and typesnd is int:
+							return fst-timeutils.datetime.timedelta(seconds=snd)
 						if typefst is timeType and typesnd is timeType:
 							return timeutils.subTimes(fst,snd)
 				else:
@@ -755,6 +757,18 @@ class Tree(object):
 					return min(map(lambda x:type(x) in NUM_TYPES and x or exe(x), args))
 				elif fnName=="round":
 					return round(*args)
+				elif fnName=="avg":
+					args=args[0]
+					if type(args) in NUM_TYPES:
+						return args
+					if type(args) not in ITER_TYPES:
+						raise Exception("Argument for avg() is not iterable")
+					try:
+						return sum(args)/float(len(args))
+					except TypeError:
+						args=filter(lambda x: type(x) in NUM_TYPES, args)
+						self.warning("Some items in array were ommited")
+						return sum(args)/float(len(args))
 				elif fnName=="abs":
 					return abs(args[0])
 				#casting
@@ -793,6 +807,8 @@ class Tree(object):
 					return args[0].capitalize()
 				elif fnName=="title":
 					return args[0].title()
+				elif fnName=="chunks":
+					return list(chunks(args[0],args[1]))
 				elif fnName=="split":
 					return args[0].split(*args[1:])
 				elif fnName=="unescape":
@@ -811,10 +827,18 @@ class Tree(object):
 						joiner=args[1]
 					except:
 						joiner=""
-					return joiner.join(args[0])
+					try:
+						return joiner.join(args[0])
+					except:
+						try:
+							return joiner.join(map(str,args[0]))
+						except:
+							return args[0]
 				elif fnName=="REsub":
 					return re.sub(args[1],args[2],args[0])
 				#array
+				elif fnName=="map":
+					return map(lambda x: exe(("fn",args[0],x)), args[1])
 				elif fnName=="sort":
 					if D: acenv.debug("doing sort on '%s'",args)
 					if not args:

@@ -31,11 +31,11 @@ def get(name):
 	if module:
 		return module
 	path="ACR.serializers."+name
-	try:
-		__import__(path)
-	except ImportError,e:
-		raise e
-		raise Error("SerializerNotFound",str(e))
+#	try:
+	__import__(path)
+#	except ImportError,e:
+#		raise e
+#		raise Error("SerializerNotFound",str(e))
 	m=sys.modules[path]
 	TE_CACHE[name]=m
 	return m

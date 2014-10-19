@@ -44,7 +44,7 @@ def serve_static(env,start_response):
 	except IOError:
 		#logging.critical("Application config not found!")
 		raise Exception("Application config not found!")
-	staticDir=os.path.join(path,"static")
+	staticDir=os.path.join(path,"frontend")
 	try:
 		f=open(os.path.join(staticDir,*env["PATH_INFO"].split("/")))
 	except:

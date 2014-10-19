@@ -80,7 +80,7 @@ class Mongo(Component):
 				"@message":str(e)
 			}
 		if D:acenv.info("inserted: %s",o)
-		ret={"@id":id,"@status":"ok"}
+		ret={"@id":str(id),"@status":"ok"}
 		#leaving space for debugging and profiling info
 		return ret
 

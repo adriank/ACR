@@ -100,14 +100,15 @@ class View(object):
 				ns[key]=value
 		self.namespaces=ns
 		#checks whether view inherits from another view
+#		raise Exception(filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")))
 		try:
-			self.parent=app.getView(filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")),True)[0]
+			self.parent=app.getView(["api"]+filter(lambda x: len(x) and not str.isspace(x), attrs["inherits"].split("/")),True)[0]
 		except KeyError:
 			self.parent=None
 		except IOError:
 			raise Error("ParentViewNotFound","View '%s' not found."%attrs["inherits"])
-		except Exception,e:
-			raise Error("ParentViewError",str(e))
+#		except Exception,e:
+#			raise Error("ParentViewError",str(e))
 		inputSchemas=[]
 		conditions=[]
 		actions=[]

@@ -76,7 +76,7 @@ class Application(object):
 		self.views={}
 		self.lang="en"
 		self.langs=[]
-		self.viewsPath=os.path.join(appDir, "views")
+		self.viewsPath=os.path.join(appDir, "")
 		self.appDir=appDir
 		self.config=config
 		try:
@@ -168,6 +168,8 @@ class Application(object):
 		#if D: acenv.debug("Searching from '%s'"%(viewPath))
 		viewName,inputs=URLpath[:i],URLpath[i:]
 		temp=viewPath
+#		if inputs[1]!="api"
+#			raise Exception(inputs)
 		while len(inputs):
 			temp=pjoin(temp, inputs[0])
 			if not pisdir(temp):
@@ -182,7 +184,7 @@ class Application(object):
 			viewName.append("default")
 		else:
 			if errorOnNotFound:
-				raise ViewNotFound
+				raise ViewNotFound(viewName)
 			viewName=["notFound"]
 		v=View(viewName, self)
 		dicttree.set(self.views, viewName, v)
