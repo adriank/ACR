@@ -27,15 +27,14 @@ except:
 	from ACR.session.file import FileSession as sessionBackend
 from ACR.core.view import View
 from ACR.errors import *
-from ACR import components,serializers
+from ACR import components, serializers
 from ACR.components import *
 from ACR.acconfig import *
-import time,os
+import time, os
 import locale
 try:
 	import pymongo
 except:
-	#pass
 	print "No MongoDB driver found. Please install pymongo."
 
 pjoin=os.path.join
@@ -101,10 +100,10 @@ class Application(object):
 			self.storage=pymongo.Connection(**connopts)[self.DB_NAME]
 		except Exception,e:
 			raise Error("MongoError",str(e))
-		if config.get("/debug"):
+		if acconfig.debug or config.get("/debug"):
 			self.dbg={
-				"enabled":str2obj(config.get("/debug[@enable]")),
-				"level":config.get("/debug[@level]","error")
+				"enabled": acconfig.debug or str2obj(config.get("/debug[@enable]")),
+				"level": config.get("/debug[@level]","error")
 			}
 		if config.get("/debug[@cutAfter]"):
 			self.dbg["cutAfter"]=config.get("/debug[@cutAfter]")
@@ -194,7 +193,7 @@ class Application(object):
 	def generate(self,acenv):
 		D=acenv.doDebug
 		P=acenv.doProfiling
-		if D: acenv.info("\033[95mSTART\033[0m")
+		if D: acenv.info("START")
 		if P: t=time.time()
 		prefix=acenv.prefix+"SESS"
 		if acenv.cookies.has_key(prefix):
@@ -210,9 +209,9 @@ class Application(object):
 			view.generate(acenv)
 		except Error,e:
 			acenv.generations={
-				"acr:globalError":{
-					"@error":e.name,
-					"@message":e
+				"GlobalError":{
+					"error":e.name,
+					"message":e
 				}
 			}
 			#FIXME - what is this for???
@@ -220,16 +219,16 @@ class Application(object):
 				acenv.output["XSLTFile"]=view.output.get("XSLTFile","error.xsl")
 			except:
 				pass
-		acenv.generations["acr:lang"]={"@current":acenv.lang,"available":acenv.langs}
-		acenv.generations["acr:appDetails"]={"@domain":acenv.domain,"@config":acenv.outputConfig}
+		acenv.generations["_acr"]["lang"]={"current":acenv.lang,"available":acenv.langs}
+		acenv.generations["_acr"]["appDetails"]={"domain":acenv.domain,"config":acenv.outputConfig}
 		try:
-			acenv.generations["acr:view"]={"@path":view.name.replace(".","/")}
+			acenv.generations["_acr"]["view"]={"path":view.name.replace(".","/")}
 		except:
 			pass
 		if acenv.sessionStorage:
 			acenv.info("Session exists")
 			sess=acenv.sessionStorage.data
-			acenv.generations["acr:user"]={"@ID":sess["ID"],"@email":sess["email"],"@role":sess["role"]}
+			acenv.generations["_acr"]["user"]={"ID":sess["ID"], "email":sess["email"],"role":sess["role"]}
 			acenv.sessionStorage.save()
 		try:
 			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"],"json"))

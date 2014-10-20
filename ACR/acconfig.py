@@ -21,6 +21,7 @@ dbschema="asyncode"
 SECRET_KEY="MySecret"
 appDir=""
 appsDir=""
+debug=False
 
 MIMEmapper={
 	"text/html":"html5",

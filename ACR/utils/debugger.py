@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# move dbgMap outside
+import inspect
 
 class Debugger(object):
 	dbg=None
@@ -9,6 +9,7 @@ class Debugger(object):
 	dbgfn=None
 	level=60
 	CUT_AFTER=100
+	# error levels
 	CRITICAL=50
 	ERROR=40
 	WARNING=30
@@ -66,7 +67,19 @@ class Debugger(object):
 		if self.dbgfn and self.level<= self.CRITICAL:
 			self.dbgfn("CRITICAL", s)
 
+	def lineno(self):
+			"""Returns the current line number in our program."""
+			return inspect.currentframe().f_back.f_back.f_back.f_lineno
+
 	def consolelog(self, lvl, s):
+		def color(c,s):
+			return '\033[%sm%s\033[0m' % (c,s)
+
+		colors={
+			"DEBUG":33,
+			"INFO":36
+		}
+
 		def f(x):
 			if type(x) is unicode:
 				x=x.encode("utf8")
@@ -82,10 +95,11 @@ class Debugger(object):
 				return s[:self.CUT_AFTER]+"..."
 			else:
 				return x
+
 		if len(s)>1:
 			v=tuple(map(f ,s[1:]))
 			self._debugStr.append((lvl, s[0] %v))
-			print lvl, s[0] % v
+			print lvl + "@" + str(self.lineno()) + " " + color(colors.get(lvl, 0), s[0] % v)
 		else:
 			self._debugStr.append((lvl, s[0]))
-			print lvl, f(s[0])
+			print lvl + "@" + str(self.lineno()) + " " + color(colors.get(lvl, 0), f(s[0]))

@@ -62,7 +62,9 @@ class Environment(Debugger):
 	doProfiling=False
 
 	def __init__(self,app):
-		self.generations={}
+		self.generations={
+			"_acr":{}
+		}
 		self.mime=[]
 		self.URLpath=[]
 		#populate with app defaults; the class attributes are not in __dict__!

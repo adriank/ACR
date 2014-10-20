@@ -155,8 +155,8 @@ class Mongo(Component):
 			except: pass
 			try:
 				p["sort"]=params["sort"]
-			except:
-				pass
+			except: pass
+
 		if P: t=time.time()
 		if count:
 			ret=coll.find(**p).count()
@@ -225,6 +225,16 @@ class Mongo(Component):
 			elif type(elem) is str:
 				s.append(elem.strip())
 		try:
+			show=pars["show"].split(",")
+			pars["fields"]=dict(map(lambda x: (x.strip(), 1), show))
+		except KeyError:
+			pass
+		try:
+			hide=pars["hide"].split(",")
+			pars["fields"]=dict(map(lambda x: (x.strip(), 0), hide))
+		except KeyError:
+			pass
+		try:
 			coll=pars["coll"].split(".")
 			if len(coll) is 1:
 				coll=coll[0]
@@ -242,8 +252,8 @@ class Mongo(Component):
 				pars["sort"]=list(itertools.izip_longest(sort,directions,fillvalue=directions[-1]))
 		except:
 			pass
-		if fields:
-			pars["fields"]=fields
+		# if fields:
+		# 	pars["fields"]=show or hide
 		return {
 			"command":config["command"],
 			"content":makeTree("".join(s)),

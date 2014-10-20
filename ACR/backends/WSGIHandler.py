@@ -20,7 +20,7 @@
 #TODO this file is mess. Need for full rewrite.
 
 import sys,os,re,time
-from ACR import acconfig,errors
+from ACR import acconfig, errors
 from ACR.utils import HTTP
 from ACR.core.environment import Environment
 from ACR.core.application import Application
@@ -33,23 +33,24 @@ from cStringIO import StringIO
 APP_CACHE={}
 
 def computeMIME(mime,agent):
-	if not agent:
-		return mime[0]
-	if "text/html" in mime or "*/*" in mime:
-		if ((agent.find("translat")==-1) and re.search("Firefox|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1 and agent.find("rekonq")==-1):
-			return "application/xml"
-		else:
-			return "text/html"
-	elif "application/json" in mime and len(mime)==1:
-		return "application/json"
-	return mime[0]
+	return "application/json"
+	# if not agent:
+	# 	return mime[0]
+	# if "text/html" in mime or "*/*" in mime:
+	# 	if ((agent.find("translat")==-1) and re.search("Firefox|IE|Opera|Chrome",agent) and agent.find("Konqueror")==-1 and agent.find("rekonq")==-1):
+	# 		return "application/xml"
+	# 	else:
+	# 		return "text/html"
+	# elif "application/json" in mime and len(mime)==1:
+	# 	return "application/json"
+	# return mime[0]
 
 def application(env,start_response):
 	#for i in env:
 	#	print i+": "+str(env[i])
 	t=time.time()
 	response=[]
-	D=False
+	D=acconfig.debug
 	path=env["HTTP_HOST"]
 	if APP_CACHE.has_key(path):
 		app=APP_CACHE[path]
