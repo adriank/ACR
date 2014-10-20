@@ -76,8 +76,12 @@ class Debugger(object):
 			return '\033[%sm%s\033[0m' % (c,s)
 
 		colors={
-			"DEBUG":33,
-			"INFO":36
+			"DEBUG":0,
+			"START":93,
+			"END":93,
+			"INFO":96,
+			"WARNING":95,
+			"ERROR":91
 		}
 
 		def f(x):

@@ -219,16 +219,16 @@ class Application(object):
 				acenv.output["XSLTFile"]=view.output.get("XSLTFile","error.xsl")
 			except:
 				pass
-		acenv.generations["_acr"]["lang"]={"current":acenv.lang,"available":acenv.langs}
-		acenv.generations["_acr"]["appDetails"]={"domain":acenv.domain,"config":acenv.outputConfig}
+		acenv.generations["_session"]["lang"]={"current":acenv.lang,"available":acenv.langs}
+		acenv.generations["_session"]["appDetails"]={"domain":acenv.domain,"config":acenv.outputConfig}
 		try:
-			acenv.generations["_acr"]["view"]={"path":view.name.replace(".","/")}
+			acenv.generations["_session"]["view"]={"path":view.name.replace(".","/")}
 		except:
 			pass
 		if acenv.sessionStorage:
 			acenv.info("Session exists")
 			sess=acenv.sessionStorage.data
-			acenv.generations["_acr"]["user"]={"ID":sess["ID"], "email":sess["email"],"role":sess["role"]}
+			acenv.generations["_session"]["user"]={"ID":sess["ID"], "email":sess["email"],"role":sess["role"]}
 			acenv.sessionStorage.save()
 		try:
 			s=serializers.get(acconfig.MIMEmapper.get(acenv.output["format"],"json"))

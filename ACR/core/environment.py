@@ -63,7 +63,7 @@ class Environment(Debugger):
 
 	def __init__(self,app):
 		self.generations={
-			"_acr":{}
+			"_session":{}
 		}
 		self.mime=[]
 		self.URLpath=[]

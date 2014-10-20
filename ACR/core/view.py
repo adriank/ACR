@@ -352,7 +352,7 @@ class View(object):
 		self.checkConditions(acenv)
 		for action in self.actions:
 			if acenv.doRedirect: break
-			if D: acenv.info("\033[92mdefining name='%s'\033[0m",action["name"])
+			if D: acenv.info("defining name='%s'",action["name"])
 			action_type=action["type"]
 			path_set=action.has_key("path")
 			if D: acenv.info("Checking condition")
